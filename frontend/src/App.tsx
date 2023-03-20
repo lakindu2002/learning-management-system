@@ -1,25 +1,25 @@
-import React from 'react';
-import {
-  Button,
-  createTheme, CssBaseline, ThemeProvider, Typography,
-} from '@mui/material';
+import { BrowserRouter } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
+// routes
+import Router from './routes';
+// theme
+import ThemeProvider from './theme';
+// components
+import { StyledChart } from './components/chart';
+import ScrollToTop from './components/scroll-to-top';
 
-function App() {
+// ----------------------------------------------------------------------
+
+export default function App() {
   return (
-    <ThemeProvider theme={createTheme()}>
-      <>
-        <CssBaseline />
-        <Typography>
-          Hello from MUI
-        </Typography>
-        <Button
-          variant="contained"
-        >
-          Click Me!
-        </Button>
-      </>
-    </ThemeProvider>
+    <HelmetProvider>
+      <BrowserRouter>
+        <ThemeProvider>
+          <ScrollToTop />
+          <StyledChart />
+          <Router />
+        </ThemeProvider>
+      </BrowserRouter>
+    </HelmetProvider>
   );
 }
-
-export default App;
