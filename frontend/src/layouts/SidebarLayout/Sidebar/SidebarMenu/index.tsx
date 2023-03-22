@@ -250,7 +250,7 @@ function SidebarMenu() {
                   to="/management/transactions"
                   startIcon={<TableChartTwoToneIcon />}
                 >
-                  Transactions List
+                  Courses
                 </Button>
               </ListItem>
             </List>
