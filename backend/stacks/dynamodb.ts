@@ -1,6 +1,6 @@
 import { StackContext } from "sst/constructs/FunctionalStack";
 import { Table } from "sst/constructs";
-import { BillingMode } from "aws-cdk-lib/aws-dynamodb";
+import { BillingMode, ProjectionType } from "aws-cdk-lib/aws-dynamodb";
 
 export function dynamodb({ stack }: StackContext) {
   const usersTable = new Table(stack, "users", {
@@ -33,12 +33,24 @@ export function dynamodb({ stack }: StackContext) {
 
   const instituteUserTable = new Table(stack, "institute-users", {
     primaryIndex: {
-      partitionKey: "userId",
+      partitionKey: "id",
       sortKey: "instituteId",
     },
     fields: {
-      userId: "string",
+      id: "string",
       instituteId: "string",
+    },
+    globalIndexes: {
+      'by-institute-index': {
+        partitionKey: "instituteId",
+        sortKey: "id",
+        cdk: {
+          index: {
+            projectionType: ProjectionType.INCLUDE,
+            nonKeyAttributes: ["email", "role"]
+          }
+        }
+      }
     },
     cdk: {
       table: {
@@ -47,9 +59,17 @@ export function dynamodb({ stack }: StackContext) {
     }
   });
 
-  return {
+  const stackOutputs = {
     userTableName: usersTable.tableName,
     instituteTableName: instituteTable.tableName,
     instituteUserTableName: instituteUserTable.tableName,
+  }
+
+  stack.addOutputs({
+    ...stackOutputs
+  })
+
+  return {
+    ...stackOutputs
   };
 }
