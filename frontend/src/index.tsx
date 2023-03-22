@@ -1,16 +1,21 @@
-import ReactDOM from 'react-dom/client';
+import ReactDOM from 'react-dom';
+import { HelmetProvider } from 'react-helmet-async';
+import { BrowserRouter } from 'react-router-dom';
 
-//
-import App from './App';
-import * as serviceWorker from './serviceWorker';
-import reportWebVitals from './reportWebVitals';
-import React from 'react';
+import 'nprogress/nprogress.css';
+import App from 'src/App';
+import { SidebarProvider } from 'src/contexts/SidebarContext';
+import * as serviceWorker from 'src/serviceWorker';
 
-// ----------------------------------------------------------------------
+ReactDOM.render(
+  <HelmetProvider>
+    <SidebarProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </SidebarProvider>
+  </HelmetProvider>,
+  document.getElementById('root')
+);
 
-const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
-
-root.render(<App />);
-
-// If you want to enable client cache, register instead.
 serviceWorker.unregister();

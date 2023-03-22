@@ -1,25 +1,22 @@
-import { BrowserRouter } from 'react-router-dom';
-import { HelmetProvider } from 'react-helmet-async';
-// routes
-import Router from './routes';
-// theme
-import ThemeProvider from './theme';
-// components
-import { StyledChart } from './components/chart';
-import ScrollToTop from './components/scroll-to-top';
+import { useRoutes } from 'react-router-dom';
+import router from 'src/router';
 
-// ----------------------------------------------------------------------
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
 
-export default function App() {
+import { CssBaseline } from '@mui/material';
+import ThemeProvider from './theme/ThemeProvider';
+
+function App() {
+  const content = useRoutes(router);
+
   return (
-    <HelmetProvider>
-      <BrowserRouter>
-        <ThemeProvider>
-          <ScrollToTop />
-          <StyledChart />
-          <Router />
-        </ThemeProvider>
-      </BrowserRouter>
-    </HelmetProvider>
+    <ThemeProvider>
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <CssBaseline />
+        {content}
+      </LocalizationProvider>
+    </ThemeProvider>
   );
 }
+export default App;
