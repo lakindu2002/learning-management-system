@@ -1,5 +1,7 @@
 import { SSTConfig } from "sst";
-import { APIGateway } from "./stacks/API";
+import { lmsApiGateway } from "./stacks/api-gateway";
+import { cognito } from "./stacks/cognito";
+import { dynamodb } from "./stacks/dynamodb";
 
 export default {
   config(_input) {
@@ -10,6 +12,11 @@ export default {
   },
   stacks(app) {
     app
-      .stack(APIGateway)
+      .stack(dynamodb)
+      .stack(cognito)
+      .stack(lmsApiGateway)
+      .setDefaultFunctionProps({
+        memorySize: 1024,
+      })
   }
 } satisfies SSTConfig;
