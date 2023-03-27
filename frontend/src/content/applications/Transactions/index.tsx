@@ -5,15 +5,20 @@ import { Grid, Container } from '@mui/material';
 import Footer from 'src/components/Footer';
 
 import RecentOrders from './RecentOrders';
+import { useState } from 'react';
+import CustomModal from 'src/components/CustomModal';
+import AddEditCourse from './AddEditCourse';
 
 function ApplicationsTransactions() {
+  const [openCreate, setOpenCreate] = useState(false);
+
   return (
     <>
       <Helmet>
-        <title>Transactions - Applications</title>
+        <title>Courses</title>
       </Helmet>
       <PageTitleWrapper>
-        <PageHeader />
+        <PageHeader openModal={() => setOpenCreate(true)} />
       </PageTitleWrapper>
       <Container maxWidth="lg">
         <Grid
@@ -28,7 +33,11 @@ function ApplicationsTransactions() {
           </Grid>
         </Grid>
       </Container>
+
       <Footer />
+      <CustomModal open={openCreate}>
+        <AddEditCourse setOpen={setOpenCreate} />
+      </CustomModal>
     </>
   );
 }
