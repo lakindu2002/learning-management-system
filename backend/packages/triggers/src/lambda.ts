@@ -48,6 +48,8 @@ export const handlePostConfirmationOnCognito: PostConfirmationTriggerHandler = a
       }
     ]
   }).promise();
+
+  return event;
 };
 
 export const handlePreTokenGenerationOnCognito: PreTokenGenerationTriggerHandler = async (event: PreTokenGenerationTriggerEvent) => {

@@ -20,6 +20,7 @@ const Overview = Loader(lazy(() => import('src/content/overview')));
 
 const Login = Loader(lazy(() => import('src/content/pages/Login')));
 const SignUp = Loader(lazy(() => import('src/content/pages/SignUp')));
+const VerifyCode = Loader(lazy(() => import('src/content/pages/VerifyCode')));
 
 // Dashboards
 
@@ -89,6 +90,10 @@ const routes: RouteObject[] = [
       {
         path: '/sign-up',
         element: <SignUp />
+      },
+      {
+        path: '/verify-code',
+        element: <VerifyCode />
       },
       {
         path: 'overview',

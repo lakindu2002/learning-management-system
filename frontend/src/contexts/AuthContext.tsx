@@ -3,7 +3,7 @@ import { Amplify, Auth } from 'aws-amplify';
 import { toast } from 'react-hot-toast';
 import { amplifyConfig } from 'src/config';
 import { User } from 'src/models/user';
-import { LoginRequest, SignUpRequest } from 'src/models/requests';
+import { LoginRequest, SignUpRequest, VerifyCodeRequest } from 'src/models/requests';
 
 console.log(amplifyConfig);
 Amplify.configure(amplifyConfig);
@@ -21,14 +21,16 @@ const initialState: State = {
 interface AuthContextValue extends State {
   login: (request: LoginRequest) => Promise<void>,
   logout: () => Promise<void>,
-  register: (request: SignUpRequest) => Promise<void>
+  register: (request: SignUpRequest) => Promise<void>,
+  verifySignUpCode: (request: VerifyCodeRequest) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue>({
   ...initialState,
   login: () => Promise.resolve(),
   logout: () => Promise.resolve(),
-  register: () => Promise.resolve()
+  register: () => Promise.resolve(),
+  verifySignUpCode: () => Promise.resolve()
 });
 
 interface AuthProviderProps {
@@ -57,7 +59,11 @@ type RegsiterAction = {
   type: 'REGISTER',
 }
 
-type Action = LoginAction | LogoutAction | InitializeAction | RegsiterAction;
+type RegsiterConfirmed = {
+  type: 'REGISTER_CONFIRMED',
+}
+
+type Action = LoginAction | LogoutAction | InitializeAction | RegsiterAction | RegsiterConfirmed;
 
 const handlers: Record<string, (state: State, action: Action) => State> = {
   LOGIN: (state: State, action: LoginAction): State => {
@@ -74,6 +80,7 @@ const handlers: Record<string, (state: State, action: Action) => State> = {
     user: undefined
   }),
   REGISTER: (state: State): State => ({ ...state, }),
+  REGISTER_CONFIRMED: (state: State): State => ({ ...state, }),
 };
 
 const reducer = (state: State, action: Action): State => (
@@ -115,11 +122,17 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     })
   }
 
+  const verifySignUpCode = async ({ code, email }: VerifyCodeRequest) => {
+    await Auth.confirmSignUp(email, code)
+    dispatcher({ type: 'REGISTER_CONFIRMED' });
+  }
+
   return <AuthContext.Provider value={{
     ...state,
     login,
     logout,
-    register
+    register,
+    verifySignUpCode
   }}>{children}</AuthContext.Provider>;
 };
 

@@ -1,38 +1,40 @@
 import { FC } from 'react';
-import *  as Yup from 'yup';
-import Logo from 'src/components/LogoSign';
-import { Container, Grid, TextField, Typography, Box, Divider } from '@mui/material';
-import { LoadingButton } from '@mui/lab';
-import { useAuth } from 'src/contexts/AuthContext';
 import { useFormik } from 'formik';
-import { LoginRequest } from 'src/models/requests';
-import { toast } from 'react-hot-toast';
-import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import * as Yup from 'yup';
+import { Box, Container, Grid, TextField, Typography } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import Logo from 'src/components/LogoSign';
+import { useAuth } from 'src/contexts/AuthContext';
+import { VerifyCodeRequest } from 'src/models/requests';
+import { useNavigate } from 'react-router';
 
-interface LoginProps { }
+interface VerifyCodeProps { }
 
-export const Login: FC<LoginProps> = () => {
-
-  const { login } = useAuth();
+export const VerifyCode: FC<VerifyCodeProps> = () => {
+  const { verifySignUpCode } = useAuth();
+  const navigate = useNavigate();
 
   const formik = useFormik({
     initialValues: {
       email: '',
-      password: '',
+      code: '',
     },
     validationSchema: Yup.object({
       email: Yup.string().email('Please enter a valid email address').required('Email address is required'),
-      password: Yup.string().required('Password is required')
+      code: Yup.string().required('Code is required').min(6, 'Code must be 6 characters').max(6, 'Code must be 6 characters')
     }),
     onSubmit: async (values) => {
-      const signInRequest: LoginRequest = {
+      const verifyCodeRequest: VerifyCodeRequest = {
         email: values.email,
-        password: values.password
+        code: values.code
       }
       try {
-        await login(signInRequest);
+        await verifySignUpCode(verifyCodeRequest);
+        navigate('/login');
+        toast.success('Your account was created successfully. Please log in to access your account');
       } catch (err) {
-        toast.error('Invalid email or password. Please try again.');
+        toast.error(err?.message || 'We could not verify your code at the moment. Please try again.');
       }
     }
   })
@@ -44,10 +46,9 @@ export const Login: FC<LoginProps> = () => {
         justifyContent="center"
         alignItems="center"
         container
-        sx={{ my: 3 }}
       >
         <Grid item md={12} lg={12} mx="auto">
-          <Typography variant="h1">
+          <Typography sx={{ my: 3 }} variant="h1">
             <Logo />
           </Typography>
           <Typography
@@ -55,7 +56,7 @@ export const Login: FC<LoginProps> = () => {
             color="text.primary"
             textAlign="center"
           >
-            Log In
+            Verify Confirmation Code
           </Typography>
           <Typography
             sx={{ mt: 3 }}
@@ -63,7 +64,7 @@ export const Login: FC<LoginProps> = () => {
             color="text.secondary"
             textAlign="center"
           >
-            Sign in to MyLMS
+            Enter the code that was emailed to your email address to confirm your account.
           </Typography>
         </Grid>
 
@@ -90,15 +91,15 @@ export const Login: FC<LoginProps> = () => {
               <TextField
                 fullWidth
                 sx={{ mt: 3 }}
-                type="password"
-                id="password"
-                name="password"
-                label="Password"
-                value={formik.values.password}
+                type="code"
+                id="code"
+                name="code"
+                label="Verification Code"
+                value={formik.values.code}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                helperText={formik.touched.password && formik.errors.password}
-                error={Boolean(formik.touched.password && formik.errors.password)}
+                helperText={formik.touched.code && formik.errors.code}
+                error={Boolean(formik.touched.code && formik.errors.code)}
               />
               <Box sx={{ my: 3 }}>
                 <LoadingButton
@@ -107,21 +108,10 @@ export const Login: FC<LoginProps> = () => {
                   type="submit"
                   loading={formik.isSubmitting}
                 >
-                  Log In
+                  Confirm Account
                 </LoadingButton>
               </Box>
             </form>
-            <Divider sx={{ my: 2 }} />
-            <Link
-              to="/sign-up"
-              style={{
-                textDecoration: 'none'
-              }}
-            >
-              <Typography>
-                Create a new account
-              </Typography>
-            </Link>
           </Container>
         </Grid>
       </Grid>

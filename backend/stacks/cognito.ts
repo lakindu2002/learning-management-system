@@ -25,9 +25,8 @@ export function cognito({ stack }: StackContext) {
     },
   })
 
-  postConfirmationTrigger.attachPermissions(["dynamodb:TransactWriteItem"])
+  postConfirmationTrigger.attachPermissions(["dynamodb:TransactWriteItem", "dynamodb:PutItem"])
   preTokenTrigger.attachPermissions(["dynamodb:Query", "dynamodb:BatchGetItem"])
-
 
   const auth = new Cognito(stack, "lms-auth", {
     login: ["email"],

@@ -3,11 +3,12 @@ import toast from 'react-hot-toast';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import { LoadingButton } from '@mui/lab';
-import { Grid, Typography, Container, TextField, Box } from '@mui/material';
+import { Grid, Typography, Container, TextField, Box, Divider } from '@mui/material';
 import { useAuth } from 'src/contexts/AuthContext';
 import { SignUpRequest } from 'src/models/requests';
 import Logo from 'src/components/LogoSign';
 import { useNavigate } from 'react-router';
+import { Link } from 'react-router-dom';
 
 interface SignUpProps { }
 
@@ -53,9 +54,10 @@ export const SignUp: FC<SignUpProps> = () => {
         justifyContent="center"
         alignItems="center"
         container
+        sx={{ my: 3 }}
       >
         <Grid item md={12} lg={12} mx="auto">
-          <Typography sx={{ my: 3 }} variant="h1">
+          <Typography variant="h1">
             <Logo />
           </Typography>
           <Typography
@@ -143,6 +145,17 @@ export const SignUp: FC<SignUpProps> = () => {
                 </LoadingButton>
               </Box>
             </form>
+            <Divider sx={{ my: 2 }} />
+            <Link
+              to="/login"
+              style={{
+                textDecoration: 'none'
+              }}
+            >
+              <Typography>
+                Having an account?
+              </Typography>
+            </Link>
           </Container>
         </Grid>
       </Grid>
