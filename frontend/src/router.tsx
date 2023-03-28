@@ -19,6 +19,7 @@ const Loader = (Component) => (props) =>
 const Overview = Loader(lazy(() => import('src/content/overview')));
 
 const Login = Loader(lazy(() => import('src/content/pages/Login')));
+const SignUp = Loader(lazy(() => import('src/content/pages/SignUp')));
 
 // Dashboards
 
@@ -66,16 +67,10 @@ const Forms = Loader(lazy(() => import('src/content/pages/Components/Forms')));
 // Status
 
 const Status404 = Loader(
-  lazy(() => import('src/content/pages/Status/Status404'))
+  lazy(() => import('src/content/pages/Status404'))
 );
 const Status500 = Loader(
-  lazy(() => import('src/content/pages/Status/Status500'))
-);
-const StatusComingSoon = Loader(
-  lazy(() => import('src/content/pages/Status/ComingSoon'))
-);
-const StatusMaintenance = Loader(
-  lazy(() => import('src/content/pages/Status/Maintenance'))
+  lazy(() => import('src/content/pages/Status500'))
 );
 
 const routes: RouteObject[] = [
@@ -90,6 +85,10 @@ const routes: RouteObject[] = [
       {
         path: '/login',
         element: <Login />
+      },
+      {
+        path: '/sign-up',
+        element: <SignUp />
       },
       {
         path: 'overview',
@@ -110,14 +109,6 @@ const routes: RouteObject[] = [
             path: '500',
             element: <Status500 />
           },
-          {
-            path: 'maintenance',
-            element: <StatusMaintenance />
-          },
-          {
-            path: 'coming-soon',
-            element: <StatusComingSoon />
-          }
         ]
       },
       {

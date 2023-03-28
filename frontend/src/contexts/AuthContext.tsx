@@ -103,13 +103,14 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     // TODO: Set up axios with request interception.
   }
 
-  const register = async ({ email, insituteName, password }: SignUpRequest) => {
+  const register = async ({ email, insituteName, password, fullName }: SignUpRequest) => {
     await Auth.signUp({
       password,
       username: email.toLowerCase().trim(),
       attributes: {
         'custom:institute_name': insituteName.trim(),
-        email: email.toLowerCase().trim()
+        email: email.toLowerCase().trim(),
+        name: fullName.trim()
       }
     })
   }

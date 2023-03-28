@@ -2,6 +2,7 @@ import { StackContext } from "sst/constructs/FunctionalStack";
 import { Cognito, use, Function } from "sst/constructs";
 import { StringAttribute } from "aws-cdk-lib/aws-cognito";
 import { dynamodb } from "./dynamodb";
+import { Duration } from "aws-cdk-lib";
 
 export function cognito({ stack }: StackContext) {
   const { instituteTableName, instituteUserTableName, userTableName } = use(dynamodb);
@@ -39,6 +40,14 @@ export function cognito({ stack }: StackContext) {
         customAttributes: {
           institute_name: new StringAttribute({ minLen: 1, maxLen: 255 }),
         },
+        passwordPolicy: {
+          minLength: 6,
+          requireDigits: false,
+          requireLowercase: true,
+          requireSymbols: false,
+          requireUppercase: false,
+          tempPasswordValidity: Duration.days(30)
+        }
       },
     },
   });
