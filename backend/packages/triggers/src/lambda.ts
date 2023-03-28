@@ -53,18 +53,17 @@ export const handlePostConfirmationOnCognito: PostConfirmationTriggerHandler = a
 };
 
 export const handlePreTokenGenerationOnCognito: PreTokenGenerationTriggerHandler = async (event: PreTokenGenerationTriggerEvent) => {
-  const { request: { userAttributes: { sid } }, response } = event;
-  const customClaims: any = {};
+  const { request: { userAttributes: { sub } }, response } = event;
 
   const { Items: instituteUserResponse = [] } = await documentClient.query({
     TableName: process.env.INSTITUTE_USER_TABLE_NAME as string,
     Limit: MAX_INSTITUTES_PER_USER,
     KeyConditionExpression: '#id = :id',
     ExpressionAttributeNames: {
-      '#id': 'userId'
+      '#id': 'id'
     },
     ExpressionAttributeValues: {
-      ':id': sid
+      ':id': sub
     }
   }).promise();
 
@@ -74,21 +73,23 @@ export const handlePreTokenGenerationOnCognito: PreTokenGenerationTriggerHandler
     RequestItems: {
       [process.env.INSTITUTE_TABLE_NAME as string]: {
         Keys: instituteIds.map((id) => ({ id })),
-        ProjectionExpression: '#id',
-        ExpressionAttributeNames: {
-          '#id': 'id',
-        }
       }
     }
   }).promise()
 
   const institutes = (Responses[process.env.INSTITUTE_TABLE_NAME as string] || []) as Partial<Institute>[]
 
+  const tokenizedInstitutes: any = {};
+
   institutes.forEach((institute) => {
     const { id = '' } = institute;
     const { role } = (instituteUserResponse as InstituteUser[]).find((user) => user.instituteId === id) as InstituteUser;
-    customClaims.id = JSON.stringify({ role })
+    tokenizedInstitutes[id] = { role }
   });
+
+  const customClaims = {
+    institutes: JSON.stringify(tokenizedInstitutes)
+  };
 
   response.claimsOverrideDetails = {
     claimsToAddOrOverride: {
