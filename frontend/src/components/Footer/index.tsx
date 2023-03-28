@@ -18,7 +18,7 @@ function Footer() {
       >
         <Box>
           <Typography variant="subtitle1">
-            &copy; 2022 - Tokyo Free Black React Typescript Admin Dashboard
+            &copy; {new Date().getFullYear()} - MyLMS
           </Typography>
         </Box>
         <Typography
