@@ -2,7 +2,13 @@ import { Typography, Button, Grid } from '@mui/material';
 
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 
-function PageHeader() {
+type PageHeaderProps = {
+  openModal: () => void;
+};
+
+function PageHeader(props: PageHeaderProps) {
+  const { openModal } = props;
+
   const user = {
     name: 'Catherine Pike',
     avatar: '/static/images/avatars/1.jpg'
@@ -22,6 +28,7 @@ function PageHeader() {
           sx={{ mt: { xs: 2, md: 0 } }}
           variant="contained"
           startIcon={<AddTwoToneIcon fontSize="small" />}
+          onClick={openModal}
         >
           Create Course
         </Button>
