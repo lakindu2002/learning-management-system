@@ -151,6 +151,10 @@ const routes: RouteObject[] = [
         element: <Transactions />
       },
       {
+        path: 'users',
+        element: <Transactions />
+      },
+      {
         path: 'profile',
         children: [
           {

@@ -253,6 +253,17 @@ function SidebarMenu() {
                   Courses
                 </Button>
               </ListItem>
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  component={RouterLink}
+                  onClick={closeSidebar}
+                  to="/management/users"
+                  startIcon={<TableChartTwoToneIcon />}
+                >
+                  Users
+                </Button>
+              </ListItem>
             </List>
           </SubMenuWrapper>
         </List>
