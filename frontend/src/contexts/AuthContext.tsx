@@ -1,11 +1,11 @@
 import React, { createContext, FC, useContext, useReducer } from 'react';
 import { Amplify, Auth } from 'aws-amplify';
 import { toast } from 'react-hot-toast';
+import axios from 'src/lib/axios';
 import { amplifyConfig } from 'src/config';
 import { User } from 'src/models/user';
 import { LoginRequest, SignUpRequest, VerifyCodeRequest } from 'src/models/requests';
 
-console.log(amplifyConfig);
 Amplify.configure(amplifyConfig);
 
 interface State {
@@ -44,13 +44,6 @@ type LoginAction = {
   }
 }
 
-type InitializeAction = {
-  type: 'INITIALIZE',
-  payload: {
-  }
-}
-
-
 type LogoutAction = {
   type: 'LOGOUT',
 }
@@ -63,7 +56,12 @@ type RegsiterConfirmed = {
   type: 'REGISTER_CONFIRMED',
 }
 
-type Action = LoginAction | LogoutAction | InitializeAction | RegsiterAction | RegsiterConfirmed;
+type Action = LoginAction | LogoutAction | RegsiterAction | RegsiterConfirmed;
+
+const loadUserInformation = async (): Promise<User> => {
+  const resp = await axios.get<User>('/api/me');
+  return resp.data;
+}
 
 const handlers: Record<string, (state: State, action: Action) => State> = {
   LOGIN: (state: State, action: LoginAction): State => {
@@ -106,8 +104,13 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       password,
       username: email,
     })
-    // TODO: Fetch logged in user information from the API.
-    // TODO: Set up axios with request interception.
+    const user = await loadUserInformation();
+    dispatcher({
+      payload: {
+        user
+      },
+      type: 'LOGIN'
+    })
   }
 
   const register = async ({ email, insituteName, password, fullName }: SignUpRequest) => {

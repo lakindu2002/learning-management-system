@@ -70,6 +70,9 @@ export function dynamodb({ stack }: StackContext) {
   })
 
   return {
-    ...stackOutputs
+    ...stackOutputs,
+    usersTable,
+    instituteTable,
+    instituteUserTable
   };
 }
