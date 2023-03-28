@@ -8,15 +8,17 @@ import BaseLayout from 'src/layouts/BaseLayout';
 import SuspenseLoader from 'src/components/SuspenseLoader';
 
 const Loader = (Component) => (props) =>
-  (
-    <Suspense fallback={<SuspenseLoader />}>
-      <Component {...props} />
-    </Suspense>
-  );
+(
+  <Suspense fallback={<SuspenseLoader />}>
+    <Component {...props} />
+  </Suspense>
+);
 
 // Pages
 
 const Overview = Loader(lazy(() => import('src/content/overview')));
+
+const Login = Loader(lazy(() => import('src/content/pages/Login')));
 
 // Dashboards
 
@@ -84,6 +86,10 @@ const routes: RouteObject[] = [
       {
         path: '/',
         element: <Overview />
+      },
+      {
+        path: '/login',
+        element: <Login />
       },
       {
         path: 'overview',

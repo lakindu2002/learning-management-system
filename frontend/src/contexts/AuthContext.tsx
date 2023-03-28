@@ -5,6 +5,7 @@ import { amplifyConfig } from 'src/config';
 import { User } from 'src/models/user';
 import { LoginRequest, SignUpRequest } from 'src/models/requests';
 
+console.log(amplifyConfig);
 Amplify.configure(amplifyConfig);
 
 interface State {
