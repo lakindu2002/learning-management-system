@@ -9,6 +9,13 @@ interface AuthGuardProps {
   children: React.ReactNode;
 }
 
+const FREE_ACCESS = [
+  '/login',
+  '/',
+  '/sign-up',
+  '/verify-code'
+]
+
 export const AuthGuard: FC<AuthGuardProps> = ({ children }) => {
   const { isAuthenticated, isInitialized } = useAuth();
   const [allowAccess, setAllowAccess] = useState<boolean>(false);
@@ -19,6 +26,10 @@ export const AuthGuard: FC<AuthGuardProps> = ({ children }) => {
   const { pathname } = location;
 
   useEffect(() => {
+    if (FREE_ACCESS.includes(pathname) && !isAuthenticated) {
+      setAllowAccess(true);
+      return;
+    }
     if (!pathname.startsWith('/app')) {
       // user accessing outside app
       if (isAuthenticated) {
