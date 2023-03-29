@@ -15,19 +15,13 @@ const Loader = (Component) => (props) =>
   </Suspense>
 );
 
-// Pages
-
 const Overview = Loader(lazy(() => import('src/content/overview')));
 
 const Login = Loader(lazy(() => import('src/content/pages/Login')));
 const SignUp = Loader(lazy(() => import('src/content/pages/SignUp')));
 const VerifyCode = Loader(lazy(() => import('src/content/pages/VerifyCode')));
 
-// Dashboards
-
 const Tasks = Loader(lazy(() => import('src/content/dashboards/Tasks')));
-
-// Applications
 
 const Messenger = Loader(
   lazy(() => import('src/content/applications/Messenger'))
@@ -41,32 +35,6 @@ const UserProfile = Loader(
 const UserSettings = Loader(
   lazy(() => import('src/content/applications/Users/settings'))
 );
-
-// Components
-
-const Buttons = Loader(
-  lazy(() => import('src/content/pages/Components/Buttons'))
-);
-const Modals = Loader(
-  lazy(() => import('src/content/pages/Components/Modals'))
-);
-const Accordions = Loader(
-  lazy(() => import('src/content/pages/Components/Accordions'))
-);
-const Tabs = Loader(lazy(() => import('src/content/pages/Components/Tabs')));
-const Badges = Loader(
-  lazy(() => import('src/content/pages/Components/Badges'))
-);
-const Tooltips = Loader(
-  lazy(() => import('src/content/pages/Components/Tooltips'))
-);
-const Avatars = Loader(
-  lazy(() => import('src/content/pages/Components/Avatars'))
-);
-const Cards = Loader(lazy(() => import('src/content/pages/Components/Cards')));
-const Forms = Loader(lazy(() => import('src/content/pages/Components/Forms')));
-
-// Status
 
 const Status404 = Loader(
   lazy(() => import('src/content/pages/Status404'))
@@ -148,7 +116,7 @@ const routes: RouteObject[] = [
     ]
   },
   {
-    path: 'management',
+    path: 'app/management',
     element: <SidebarLayout />,
     children: [
       {
@@ -182,52 +150,6 @@ const routes: RouteObject[] = [
       }
     ]
   },
-  {
-    path: '/components',
-    element: <SidebarLayout />,
-    children: [
-      {
-        path: '',
-        element: <Navigate to="buttons" replace />
-      },
-      {
-        path: 'buttons',
-        element: <Buttons />
-      },
-      {
-        path: 'modals',
-        element: <Modals />
-      },
-      {
-        path: 'accordions',
-        element: <Accordions />
-      },
-      {
-        path: 'tabs',
-        element: <Tabs />
-      },
-      {
-        path: 'badges',
-        element: <Badges />
-      },
-      {
-        path: 'tooltips',
-        element: <Tooltips />
-      },
-      {
-        path: 'avatars',
-        element: <Avatars />
-      },
-      {
-        path: 'cards',
-        element: <Cards />
-      },
-      {
-        path: 'forms',
-        element: <Forms />
-      }
-    ]
-  }
 ];
 
 export default routes;
