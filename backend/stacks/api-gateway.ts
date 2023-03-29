@@ -4,18 +4,21 @@ import { dynamodb } from "./dynamodb";
 import { cognito } from "./cognito";
 
 export function lmsApiGateway({ stack }: StackContext) {
-  const { usersTable, instituteTable, instituteUserTable } = use(dynamodb);
+  const { usersTable, instituteTable, instituteUserTable, courseTable } = use(dynamodb);
   const { clientId, userPoolId } = use(cognito);
   const apiGateway = new Api(stack, "lms-api-gateway", {
     routes: {
       "GET /me": "packages/functions/src/lambda.getLoggedInUserInformation",
+      "GET /institutes/{instituteId}/courses": "packages/functions/src/lambda.getCourses",
+      "POST /institutes/{instituteId}/courses": "packages/functions/src/lambda.createCourse",
     },
     defaults: {
       function: {
         environment: {
           USER_TABLE_NAME: usersTable.tableName,
           INSTITUTE_TABLE_NAME: instituteTable.tableName,
-          INSTITUTE_USER_TABLE_NAME: instituteUserTable.tableName
+          INSTITUTE_USER_TABLE_NAME: instituteUserTable.tableName,
+          COURSES_TABLE: courseTable.tableName
         },
       },
       authorizer: "Authorizer",
@@ -32,6 +35,7 @@ export function lmsApiGateway({ stack }: StackContext) {
   });
 
 
+  apiGateway.attachPermissionsToRoute("POST /institutes/{instituteId}/courses", [courseTable])
   apiGateway.attachPermissionsToRoute("GET /me", [usersTable, instituteTable, instituteUserTable])
 
   const stackOutputs = {

@@ -59,10 +59,47 @@ export function dynamodb({ stack }: StackContext) {
     }
   });
 
+  const courseTable = new Table(stack, "courses", {
+    primaryIndex: {
+      partitionKey: "id",
+    },
+    fields: {
+      id: "string",
+      lecturerId: "string",
+      instituteId: "string"
+    },
+    globalIndexes: {
+      'by-institute-index': {
+        partitionKey: "instituteId",
+        sortKey: "id",
+        cdk: {
+          index: {
+            projectionType: ProjectionType.ALL,
+          }
+        }
+      },
+      'by-institute-lecturer-index': {
+        partitionKey: "instituteId",
+        sortKey: "lecturerId",
+        cdk: {
+          index: {
+            projectionType: ProjectionType.ALL,
+          }
+        }
+      }
+    },
+    cdk: {
+      table: {
+        billingMode: BillingMode.PAY_PER_REQUEST,
+      }
+    }
+  });
+
   const stackOutputs = {
     userTableName: usersTable.tableName,
     instituteTableName: instituteTable.tableName,
     instituteUserTableName: instituteUserTable.tableName,
+    courseTableName: courseTable.tableName
   }
 
   stack.addOutputs({
@@ -73,6 +110,7 @@ export function dynamodb({ stack }: StackContext) {
     ...stackOutputs,
     usersTable,
     instituteTable,
-    instituteUserTable
+    instituteUserTable,
+    courseTable
   };
 }
