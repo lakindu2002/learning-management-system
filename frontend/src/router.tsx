@@ -107,11 +107,17 @@ const routes: RouteObject[] = [
       },
       {
         path: 'tasks',
-        element: <Tasks />
+        element:
+          <AuthGuard>
+            <Tasks />
+          </AuthGuard>
       },
       {
         path: 'messenger',
-        element: <Messenger />
+        element:
+          <AuthGuard>
+            <Messenger />
+          </AuthGuard>
       }
     ]
   },
@@ -125,11 +131,17 @@ const routes: RouteObject[] = [
       },
       {
         path: 'transactions',
-        element: <Transactions />
+        element:
+          <AuthGuard>
+            <Transactions />
+          </AuthGuard>
       },
       {
         path: 'users',
-        element: <Transactions />
+        element:
+          <AuthGuard>
+            <Transactions />
+          </AuthGuard>
       },
       {
         path: 'profile',
@@ -140,11 +152,17 @@ const routes: RouteObject[] = [
           },
           {
             path: 'details',
-            element: <UserProfile />
+            element:
+              <AuthGuard>
+                <UserProfile />
+              </AuthGuard>
           },
           {
             path: 'settings',
-            element: <UserSettings />
+            element:
+              <AuthGuard>
+                <UserSettings />
+              </AuthGuard>
           }
         ]
       }
