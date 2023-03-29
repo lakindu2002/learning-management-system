@@ -88,15 +88,23 @@ const routes: RouteObject[] = [
       },
       {
         path: '/login',
-        element: <Login />
+        element: <AuthGuard>
+          <Login />
+        </AuthGuard>
       },
       {
         path: '/sign-up',
-        element: <SignUp />
+        element:
+          <AuthGuard>
+            <SignUp />
+          </AuthGuard>
       },
       {
         path: '/verify-code',
-        element: <VerifyCode />
+        element:
+          <AuthGuard>
+            <VerifyCode />
+          </AuthGuard>
       },
       {
         path: 'overview',
