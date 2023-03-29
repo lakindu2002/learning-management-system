@@ -1,4 +1,4 @@
-import React, { createContext, FC, useContext, useReducer } from 'react';
+import React, { createContext, FC, useContext, useEffect, useReducer } from 'react';
 import { Amplify, Auth } from 'aws-amplify';
 import { toast } from 'react-hot-toast';
 import axios from 'src/lib/axios';
@@ -129,6 +129,10 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     await Auth.confirmSignUp(email, code)
     dispatcher({ type: 'REGISTER_CONFIRMED' });
   }
+
+  useEffect(() => {
+
+  }, []);
 
   return <AuthContext.Provider value={{
     ...state,
