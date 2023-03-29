@@ -10,12 +10,14 @@ Amplify.configure(amplifyConfig);
 
 interface State {
   user: User | undefined;
-  isAuthenticated: boolean
+  isAuthenticated: boolean;
+  isInitialized: boolean,
 }
 
 const initialState: State = {
   user: undefined,
-  isAuthenticated: false
+  isAuthenticated: false,
+  isInitialized: false
 }
 
 interface AuthContextValue extends State {
@@ -40,7 +42,9 @@ interface AuthProviderProps {
 type InitializeAction = {
   type: 'INITIALIZE',
   payload: {
-    user: User
+    user: User,
+    isInitialized?: boolean,
+    isAuthenticated?: boolean
   }
 }
 
@@ -66,10 +70,11 @@ const loadUserInformation = async (): Promise<User> => {
 
 const handlers: Record<string, (state: State, action: Action) => State> = {
   INITIALIZE: (state: State, action: InitializeAction): State => {
-    const { user } = action.payload;
+    const { user, isAuthenticated = true, isInitialized = true } = action.payload;
     return {
       ...state,
-      isAuthenticated: true,
+      isAuthenticated,
+      isInitialized,
       user
     };
   },
@@ -133,13 +138,25 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const loadUser = async () => {
-      const userInfo = await loadUserInformation();
-      dispatcher({
-        type: 'INITIALIZE',
-        payload: {
-          user: userInfo
-        }
-      })
+      try {
+        const userInfo = await loadUserInformation();
+        dispatcher({
+          type: 'INITIALIZE',
+          payload: {
+            user: userInfo
+          }
+        })
+      } catch (err) {
+        dispatcher({
+          type: 'INITIALIZE',
+          payload: {
+            user: undefined,
+            isAuthenticated: false,
+            isInitialized: true
+          }
+        })
+        console.log(err);
+      }
     }
     loadUser()
   }, []);
