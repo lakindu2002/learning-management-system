@@ -107,10 +107,6 @@ const routes: RouteObject[] = [
           </AuthGuard>
       },
       {
-        path: 'overview',
-        element: <Navigate to="/" replace />
-      },
-      {
         path: 'status',
         children: [
           {
@@ -134,7 +130,7 @@ const routes: RouteObject[] = [
     ]
   },
   {
-    path: 'dashboards',
+    path: 'app',
     element: <SidebarLayout />,
     children: [
       {

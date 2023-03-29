@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://axdcc2rf11.execute-api.ap-southeast-1.amazonaws.com/:path*"
+    }
+  ]
+}
