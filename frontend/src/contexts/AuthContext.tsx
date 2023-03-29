@@ -37,8 +37,8 @@ interface AuthProviderProps {
   children: React.ReactNode;
 }
 
-type LoginAction = {
-  type: 'LOGIN',
+type InitializeAction = {
+  type: 'INITIALIZE',
   payload: {
     user: User
   }
@@ -52,11 +52,12 @@ type RegsiterAction = {
   type: 'REGISTER',
 }
 
+
 type RegsiterConfirmed = {
   type: 'REGISTER_CONFIRMED',
 }
 
-type Action = LoginAction | LogoutAction | RegsiterAction | RegsiterConfirmed;
+type Action = InitializeAction | LogoutAction | RegsiterAction | RegsiterConfirmed;
 
 const loadUserInformation = async (): Promise<User> => {
   const resp = await axios.get<User>('/api/me');
@@ -64,7 +65,7 @@ const loadUserInformation = async (): Promise<User> => {
 }
 
 const handlers: Record<string, (state: State, action: Action) => State> = {
-  LOGIN: (state: State, action: LoginAction): State => {
+  INITIALIZE: (state: State, action: InitializeAction): State => {
     const { user } = action.payload;
     return {
       ...state,
@@ -109,7 +110,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       payload: {
         user
       },
-      type: 'LOGIN'
+      type: 'INITIALIZE'
     })
   }
 
@@ -131,7 +132,16 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   }
 
   useEffect(() => {
-
+    const loadUser = async () => {
+      const userInfo = await loadUserInformation();
+      dispatcher({
+        type: 'INITIALIZE',
+        payload: {
+          user: userInfo
+        }
+      })
+    }
+    loadUser()
   }, []);
 
   return <AuthContext.Provider value={{
