@@ -64,8 +64,8 @@ type RegsiterConfirmed = {
 type Action = InitializeAction | LogoutAction | RegsiterAction | RegsiterConfirmed;
 
 const loadUserInformation = async (): Promise<User> => {
-  const resp = await axios.get<User>('/api/me');
-  return resp.data;
+  const resp = await axios.get<{ user: User }>('/api/me');
+  return resp.data.user;
 }
 
 const handlers: Record<string, (state: State, action: Action) => State> = {
