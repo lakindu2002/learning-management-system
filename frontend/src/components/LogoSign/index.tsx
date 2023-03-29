@@ -102,25 +102,12 @@ function Logo() {
       title="MyLMS"
       arrow
     >
-      <LogoWrapper to="/overview">
-        <Badge
-          sx={{
-            '.MuiBadge-badge': {
-              fontSize: theme.typography.pxToRem(11),
-              right: -2,
-              top: 8
-            }
-          }}
-          overlap="circular"
-          color="success"
-          badgeContent="2.0"
-        >
-          <LogoSignWrapper>
-            <LogoSign>
-              <LogoSignInner />
-            </LogoSign>
-          </LogoSignWrapper>
-        </Badge>
+      <LogoWrapper to="/">
+        <LogoSignWrapper>
+          <LogoSign>
+            <LogoSignInner />
+          </LogoSign>
+        </LogoSignWrapper>
       </LogoWrapper>
     </TooltipWrapper>
   );
