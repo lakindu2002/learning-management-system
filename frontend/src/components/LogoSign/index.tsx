@@ -99,7 +99,7 @@ function Logo() {
 
   return (
     <TooltipWrapper
-      title="Tokyo Free Black React Typescript Admin Dashboard"
+      title="MyLMS"
       arrow
     >
       <LogoWrapper to="/overview">

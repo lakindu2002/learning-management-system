@@ -6,16 +6,21 @@ import LocalizationProvider from '@mui/lab/LocalizationProvider';
 
 import { CssBaseline } from '@mui/material';
 import ThemeProvider from './theme/ThemeProvider';
+import { Toaster } from 'react-hot-toast';
+import { AuthProvider } from './contexts/AuthContext';
 
 function App() {
   const content = useRoutes(router);
 
   return (
     <ThemeProvider>
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <CssBaseline />
-        {content}
-      </LocalizationProvider>
+      <AuthProvider>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <CssBaseline />
+          <Toaster />
+          {content}
+        </LocalizationProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }
