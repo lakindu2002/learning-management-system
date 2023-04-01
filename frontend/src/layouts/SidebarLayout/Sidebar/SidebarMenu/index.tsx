@@ -234,7 +234,7 @@ function SidebarMenu() {
                   disableRipple
                   component={RouterLink}
                   onClick={closeSidebar}
-                  to="/app/management/transactions"
+                  to="/app/management/courses"
                   startIcon={<TableChartTwoToneIcon />}
                 >
                   Courses

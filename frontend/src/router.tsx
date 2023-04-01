@@ -26,9 +26,7 @@ const Tasks = Loader(lazy(() => import('src/content/dashboards/Tasks')));
 const Messenger = Loader(
   lazy(() => import('src/content/applications/Messenger'))
 );
-const Transactions = Loader(
-  lazy(() => import('src/content/applications/Transactions'))
-);
+const Courses = Loader(lazy(() => import('src/content/applications/Courses')));
 const UserProfile = Loader(
   lazy(() => import('src/content/applications/Users/profile'))
 );
@@ -131,13 +129,13 @@ const routes: RouteObject[] = [
     children: [
       {
         path: '',
-        element: <Navigate to="transactions" replace />
+        element: <Navigate to="courses" replace />
       },
       {
-        path: 'transactions',
+        path: 'courses',
         element: (
           <AuthGuard>
-            <Transactions />
+            <Courses />
           </AuthGuard>
         )
       },
@@ -145,7 +143,7 @@ const routes: RouteObject[] = [
         path: 'users',
         element: (
           <AuthGuard>
-            <Transactions />
+            <Courses />
           </AuthGuard>
         )
       },

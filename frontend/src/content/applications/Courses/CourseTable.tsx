@@ -6,8 +6,6 @@ import {
   Tooltip,
   Divider,
   Box,
-  FormControl,
-  InputLabel,
   Card,
   Checkbox,
   IconButton,
@@ -18,11 +16,8 @@ import {
   TablePagination,
   TableRow,
   TableContainer,
-  Select,
-  MenuItem,
   Typography,
-  useTheme,
-  CardHeader
+  useTheme
 } from '@mui/material';
 
 import Label from 'src/components/Label';
@@ -30,10 +25,11 @@ import { CryptoOrder, CryptoOrderStatus } from 'src/models/crypto_order';
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 import BulkActions from './BulkActions';
+import { Course } from 'src/models/course';
 
-interface RecentOrdersTableProps {
+interface CourseTableProps {
   className?: string;
-  cryptoOrders: CryptoOrder[];
+  courses: Course[];
 }
 
 interface Filters {
@@ -61,79 +57,28 @@ const getStatusLabel = (cryptoOrderStatus: CryptoOrderStatus): JSX.Element => {
   return <Label color={color}>{text}</Label>;
 };
 
-const applyFilters = (
-  cryptoOrders: CryptoOrder[],
-  filters: Filters
-): CryptoOrder[] => {
-  return cryptoOrders.filter((cryptoOrder) => {
-    let matches = true;
-
-    if (filters.status && cryptoOrder.status !== filters.status) {
-      matches = false;
-    }
-
-    return matches;
-  });
-};
-
 const applyPagination = (
-  cryptoOrders: CryptoOrder[],
+  courses: Course[],
   page: number,
   limit: number
-): CryptoOrder[] => {
-  return cryptoOrders.slice(page * limit, page * limit + limit);
+): Course[] => {
+  return courses.slice(page * limit, page * limit + limit);
 };
 
-const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ cryptoOrders }) => {
-  const [selectedCryptoOrders, setSelectedCryptoOrders] = useState<string[]>(
-    []
-  );
-  const selectedBulkActions = selectedCryptoOrders.length > 0;
+const CourseTable: FC<CourseTableProps> = ({ courses }) => {
+  const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
+  const selectedBulkActions = selectedCourses.length > 0;
   const [page, setPage] = useState<number>(0);
   const [limit, setLimit] = useState<number>(5);
   const [filters, setFilters] = useState<Filters>({
     status: null
   });
 
-  const statusOptions = [
-    {
-      id: 'all',
-      name: 'All'
-    },
-    {
-      id: 'completed',
-      name: 'Completed'
-    },
-    {
-      id: 'pending',
-      name: 'Pending'
-    },
-    {
-      id: 'failed',
-      name: 'Failed'
-    }
-  ];
-
-  const handleStatusChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    let value = null;
-
-    if (e.target.value !== 'all') {
-      value = e.target.value;
-    }
-
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      status: value
-    }));
-  };
-
-  const handleSelectAllCryptoOrders = (
+  const handleSelectAllCourses = (
     event: ChangeEvent<HTMLInputElement>
   ): void => {
-    setSelectedCryptoOrders(
-      event.target.checked
-        ? cryptoOrders.map((cryptoOrder) => cryptoOrder.id)
-        : []
+    setSelectedCourses(
+      event.target.checked ? courses.map((course) => course.id) : []
     );
   };
 
@@ -141,13 +86,10 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ cryptoOrders }) => {
     event: ChangeEvent<HTMLInputElement>,
     cryptoOrderId: string
   ): void => {
-    if (!selectedCryptoOrders.includes(cryptoOrderId)) {
-      setSelectedCryptoOrders((prevSelected) => [
-        ...prevSelected,
-        cryptoOrderId
-      ]);
+    if (!selectedCourses.includes(cryptoOrderId)) {
+      setSelectedCourses((prevSelected) => [...prevSelected, cryptoOrderId]);
     } else {
-      setSelectedCryptoOrders((prevSelected) =>
+      setSelectedCourses((prevSelected) =>
         prevSelected.filter((id) => id !== cryptoOrderId)
       );
     }
@@ -161,17 +103,10 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ cryptoOrders }) => {
     setLimit(parseInt(event.target.value));
   };
 
-  const filteredCryptoOrders = applyFilters(cryptoOrders, filters);
-  const paginatedCryptoOrders = applyPagination(
-    filteredCryptoOrders,
-    page,
-    limit
-  );
-  const selectedSomeCryptoOrders =
-    selectedCryptoOrders.length > 0 &&
-    selectedCryptoOrders.length < cryptoOrders.length;
-  const selectedAllCryptoOrders =
-    selectedCryptoOrders.length === cryptoOrders.length;
+  const paginatedCryptoOrders = applyPagination(courses, page, limit);
+  const selectedSomeCourses =
+    selectedCourses.length > 0 && selectedCourses.length < courses.length;
+  const selectedAllCryptoOrders = selectedCourses.length === courses.length;
   const theme = useTheme();
 
   return (
@@ -180,30 +115,6 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ cryptoOrders }) => {
         <Box flex={1} p={2}>
           <BulkActions />
         </Box>
-      )}
-      {!selectedBulkActions && (
-        <CardHeader
-          action={
-            <Box width={150}>
-              <FormControl fullWidth variant="outlined">
-                <InputLabel>Status</InputLabel>
-                <Select
-                  value={filters.status || 'all'}
-                  onChange={handleStatusChange}
-                  label="Status"
-                  autoWidth
-                >
-                  {statusOptions.map((statusOption) => (
-                    <MenuItem key={statusOption.id} value={statusOption.id}>
-                      {statusOption.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
-          }
-          title="Recent Orders"
-        />
       )}
       <Divider />
       <TableContainer>
@@ -214,21 +125,22 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ cryptoOrders }) => {
                 <Checkbox
                   color="primary"
                   checked={selectedAllCryptoOrders}
-                  indeterminate={selectedSomeCryptoOrders}
-                  onChange={handleSelectAllCryptoOrders}
+                  indeterminate={selectedSomeCourses}
+                  onChange={handleSelectAllCourses}
                 />
               </TableCell>
-              <TableCell>Order Details</TableCell>
-              <TableCell>Order ID</TableCell>
-              <TableCell>Source</TableCell>
+              <TableCell>Course</TableCell>
+              <TableCell>Lecturer</TableCell>
+              {/* <TableCell>Source</TableCell>
               <TableCell align="right">Amount</TableCell>
-              <TableCell align="right">Status</TableCell>
+              <TableCell align="right">Status</TableCell> */}
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
+            {console.log('paginatedCryptoOrders', paginatedCryptoOrders)}
             {paginatedCryptoOrders.map((cryptoOrder) => {
-              const isCryptoOrderSelected = selectedCryptoOrders.includes(
+              const isCryptoOrderSelected = selectedCourses.includes(
                 cryptoOrder.id
               );
               return (
@@ -255,11 +167,11 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ cryptoOrders }) => {
                       gutterBottom
                       noWrap
                     >
-                      {cryptoOrder.orderDetails}
+                      {cryptoOrder.name}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" noWrap>
+                    {/* <Typography variant="body2" color="text.secondary" noWrap>
                       {format(cryptoOrder.orderDate, 'MMMM dd yyyy')}
-                    </Typography>
+                    </Typography> */}
                   </TableCell>
                   <TableCell>
                     <Typography
@@ -269,10 +181,10 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ cryptoOrders }) => {
                       gutterBottom
                       noWrap
                     >
-                      {cryptoOrder.orderID}
+                      {cryptoOrder.lecturer.name}
                     </Typography>
                   </TableCell>
-                  <TableCell>
+                  {/* <TableCell>
                     <Typography
                       variant="body1"
                       fontWeight="bold"
@@ -285,8 +197,8 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ cryptoOrders }) => {
                     <Typography variant="body2" color="text.secondary" noWrap>
                       {cryptoOrder.sourceDesc}
                     </Typography>
-                  </TableCell>
-                  <TableCell align="right">
+                  </TableCell> */}
+                  {/* <TableCell align="right">
                     <Typography
                       variant="body1"
                       fontWeight="bold"
@@ -302,10 +214,10 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ cryptoOrders }) => {
                         `${cryptoOrder.currency}0,0.00`
                       )}
                     </Typography>
-                  </TableCell>
-                  <TableCell align="right">
+                  </TableCell> */}
+                  {/* <TableCell align="right">
                     {getStatusLabel(cryptoOrder.status)}
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell align="right">
                     <Tooltip title="Edit Order" arrow>
                       <IconButton
@@ -343,7 +255,7 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ cryptoOrders }) => {
       <Box p={2}>
         <TablePagination
           component="div"
-          count={filteredCryptoOrders.length}
+          count={courses.length}
           onPageChange={handlePageChange}
           onRowsPerPageChange={handleLimitChange}
           page={page}
@@ -355,12 +267,12 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ cryptoOrders }) => {
   );
 };
 
-RecentOrdersTable.propTypes = {
-  cryptoOrders: PropTypes.array.isRequired
+CourseTable.propTypes = {
+  courses: PropTypes.array.isRequired
 };
 
-RecentOrdersTable.defaultProps = {
-  cryptoOrders: []
+CourseTable.defaultProps = {
+  courses: []
 };
 
-export default RecentOrdersTable;
+export default CourseTable;
