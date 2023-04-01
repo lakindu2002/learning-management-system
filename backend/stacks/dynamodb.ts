@@ -71,7 +71,7 @@ export function dynamodb({ stack }: StackContext) {
         cdk: {
           index: {
             projectionType: ProjectionType.INCLUDE,
-            nonKeyAttributes: ["email", "name", "createdAt", "updatedAt", "id"]
+            nonKeyAttributes: ["email", "name", "createdAt", "updatedAt", "id", "status"]
           }
         }
       }

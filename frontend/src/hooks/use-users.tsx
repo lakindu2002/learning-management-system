@@ -3,14 +3,17 @@ import { uniq } from 'lodash';
 import { toast } from 'react-hot-toast';
 import { useAuth } from 'src/contexts/AuthContext';
 import axios from 'src/lib/axios';
-import { InstituteUserRole } from 'src/models/user';
+import { InstituteUser, InstituteUserRole } from 'src/models/user';
 
 const validator = require('validator');
 
+
+type NextKey = {}
+
 export const useInstituteUsers = () => {
   const { user } = useAuth();
-  const [users, setUsers] = useState<any[]>([]);
-  const [nextKey, setNextKey] = useState<any>(undefined);
+  const [users, setUsers] = useState<InstituteUser[]>([]);
+  const [nextKey, setNextKey] = useState<NextKey>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
   const [isInviting, setInviting] = useState<boolean>(false);
@@ -22,11 +25,13 @@ export const useInstituteUsers = () => {
       } else {
         setIsLoadingMore(true)
       }
-      const resp = await axios.post<{ users: any[], nextKey: any }>(
+      const resp = await axios.post<{ users: InstituteUser[], nextKey: NextKey }>(
         `/api/institutes/${user?.currentInstitute.id}/users/get`,
         {
           limit: 10,
-          nextKey,
+          ...mode === 'paginate' && {
+            nextKey,
+          },
           role: fetchByRole
         })
       setUsers(mode === 'initial' ? resp.data.users : [...users, ...resp.data.users]);
@@ -67,9 +72,10 @@ export const useInstituteUsers = () => {
   return {
     getInstituteUsers,
     isLoading,
-    hasMoreUsers: !!nextKey,
+    hasMoreUsers: Boolean(nextKey),
     inviteUsersToInstitute,
     isLoadingMore,
-    isInviting
+    isInviting,
+    users
   }
 };
