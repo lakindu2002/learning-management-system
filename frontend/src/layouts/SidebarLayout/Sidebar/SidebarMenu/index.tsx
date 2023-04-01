@@ -7,7 +7,8 @@ import {
   List,
   styled,
   Button,
-  ListItem
+  ListItem,
+  Divider
 } from '@mui/material';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { SidebarContext } from 'src/contexts/SidebarContext';
@@ -171,20 +172,26 @@ function SidebarMenu() {
           <SubMenuWrapper>
             <List component="div">
               <ListItem component="div">
-                <Button
-                  disableRipple
-                  component={RouterLink}
-                  onClick={closeSidebar}
-                  to="/app/"
-                  startIcon={<DesignServicesTwoToneIcon />}
-                >
-                  Overview
-                </Button>
+                <ListSubheader component="div" disableSticky>
+                  <Button
+                    disableRipple
+                    component={RouterLink}
+                    onClick={closeSidebar}
+                    to="/app/"
+                    startIcon={<TableChartTwoToneIcon />}
+                  >
+                    {' '}
+                    My Dashboard
+                  </Button>
+                </ListSubheader>
               </ListItem>
             </List>
           </SubMenuWrapper>
         </List>
-        <List
+        <Box px={2} mb={2}>
+          <Divider />
+        </Box>
+        {/* <List
           component="div"
           subheader={
             <ListSubheader component="div" disableSticky>
@@ -218,7 +225,7 @@ function SidebarMenu() {
               </ListItem>
             </List>
           </SubMenuWrapper>
-        </List>
+        </List> */}
         <List
           component="div"
           subheader={

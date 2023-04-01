@@ -1,5 +1,6 @@
 import { Box, styled, Tooltip } from '@mui/material';
 import { Link } from 'react-router-dom';
+import SchoolIcon from '@mui/icons-material/School';
 
 const LogoWrapper = styled(Link)(
   ({ theme }) => `
@@ -100,9 +101,7 @@ function Logo() {
   return (
     <LogoWrapper to="/overview">
       <LogoSignWrapper>
-        <LogoSign>
-          <LogoSignInner />
-        </LogoSign>
+        <SchoolIcon />
       </LogoSignWrapper>
       <Box
         component="span"

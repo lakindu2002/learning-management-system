@@ -15,13 +15,7 @@ function Footer() {
         alignItems="center"
         textAlign={{ xs: 'center', md: 'left' }}
         justifyContent="space-between"
-      >
-        <Box>
-          <Typography variant="subtitle1">
-            &copy; {new Date().getFullYear()} - MyLMS
-          </Typography>
-        </Box>
-      </Box>
+      ></Box>
     </FooterWrapper>
   );
 }
