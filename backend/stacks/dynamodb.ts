@@ -9,6 +9,19 @@ export function dynamodb({ stack }: StackContext) {
     },
     fields: {
       id: "string",
+      email: 'string'
+    },
+    globalIndexes: {
+      'by-email-index': {
+        partitionKey: 'email',
+        sortKey: 'id',
+        cdk: {
+          index: {
+            projectionType: ProjectionType.INCLUDE,
+            nonKeyAttributes: ["name"]
+          }
+        }
+      }
     },
     cdk: {
       table: {
@@ -39,6 +52,7 @@ export function dynamodb({ stack }: StackContext) {
     fields: {
       id: "string",
       instituteId: "string",
+      role: "string"
     },
     globalIndexes: {
       'by-institute-index': {
@@ -48,6 +62,16 @@ export function dynamodb({ stack }: StackContext) {
           index: {
             projectionType: ProjectionType.INCLUDE,
             nonKeyAttributes: ["email", "role"]
+          }
+        }
+      },
+      'by-intitute-id-role-index': {
+        partitionKey: "instituteId",
+        sortKey: "role",
+        cdk: {
+          index: {
+            projectionType: ProjectionType.INCLUDE,
+            nonKeyAttributes: ["email", "name", "createdAt", "updatedAt", "id"]
           }
         }
       }

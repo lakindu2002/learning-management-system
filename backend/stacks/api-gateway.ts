@@ -11,6 +11,15 @@ export function lmsApiGateway({ stack }: StackContext) {
       "GET /me": "packages/functions/src/lambda.getLoggedInUserInformation",
       "GET /institutes/{instituteId}/courses": "packages/functions/src/lambda.getCourses",
       "POST /institutes/{instituteId}/courses": "packages/functions/src/lambda.createCourse",
+      "POST /institutes/{instituteId}/users": {
+        function: {
+          handler: "packages/functions/src/lambda.addUsersToInstitute",
+          environment: {
+            USER_POOL_ID: userPoolId,
+          }
+        }
+      },
+      "POST /institutes/{instituteId}/users/get": "packages/functions/src/lambda.getAllUsersInAnInstitute",
     },
     defaults: {
       function: {
@@ -35,6 +44,9 @@ export function lmsApiGateway({ stack }: StackContext) {
   });
 
 
+  apiGateway.attachPermissionsToRoute("POST /institutes/{instituteId}/users/get", [instituteUserTable])
+  apiGateway.attachPermissionsToRoute("POST /institutes/{instituteId}/users", [usersTable, instituteUserTable, "cognito-idp:AdminCreateUser"])
+  apiGateway.attachPermissionsToRoute("GET /institutes/{instituteId}/courses", [courseTable])
   apiGateway.attachPermissionsToRoute("POST /institutes/{instituteId}/courses", [courseTable])
   apiGateway.attachPermissionsToRoute("GET /me", [usersTable, instituteTable, instituteUserTable])
 

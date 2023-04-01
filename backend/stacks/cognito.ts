@@ -62,6 +62,6 @@ export function cognito({ stack }: StackContext) {
   })
 
   return {
-    ...stackOutputs
+    ...stackOutputs,
   };
 }
