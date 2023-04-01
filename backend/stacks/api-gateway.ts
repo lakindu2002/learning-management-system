@@ -9,6 +9,7 @@ export function lmsApiGateway({ stack }: StackContext) {
   const apiGateway = new Api(stack, "lms-api-gateway", {
     routes: {
       "GET /me": "packages/functions/src/lambda.getLoggedInUserInformation",
+      "POST /me/activate": "packages/functions/src/lambda.activateUser",
       "GET /institutes/{instituteId}/courses": "packages/functions/src/lambda.getCourses",
       "POST /institutes/{instituteId}/courses": "packages/functions/src/lambda.createCourse",
       "POST /institutes/{instituteId}/users": {
@@ -49,6 +50,7 @@ export function lmsApiGateway({ stack }: StackContext) {
   apiGateway.attachPermissionsToRoute("GET /institutes/{instituteId}/courses", [courseTable])
   apiGateway.attachPermissionsToRoute("POST /institutes/{instituteId}/courses", [courseTable])
   apiGateway.attachPermissionsToRoute("GET /me", [usersTable, instituteTable, instituteUserTable])
+  apiGateway.attachPermissionsToRoute("POST /me/activate", [usersTable, instituteUserTable])
 
   const stackOutputs = {
     apiUrl: apiGateway.url,

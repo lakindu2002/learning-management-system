@@ -1,5 +1,6 @@
 import { DynamoDB } from "aws-sdk";
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
+import { chunk } from 'lodash';
 import { User, InstituteUser, InstituteUserRole } from "@backend/core/types/user";
 import { createDefinedUUID } from "@backend/core/nano-id";
 import { Course } from "@backend/core/types/course";
@@ -286,3 +287,80 @@ export const getAllUsersInAnInstitute: APIGatewayProxyHandlerV2 = async (event) 
 
 }
 
+export const activateUser: APIGatewayProxyHandlerV2 = async (event) => {
+  const pe = Parse(event);
+  const { userId, body } = pe;
+
+  const { fullName = '' } = body;
+
+  const documentClient = new DynamoDB.DocumentClient();
+
+  // get all institutes for user and activate them
+  const { Items: instituteUsers = [] } = await documentClient.query({
+    TableName: INSTITUTE_USER_TABLE_NAME,
+    Limit: 100,
+    KeyConditionExpression: '#id = :id',
+    ProjectionExpression: '#id, #instituteId',
+    ExpressionAttributeNames: {
+      '#id': 'id',
+      '#instituteId': 'instituteId'
+    },
+    ExpressionAttributeValues: {
+      ':id': userId
+    }
+  }).promise();
+
+  const mappedUpdates = instituteUsers.map((instituteUser) => {
+    const { id, instituteId } = instituteUser as InstituteUser;
+    return {
+      Update: {
+        Key: { id, instituteId },
+        TableName: INSTITUTE_USER_TABLE_NAME,
+        UpdateExpression: 'SET #status = :status, #name = :name',
+        ExpressionAttributeNames: {
+          '#status': 'status',
+          '#name': 'name'
+        },
+        ExpressionAttributeValues: {
+          ':status': Status.ACTIVE,
+          ':name': fullName.trim().toLowerCase()
+        }
+      }
+    }
+  });
+
+  const transactions = [];
+
+  if (mappedUpdates.length > 0) {
+    transactions.push(...mappedUpdates);
+  }
+  transactions.push({
+    Update: {
+      Key: { id: userId },
+      TableName: USERS_TABLE_NAME,
+      UpdateExpression: 'SET #status = :status, #name = :name',
+      ExpressionAttributeNames: {
+        '#status': 'status',
+        '#name': 'name'
+      },
+      ExpressionAttributeValues: {
+        ':status': Status.ACTIVE,
+        ':name': fullName.trim().toLowerCase()
+      }
+    }
+  })
+
+  const MAX_CHUNK = 25;
+  const chunkedItems = chunk(transactions, MAX_CHUNK);
+
+  const promises = chunkedItems.map(async (eachChunk) => {
+    await documentClient.transactWrite({
+      TransactItems: eachChunk
+    }).promise();
+  })
+
+  await Promise.all(promises);
+
+  return SuccessWithData({ status: 'ok' });
+
+};

@@ -14,3 +14,10 @@ export interface VerifyCodeRequest {
   email: string;
   code: string;
 }
+
+export interface ResetDefaultPasswordRequest {
+  email: string,
+  fullName: string,
+  tempPassword: string,
+  newPassword: string,
+}

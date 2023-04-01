@@ -4,7 +4,7 @@ import { toast } from 'react-hot-toast';
 import axios from 'src/lib/axios';
 import { amplifyConfig } from 'src/config';
 import { User } from 'src/models/user';
-import { LoginRequest, SignUpRequest, VerifyCodeRequest } from 'src/models/requests';
+import { LoginRequest, ResetDefaultPasswordRequest, SignUpRequest, VerifyCodeRequest } from 'src/models/requests';
 
 Amplify.configure(amplifyConfig);
 
@@ -21,23 +21,27 @@ const initialState: State = {
 }
 
 interface AuthContextValue extends State {
-  login: (request: LoginRequest) => Promise<void>,
+  login: (request: LoginRequest) => Promise<ChallengeName | undefined>,
   logout: () => Promise<void>,
   register: (request: SignUpRequest) => Promise<void>,
   verifySignUpCode: (request: VerifyCodeRequest) => Promise<void>
+  resetDefaultPassword: (request: ResetDefaultPasswordRequest) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue>({
   ...initialState,
-  login: () => Promise.resolve(),
+  login: () => Promise.resolve('NEW_PASSWORD_REQUIRED'),
   logout: () => Promise.resolve(),
   register: () => Promise.resolve(),
-  verifySignUpCode: () => Promise.resolve()
+  verifySignUpCode: () => Promise.resolve(),
+  resetDefaultPassword: () => Promise.resolve()
 });
 
 interface AuthProviderProps {
   children: React.ReactNode;
 }
+
+type ChallengeName = 'NEW_PASSWORD_REQUIRED';
 
 type InitializeAction = {
   type: 'INITIALIZE',
@@ -105,11 +109,15 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     }
   }
 
-  const login = async ({ email, password }: LoginRequest) => {
-    await Auth.signIn({
+  const login = async ({ email, password }: LoginRequest): Promise<ChallengeName | undefined> => {
+    const resp = await Auth.signIn({
       password,
       username: email,
     })
+    if (resp.challengeName === 'NEW_PASSWORD_REQUIRED') {
+      toast.error('New Password Required');
+      return 'NEW_PASSWORD_REQUIRED';
+    }
     const user = await loadUserInformation();
     dispatcher({
       payload: {
@@ -134,6 +142,34 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const verifySignUpCode = async ({ code, email }: VerifyCodeRequest) => {
     await Auth.confirmSignUp(email, code)
     dispatcher({ type: 'REGISTER_CONFIRMED' });
+  }
+
+  const resetDefaultPassword = async ({ email, fullName, newPassword, tempPassword }: ResetDefaultPasswordRequest) => {
+    const user = await Auth.signIn({
+      password: tempPassword,
+      username: email
+    })
+
+    await Auth.completeNewPassword(
+      user,
+      newPassword,
+      {
+        name: fullName.trim()
+      }
+    )
+
+    await axios.post(`/api/me/activate`, { fullName });
+
+    const activatedUser = await loadUserInformation();
+
+    dispatcher({
+      type: 'INITIALIZE',
+      payload: {
+        user: activatedUser,
+        isAuthenticated: true,
+        isInitialized: true
+      }
+    })
   }
 
   useEffect(() => {
@@ -166,6 +202,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     login,
     logout,
     register,
+    resetDefaultPassword,
     verifySignUpCode
   }}>{children}</AuthContext.Provider>;
 };

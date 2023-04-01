@@ -20,6 +20,7 @@ const Overview = Loader(lazy(() => import('src/content/overview')));
 const Login = Loader(lazy(() => import('src/content/pages/Login')));
 const SignUp = Loader(lazy(() => import('src/content/pages/SignUp')));
 const VerifyCode = Loader(lazy(() => import('src/content/pages/VerifyCode')));
+const ResetDefaultPassword = Loader(lazy(() => import('src/content/pages/ResetPassword')));
 
 const Tasks = Loader(lazy(() => import('src/content/dashboards/Tasks')));
 
@@ -72,6 +73,13 @@ const routes: RouteObject[] = [
         element:
           <AuthGuard>
             <VerifyCode />
+          </AuthGuard>
+      },
+      {
+        path: '/reset-password',
+        element:
+          <AuthGuard>
+            <ResetDefaultPassword />
           </AuthGuard>
       },
       {
