@@ -69,7 +69,7 @@ type Action = InitializeAction | LogoutAction | RegsiterAction | RegsiterConfirm
 
 const loadUserInformation = async (): Promise<User> => {
   const resp = await axios.get<{ user: User }>('/api/me');
-  return resp.data.user;
+  return { ...resp.data.user, currentInstitute: resp.data.user.institutes[0] };
 }
 
 const handlers: Record<string, (state: State, action: Action) => State> = {

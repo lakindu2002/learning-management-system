@@ -24,6 +24,10 @@ const ResetDefaultPassword = Loader(lazy(() => import('src/content/pages/ResetPa
 
 const Tasks = Loader(lazy(() => import('src/content/dashboards/Tasks')));
 
+const UserListPage = Loader(
+  lazy(() => import('src/content/applications/Users/list'))
+)
+
 const Messenger = Loader(
   lazy(() => import('src/content/applications/Messenger'))
 );
@@ -148,7 +152,7 @@ const routes: RouteObject[] = [
         path: 'users',
         element:
           <AuthGuard>
-            <Transactions />
+            <UserListPage />
           </AuthGuard>
       },
       {

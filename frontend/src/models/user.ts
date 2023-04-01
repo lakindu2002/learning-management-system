@@ -6,6 +6,11 @@ export interface User {
     name: string,
     role: InstituteUserRole
   }[]
+  currentInstitute: {
+    id: string,
+    name: string,
+    role: InstituteUserRole
+  }
 }
 export enum InstituteUserRole {
   ADMINISTRATOR = 'administrator',
