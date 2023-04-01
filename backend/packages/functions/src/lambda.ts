@@ -58,11 +58,15 @@ export const getLoggedInUserInformation: APIGatewayProxyHandlerV2 = async (event
 
   const allInstituteInformation = Responses[INSTITUTE_TABLE_NAME] as Institute[];
 
+  const activeInstitutes = allInstituteInformation.filter((institute) => {
+    const instituteUser = (allInstitutesForUser as InstituteUser[]).find((instituteUser) => instituteUser.instituteId === institute.id);
+    return instituteUser?.status === Status.ACTIVE
+  })
 
   const userDTO = {
     id: user.id,
     name: user.name,
-    institutes: allInstituteInformation.map((institute) => ({
+    institutes: activeInstitutes.map((institute) => ({
       id: institute.id,
       name: institute.name,
       role: (allInstitutesForUser as InstituteUser[]).find((instituteUser) => instituteUser.instituteId === institute.id)?.role
