@@ -128,7 +128,7 @@ export const getCourses: APIGatewayProxyHandlerV2 = async (event) => {
 
   if (isAuthorized(instituteId as string, institutes, [InstituteUserRole.OWNER, InstituteUserRole.ADMINISTRATOR])) {
     // view all course of institute
-    const { Items = [] } = await documentClient.query({
+    const { Items = [], LastEvaluatedKey } = await documentClient.query({
       TableName: COURSES_TABLE,
       IndexName: 'by-institute-index',
       KeyConditionExpression: '#instituteId = :instituteId',
@@ -142,12 +142,12 @@ export const getCourses: APIGatewayProxyHandlerV2 = async (event) => {
       Limit: MAX_LIMIT
     }).promise();
 
-    return SuccessWithData({ courses: Items })
+    return SuccessWithData({ courses: Items, nextKey: LastEvaluatedKey })
   }
 
   if (isAuthorized(instituteId as string, institutes, [InstituteUserRole.LECTURER])) {
     // view courses that they have been assigned to
-    const { Items = [] } = await documentClient.query({
+    const { Items = [], LastEvaluatedKey } = await documentClient.query({
       TableName: COURSES_TABLE,
       IndexName: 'by-institute-lecturer-index',
       KeyConditionExpression: '#instituteId = :instituteId and #lecturerId = :lecturerId',
@@ -163,7 +163,7 @@ export const getCourses: APIGatewayProxyHandlerV2 = async (event) => {
       }
     }).promise()
 
-    return SuccessWithData({ courses: Items })
+    return SuccessWithData({ courses: Items, nextKey: LastEvaluatedKey })
   }
 
   if (isAuthorized(instituteId as string, institutes, [InstituteUserRole.STUDENT])) {
