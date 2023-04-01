@@ -9,11 +9,11 @@ import SuspenseLoader from 'src/components/SuspenseLoader';
 import { AuthGuard } from './content/auth/AuthGuard';
 
 const Loader = (Component) => (props) =>
-(
-  <Suspense fallback={<SuspenseLoader />}>
-    <Component {...props} />
-  </Suspense>
-);
+  (
+    <Suspense fallback={<SuspenseLoader />}>
+      <Component {...props} />
+    </Suspense>
+  );
 
 const Overview = Loader(lazy(() => import('src/content/overview')));
 
@@ -36,12 +36,8 @@ const UserSettings = Loader(
   lazy(() => import('src/content/applications/Users/settings'))
 );
 
-const Status404 = Loader(
-  lazy(() => import('src/content/pages/Status404'))
-);
-const Status500 = Loader(
-  lazy(() => import('src/content/pages/Status500'))
-);
+const Status404 = Loader(lazy(() => import('src/content/pages/Status404')));
+const Status500 = Loader(lazy(() => import('src/content/pages/Status500')));
 
 const routes: RouteObject[] = [
   {
@@ -50,29 +46,35 @@ const routes: RouteObject[] = [
     children: [
       {
         path: '/',
-        element: <AuthGuard>
-          <Overview />
-        </AuthGuard>
+        element: (
+          <AuthGuard>
+            <Overview />
+          </AuthGuard>
+        )
       },
       {
         path: '/login',
-        element: <AuthGuard>
-          <Login />
-        </AuthGuard>
+        element: (
+          <AuthGuard>
+            <Login />
+          </AuthGuard>
+        )
       },
       {
         path: '/sign-up',
-        element:
+        element: (
           <AuthGuard>
             <SignUp />
           </AuthGuard>
+        )
       },
       {
         path: '/verify-code',
-        element:
+        element: (
           <AuthGuard>
             <VerifyCode />
           </AuthGuard>
+        )
       },
       {
         path: 'status',
@@ -88,7 +90,7 @@ const routes: RouteObject[] = [
           {
             path: '500',
             element: <Status500 />
-          },
+          }
         ]
       },
       {
@@ -107,17 +109,19 @@ const routes: RouteObject[] = [
       },
       {
         path: 'tasks',
-        element:
+        element: (
           <AuthGuard>
             <Tasks />
           </AuthGuard>
+        )
       },
       {
         path: 'messenger',
-        element:
+        element: (
           <AuthGuard>
             <Messenger />
           </AuthGuard>
+        )
       }
     ]
   },
@@ -131,17 +135,19 @@ const routes: RouteObject[] = [
       },
       {
         path: 'transactions',
-        element:
+        element: (
           <AuthGuard>
             <Transactions />
           </AuthGuard>
+        )
       },
       {
         path: 'users',
-        element:
+        element: (
           <AuthGuard>
             <Transactions />
           </AuthGuard>
+        )
       },
       {
         path: 'profile',
@@ -152,22 +158,24 @@ const routes: RouteObject[] = [
           },
           {
             path: 'details',
-            element:
+            element: (
               <AuthGuard>
                 <UserProfile />
               </AuthGuard>
+            )
           },
           {
             path: 'settings',
-            element:
+            element: (
               <AuthGuard>
                 <UserSettings />
               </AuthGuard>
+            )
           }
         ]
       }
     ]
-  },
+  }
 ];
 
 export default routes;

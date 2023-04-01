@@ -10,11 +10,16 @@ import {
   MenuItem
 } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
+import { useAuth } from 'src/contexts/AuthContext';
+import axios from 'src/lib/axios';
+import { Course } from 'src/models/course';
+import { useMutation } from '@tanstack/react-query';
+import { useEffect } from 'react';
 
 // Temp Data
 const lecturers = [
-  { label: 'John Doe', value: '12313ewr34d34' },
-  { label: 'Peter Smith', value: '4231jkwr34d34' }
+  { label: 'John Doe', value: 'L01' },
+  { label: 'Peter Smith', value: 'L02' }
 ];
 
 type Props = {
@@ -28,6 +33,17 @@ const validationSchema = yup.object({
 
 export default function AddEditCourse(props: Props) {
   const { setOpen } = props;
+  const { user, logout } = useAuth();
+
+  const createCourse = useMutation({
+    mutationFn: (course: Course) => {
+      return axios.post(
+        `/api/institutes/${user.institutes[0].id}/courses`,
+        course
+      );
+    }
+  });
+
   const formik = useFormik({
     initialValues: {
       courseCode: '',
@@ -35,10 +51,25 @@ export default function AddEditCourse(props: Props) {
       lecturerId: ''
     },
     validationSchema: validationSchema,
+
     onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+      const course: Course = {
+        name: values.title,
+        lecturer: {
+          id: values.lecturerId,
+          name: lecturers.find(
+            (lecturer) => lecturer.value === values.lecturerId
+          ).label
+        }
+      };
+      createCourse.mutate(course);
     }
-  });
+  }); // return resp.data.course;
+
+  useEffect(() => {
+    if (createCourse.isSuccess) setOpen(false);
+  }, [createCourse.isSuccess]);
+
   return (
     <div>
       <form onSubmit={formik.handleSubmit}>
@@ -121,6 +152,7 @@ export default function AddEditCourse(props: Props) {
             variant="contained"
             type="submit"
             fullWidth
+            loading={createCourse.isLoading}
           >
             Submit
           </LoadingButton>
