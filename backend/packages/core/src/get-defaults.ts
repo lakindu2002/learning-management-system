@@ -1,6 +1,7 @@
 import { Institute } from "./types/institute";
 import { InstituteUser, InstituteUserRole, User } from "./types/user";
 import { createDefinedUUID } from "./nano-id";
+import { Status } from "./types/common";
 
 export const getDefaultInstitute = ({
   name = "",
@@ -15,12 +16,14 @@ export const getDefaultUser = ({
   email = "",
   id = "",
   name = "",
+  status = Status.ACTIVE
 }: Partial<User>): User => ({
   email,
   id,
   name,
   createdAt: Date.now(),
   updatedAt: Date.now(),
+  status,
 });
 
 export const getDefaultInstituteUser = ({
@@ -28,7 +31,8 @@ export const getDefaultInstituteUser = ({
   id = "",
   name = "",
   instituteId = "",
-  role = InstituteUserRole.OWNER
+  role = InstituteUserRole.OWNER,
+  status = Status.ACTIVE
 }: Partial<InstituteUser>): InstituteUser => ({
   email,
   id,
@@ -37,4 +41,5 @@ export const getDefaultInstituteUser = ({
   role,
   createdAt: Date.now(),
   updatedAt: Date.now(),
+  status,
 });

@@ -7,13 +7,14 @@ import { useAuth } from 'src/contexts/AuthContext';
 import { useFormik } from 'formik';
 import { LoginRequest } from 'src/models/requests';
 import { toast } from 'react-hot-toast';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface LoginProps { }
 
 export const Login: FC<LoginProps> = () => {
 
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const formik = useFormik({
     initialValues: {
@@ -30,7 +31,11 @@ export const Login: FC<LoginProps> = () => {
         password: values.password
       }
       try {
-        await login(signInRequest);
+        const challenge = await login(signInRequest);
+        if (challenge === 'NEW_PASSWORD_REQUIRED') {
+          navigate(`/reset-password?email=${signInRequest.email}`);
+          return;
+        }
       } catch (err) {
         toast.error('Invalid email or password. Please try again.');
       }

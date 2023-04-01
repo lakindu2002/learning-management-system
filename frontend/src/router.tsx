@@ -20,8 +20,13 @@ const Overview = Loader(lazy(() => import('src/content/overview')));
 const Login = Loader(lazy(() => import('src/content/pages/Login')));
 const SignUp = Loader(lazy(() => import('src/content/pages/SignUp')));
 const VerifyCode = Loader(lazy(() => import('src/content/pages/VerifyCode')));
+const ResetDefaultPassword = Loader(lazy(() => import('src/content/pages/ResetPassword')));
 
 const Tasks = Loader(lazy(() => import('src/content/dashboards/Tasks')));
+
+const UserListPage = Loader(
+  lazy(() => import('src/content/applications/Users/list'))
+)
 
 const Messenger = Loader(
   lazy(() => import('src/content/applications/Messenger'))
@@ -73,6 +78,13 @@ const routes: RouteObject[] = [
             <VerifyCode />
           </AuthGuard>
         )
+      },
+      {
+        path: '/reset-password',
+        element:
+          <AuthGuard>
+            <ResetDefaultPassword />
+          </AuthGuard>
       },
       {
         path: 'status',
@@ -143,7 +155,7 @@ const routes: RouteObject[] = [
         path: 'users',
         element: (
           <AuthGuard>
-            <Courses />
+            <UserListPage />
           </AuthGuard>
         )
       },

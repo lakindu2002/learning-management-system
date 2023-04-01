@@ -9,6 +9,19 @@ export function dynamodb({ stack }: StackContext) {
     },
     fields: {
       id: "string",
+      email: 'string'
+    },
+    globalIndexes: {
+      'by-email-index': {
+        partitionKey: 'email',
+        sortKey: 'id',
+        cdk: {
+          index: {
+            projectionType: ProjectionType.INCLUDE,
+            nonKeyAttributes: ["name"]
+          }
+        }
+      }
     },
     cdk: {
       table: {
@@ -39,6 +52,7 @@ export function dynamodb({ stack }: StackContext) {
     fields: {
       id: "string",
       instituteId: "string",
+      role: "string"
     },
     globalIndexes: {
       'by-institute-index': {
@@ -48,6 +62,16 @@ export function dynamodb({ stack }: StackContext) {
           index: {
             projectionType: ProjectionType.INCLUDE,
             nonKeyAttributes: ["email", "role"]
+          }
+        }
+      },
+      'by-intitute-id-role-index': {
+        partitionKey: "instituteId",
+        sortKey: "role",
+        cdk: {
+          index: {
+            projectionType: ProjectionType.INCLUDE,
+            nonKeyAttributes: ["email", "name", "createdAt", "updatedAt", "id", "status"]
           }
         }
       }
@@ -95,11 +119,39 @@ export function dynamodb({ stack }: StackContext) {
     }
   });
 
+  const studentCourseTable = new Table(stack, "studentCourseTable", {
+    primaryIndex: {
+      partitionKey: "courseId",
+      sortKey: "instituteId",
+    },
+    fields: {
+      instituteId: "string",
+      courseId: "string",
+    },
+    globalIndexes: {
+      'by-institute-index': {
+        partitionKey: "instituteId",
+        sortKey: "courseId",
+        cdk: {
+          index: {
+            projectionType: ProjectionType.ALL,
+          }
+        }
+      },
+    },
+    cdk: {
+      table: {
+        billingMode: BillingMode.PAY_PER_REQUEST,
+      }
+    }
+  });
+
   const stackOutputs = {
     userTableName: usersTable.tableName,
     instituteTableName: instituteTable.tableName,
     instituteUserTableName: instituteUserTable.tableName,
-    courseTableName: courseTable.tableName
+    courseTableName: courseTable.tableName,
+    studentCourseTableName: studentCourseTable.tableName
   }
 
   stack.addOutputs({
@@ -111,6 +163,7 @@ export function dynamodb({ stack }: StackContext) {
     usersTable,
     instituteTable,
     instituteUserTable,
-    courseTable
+    courseTable,
+    studentCourseTable
   };
 }

@@ -13,7 +13,8 @@ const FREE_ACCESS = [
   '/login',
   '/',
   '/sign-up',
-  '/verify-code'
+  '/verify-code',
+  '/reset-password',
 ]
 
 export const AuthGuard: FC<AuthGuardProps> = ({ children }) => {
