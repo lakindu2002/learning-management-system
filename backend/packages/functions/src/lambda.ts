@@ -275,8 +275,6 @@ export const getAllUsersInAnInstitute: APIGatewayProxyHandlerV2 = async (event) 
     }
   });
 
-  console.log({ keyConditionExpression, expressionAttributeNames, expressionAttributeValues })
-
   const { Items = [], LastEvaluatedKey } = await documentClient.query({
     TableName: INSTITUTE_USER_TABLE_NAME,
     KeyConditionExpression: keyConditionExpression,
