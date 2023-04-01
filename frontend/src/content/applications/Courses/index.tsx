@@ -4,12 +4,12 @@ import PageTitleWrapper from 'src/components/PageTitleWrapper';
 import { Grid, Container } from '@mui/material';
 import Footer from 'src/components/Footer';
 
-import RecentOrders from './RecentOrders';
+import Courses from './Courses';
 import { useState } from 'react';
 import CustomModal from 'src/components/CustomModal';
 import AddEditCourse from './AddEditCourse';
 
-function ApplicationsTransactions() {
+function ApplicationsCourses() {
   const [openCreate, setOpenCreate] = useState(false);
 
   return (
@@ -29,7 +29,7 @@ function ApplicationsTransactions() {
           spacing={3}
         >
           <Grid item xs={12}>
-            <RecentOrders />
+            <Courses />
           </Grid>
         </Grid>
       </Container>
@@ -42,4 +42,4 @@ function ApplicationsTransactions() {
   );
 }
 
-export default ApplicationsTransactions;
+export default ApplicationsCourses;
