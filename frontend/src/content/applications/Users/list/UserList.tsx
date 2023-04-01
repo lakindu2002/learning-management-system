@@ -107,7 +107,7 @@ export const UserList: FC<UserListProps> = () => {
                   </Table>
                 )}
 
-                {(users.length > 0 || hasMoreUsers) && (
+                {(users.length === 0 || hasMoreUsers) && (
                   <Box sx={{ display: 'flex', width: '100%', justifyContent: 'center', my: 2 }}>
                     {users.length === 0 && (
                       <Alert
