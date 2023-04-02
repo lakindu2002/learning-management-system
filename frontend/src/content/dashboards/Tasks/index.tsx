@@ -123,13 +123,13 @@ function DashboardTasks() {
   return (
     <>
       <Helmet>
-        <title>Tasks Dashboard</title>
+        <title>My Dashboard</title>
       </Helmet>
       <PageTitleWrapper>
         <PageHeader />
       </PageTitleWrapper>
       <Container maxWidth="lg">
-        <TabsContainerWrapper>
+        {/* <TabsContainerWrapper>
           <Tabs
             onChange={handleTabsChange}
             value={currentTab}
@@ -218,7 +218,7 @@ function DashboardTasks() {
               </Grid>
             )}
           </Grid>
-        </Card>
+        </Card> */}
       </Container>
       <Footer />
     </>
