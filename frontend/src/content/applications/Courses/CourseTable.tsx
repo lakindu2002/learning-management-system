@@ -138,7 +138,6 @@ const CourseTable: FC<CourseTableProps> = ({ courses }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {console.log('paginatedCryptoOrders', paginatedCryptoOrders)}
             {paginatedCryptoOrders.map((cryptoOrder) => {
               const isCryptoOrderSelected = selectedCourses.includes(
                 cryptoOrder.id
