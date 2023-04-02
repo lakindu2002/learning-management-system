@@ -2,7 +2,7 @@ import { alpha, createTheme, darken } from '@mui/material';
 import '@mui/lab/themeAugmentation';
 
 const themeColors = {
-  primary: '#92b9f7',
+  primary: '#8C7CF0',
   secondary: '#9EA4C1',
   success: '#57CA22',
   warning: '#FFA319',
@@ -10,7 +10,7 @@ const themeColors = {
   info: '#33C2FF',
   black: '#CBCCD2',
   white: '#111633',
-  primaryAlt: '#000226',
+  primaryAlt: '#111633',
   trueWhite: '#ffffff'
 };
 
@@ -912,9 +912,9 @@ export const NebulaFighterTheme = createTheme({
         },
         root: {
           '.MuiAutocomplete-inputRoot.MuiOutlinedInput-root .MuiAutocomplete-endAdornment':
-            {
-              right: 14
-            }
+          {
+            right: 14
+          }
         },
         clearIndicator: {
           background: alpha(colors.error.lighter, 0.2),

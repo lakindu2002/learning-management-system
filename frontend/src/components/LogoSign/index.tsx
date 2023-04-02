@@ -102,7 +102,7 @@ function Logo({ withTitle = true }: LogoProps) {
             <Box>
               <SchoolIcon color="primary" fontSize="large" />
             </Box>
-            {withTitle && <Box color="#92b9f7" fontSize={16}>
+            {withTitle && <Box fontSize={16}>
               MyLMS
             </Box>}
           </Box>
