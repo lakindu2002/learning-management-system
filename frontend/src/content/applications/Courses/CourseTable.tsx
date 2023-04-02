@@ -1,6 +1,4 @@
 import { FC, ChangeEvent, useState } from 'react';
-import { format } from 'date-fns';
-import numeral from 'numeral';
 import PropTypes from 'prop-types';
 import {
   Tooltip,
@@ -13,15 +11,12 @@ import {
   TableBody,
   TableCell,
   TableHead,
-  TablePagination,
   TableRow,
   TableContainer,
   Typography,
   useTheme
 } from '@mui/material';
 
-import Label from 'src/components/Label';
-import { CryptoOrder, CryptoOrderStatus } from 'src/models/crypto_order';
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 import BulkActions from './BulkActions';
@@ -32,48 +27,9 @@ interface CourseTableProps {
   courses: Course[];
 }
 
-interface Filters {
-  status?: CryptoOrderStatus;
-}
-
-const getStatusLabel = (cryptoOrderStatus: CryptoOrderStatus): JSX.Element => {
-  const map = {
-    failed: {
-      text: 'Failed',
-      color: 'error'
-    },
-    completed: {
-      text: 'Completed',
-      color: 'success'
-    },
-    pending: {
-      text: 'Pending',
-      color: 'warning'
-    }
-  };
-
-  const { text, color }: any = map[cryptoOrderStatus];
-
-  return <Label color={color}>{text}</Label>;
-};
-
-const applyPagination = (
-  courses: Course[],
-  page: number,
-  limit: number
-): Course[] => {
-  return courses.slice(page * limit, page * limit + limit);
-};
-
 const CourseTable: FC<CourseTableProps> = ({ courses }) => {
   const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
   const selectedBulkActions = selectedCourses.length > 0;
-  const [page, setPage] = useState<number>(0);
-  const [limit, setLimit] = useState<number>(5);
-  const [filters, setFilters] = useState<Filters>({
-    status: null
-  });
-
   const handleSelectAllCourses = (
     event: ChangeEvent<HTMLInputElement>
   ): void => {
@@ -82,30 +38,20 @@ const CourseTable: FC<CourseTableProps> = ({ courses }) => {
     );
   };
 
-  const handleSelectOneCryptoOrder = (
+  const handleSelectOneCourse = (
     event: ChangeEvent<HTMLInputElement>,
-    cryptoOrderId: string
+    courseId: string
   ): void => {
-    if (!selectedCourses.includes(cryptoOrderId)) {
-      setSelectedCourses((prevSelected) => [...prevSelected, cryptoOrderId]);
+    if (!selectedCourses.includes(courseId)) {
+      setSelectedCourses((prevSelected) => [...prevSelected, courseId]);
     } else {
       setSelectedCourses((prevSelected) =>
-        prevSelected.filter((id) => id !== cryptoOrderId)
+        prevSelected.filter((id) => id !== courseId)
       );
     }
   };
 
-  const handlePageChange = (event: any, newPage: number): void => {
-    setPage(newPage);
-  };
-
-  const handleLimitChange = (event: ChangeEvent<HTMLInputElement>): void => {
-    setLimit(parseInt(event.target.value));
-  };
-
-  const paginatedCryptoOrders = applyPagination(courses, page, limit);
-  const selectedSomeCourses =
-    selectedCourses.length > 0 && selectedCourses.length < courses.length;
+  const selectedSomeCourses = selectedCourses.length > 0 && selectedCourses.length < courses.length;
   const selectedAllCryptoOrders = selectedCourses.length === courses.length;
   const theme = useTheme();
 
@@ -131,31 +77,28 @@ const CourseTable: FC<CourseTableProps> = ({ courses }) => {
               </TableCell>
               <TableCell>Course</TableCell>
               <TableCell>Lecturer</TableCell>
-              {/* <TableCell>Source</TableCell>
-              <TableCell align="right">Amount</TableCell>
-              <TableCell align="right">Status</TableCell> */}
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedCryptoOrders.map((cryptoOrder) => {
-              const isCryptoOrderSelected = selectedCourses.includes(
-                cryptoOrder.id
+            {courses.map((course) => {
+              const isCourseSelected = selectedCourses.includes(
+                course.id
               );
               return (
                 <TableRow
                   hover
-                  key={cryptoOrder.id}
-                  selected={isCryptoOrderSelected}
+                  key={course.id}
+                  selected={isCourseSelected}
                 >
                   <TableCell padding="checkbox">
                     <Checkbox
                       color="primary"
-                      checked={isCryptoOrderSelected}
+                      checked={isCourseSelected}
                       onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                        handleSelectOneCryptoOrder(event, cryptoOrder.id)
+                        handleSelectOneCourse(event, course.id)
                       }
-                      value={isCryptoOrderSelected}
+                      value={isCourseSelected}
                     />
                   </TableCell>
                   <TableCell>
@@ -166,11 +109,8 @@ const CourseTable: FC<CourseTableProps> = ({ courses }) => {
                       gutterBottom
                       noWrap
                     >
-                      {cryptoOrder.name}
+                      {course.name}
                     </Typography>
-                    {/* <Typography variant="body2" color="text.secondary" noWrap>
-                      {format(cryptoOrder.orderDate, 'MMMM dd yyyy')}
-                    </Typography> */}
                   </TableCell>
                   <TableCell>
                     <Typography
@@ -180,45 +120,11 @@ const CourseTable: FC<CourseTableProps> = ({ courses }) => {
                       gutterBottom
                       noWrap
                     >
-                      {cryptoOrder.lecturer.name}
+                      {course.lecturer.name}
                     </Typography>
                   </TableCell>
-                  {/* <TableCell>
-                    <Typography
-                      variant="body1"
-                      fontWeight="bold"
-                      color="text.primary"
-                      gutterBottom
-                      noWrap
-                    >
-                      {cryptoOrder.sourceName}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" noWrap>
-                      {cryptoOrder.sourceDesc}
-                    </Typography>
-                  </TableCell> */}
-                  {/* <TableCell align="right">
-                    <Typography
-                      variant="body1"
-                      fontWeight="bold"
-                      color="text.primary"
-                      gutterBottom
-                      noWrap
-                    >
-                      {cryptoOrder.amountCrypto}
-                      {cryptoOrder.cryptoCurrency}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" noWrap>
-                      {numeral(cryptoOrder.amount).format(
-                        `${cryptoOrder.currency}0,0.00`
-                      )}
-                    </Typography>
-                  </TableCell> */}
-                  {/* <TableCell align="right">
-                    {getStatusLabel(cryptoOrder.status)}
-                  </TableCell> */}
                   <TableCell align="right">
-                    <Tooltip title="Edit Order" arrow>
+                    <Tooltip title="Edit Course" arrow>
                       <IconButton
                         sx={{
                           '&:hover': {
@@ -232,7 +138,7 @@ const CourseTable: FC<CourseTableProps> = ({ courses }) => {
                         <EditTwoToneIcon fontSize="small" />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Delete Order" arrow>
+                    <Tooltip title="Delete Course" arrow>
                       <IconButton
                         sx={{
                           '&:hover': { background: theme.colors.error.lighter },
@@ -251,17 +157,6 @@ const CourseTable: FC<CourseTableProps> = ({ courses }) => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Box p={2}>
-        <TablePagination
-          component="div"
-          count={courses.length}
-          onPageChange={handlePageChange}
-          onRowsPerPageChange={handleLimitChange}
-          page={page}
-          rowsPerPage={limit}
-          rowsPerPageOptions={[5, 10, 25, 30]}
-        />
-      </Box>
     </Card>
   );
 };

@@ -28,6 +28,7 @@ function PageHeader(props: PageHeaderProps) {
         <Button
           sx={{ mt: { xs: 2, md: 0 } }}
           variant="contained"
+          color="primary"
           startIcon={<AddTwoToneIcon fontSize="small" />}
           onClick={openModal}
         >
