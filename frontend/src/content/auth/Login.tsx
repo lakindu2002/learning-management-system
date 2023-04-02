@@ -52,18 +52,17 @@ export const Login: FC<LoginProps> = () => {
         sx={{ my: 3 }}
       >
         <Grid item md={12} lg={12} mx="auto">
-          <Typography variant="h1">
-            <Logo />
-          </Typography>
+          <Logo />
           <Typography
             variant="h1"
+            sx={{ mt: 3 }}
             color="text.primary"
             textAlign="center"
           >
             Log In
           </Typography>
           <Typography
-            sx={{ mt: 3 }}
+            sx={{ mt: 1 }}
             variant="body2"
             color="text.secondary"
             textAlign="center"

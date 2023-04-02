@@ -19,6 +19,9 @@ import MmsTwoToneIcon from '@mui/icons-material/MmsTwoTone';
 import TableChartTwoToneIcon from '@mui/icons-material/TableChartTwoTone';
 import AccountCircleTwoToneIcon from '@mui/icons-material/AccountCircleTwoTone';
 import DisplaySettingsTwoToneIcon from '@mui/icons-material/DisplaySettingsTwoTone';
+import GroupIcon from '@mui/icons-material/Group';
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 
 const MenuWrapper = styled(Box)(
   ({ theme }) => `
@@ -178,7 +181,7 @@ function SidebarMenu() {
                     component={RouterLink}
                     onClick={closeSidebar}
                     to="/app/"
-                    startIcon={<TableChartTwoToneIcon />}
+                    startIcon={<DashboardIcon />}
                   >
                     {' '}
                     My Dashboard
@@ -242,7 +245,7 @@ function SidebarMenu() {
                   component={RouterLink}
                   onClick={closeSidebar}
                   to="/app/management/courses"
-                  startIcon={<TableChartTwoToneIcon />}
+                  startIcon={<LibraryBooksIcon />}
                 >
                   Courses
                 </Button>
@@ -253,7 +256,7 @@ function SidebarMenu() {
                   component={RouterLink}
                   onClick={closeSidebar}
                   to="/app/management/users"
-                  startIcon={<TableChartTwoToneIcon />}
+                  startIcon={<GroupIcon />}
                 >
                   Users
                 </Button>

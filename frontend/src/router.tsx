@@ -115,10 +115,10 @@ const routes: RouteObject[] = [
     children: [
       {
         path: '',
-        element: <Navigate to="tasks" replace />
+        element: <Navigate to="overview" replace />
       },
       {
-        path: 'tasks',
+        path: 'overview',
         element: (
           <AuthGuard>
             <Tasks />
