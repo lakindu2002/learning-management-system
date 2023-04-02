@@ -106,7 +106,7 @@ function Logo() {
           <Box display="flex">
             <SchoolIcon color="primary" fontSize="large" />
             <Box color="#92b9f7" fontSize={16} ml={2} mt={1}>
-              LMS
+              MyLMS
             </Box>
           </Box>
         </LogoSignWrapper>

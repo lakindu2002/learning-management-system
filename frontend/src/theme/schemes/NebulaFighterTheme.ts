@@ -1150,7 +1150,7 @@ export const NebulaFighterTheme = createTheme({
     borderRadius: 10
   },
   typography: {
-    fontFamily: 'sans-serif,"Poppins"',
+    fontFamily: 'sans-serif,"Roboto"',
     h1: {
       fontWeight: 700,
       fontSize: 35
