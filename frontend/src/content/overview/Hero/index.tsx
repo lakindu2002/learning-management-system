@@ -27,7 +27,9 @@ function Hero() {
         container
       >
         <Grid item md={10} lg={8} mx="auto">
-          <Logo />
+          <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+            <Logo withTitle={false} />
+          </Box>
           <TypographyH1 sx={{ my: 2 }} variant="h1">
             MyLMS
           </TypographyH1>

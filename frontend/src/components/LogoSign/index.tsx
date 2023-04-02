@@ -22,13 +22,6 @@ const LogoWrapper = styled(Link)(
 `
 );
 
-const LogoSignWrapper = styled(Box)(
-  () => `
-        width: 52px;
-        height: 38px;
-`
-);
-
 const LogoSign = styled(Box)(
   ({ theme }) => `
         background: ${theme.general.reactFrameworkColor};
@@ -96,22 +89,26 @@ const TooltipWrapper = styled(({ className, ...props }: TooltipProps) => (
   }
 }));
 
-function Logo() {
-  const theme = useTheme();
+type LogoProps = {
+  withTitle?: boolean
+}
 
+function Logo({ withTitle = true }: LogoProps) {
   return (
-    <TooltipWrapper title="MyLMS" arrow>
-      <LogoWrapper to="/">
-        <LogoSignWrapper>
-          <Box display="flex">
-            <SchoolIcon color="primary" fontSize="large" />
-            <Box color="#92b9f7" fontSize={16} ml={2} mt={1}>
-              MyLMS
+    <Box sx={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
+      <TooltipWrapper title="MyLMS" arrow>
+        <LogoWrapper to="/">
+          <Box sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', width: '100%' }}>
+            <Box>
+              <SchoolIcon color="primary" fontSize="large" />
             </Box>
+            {withTitle && <Box color="#92b9f7" fontSize={16}>
+              MyLMS
+            </Box>}
           </Box>
-        </LogoSignWrapper>
-      </LogoWrapper>
-    </TooltipWrapper>
+        </LogoWrapper>
+      </TooltipWrapper>
+    </Box>
   );
 }
 
