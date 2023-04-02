@@ -2,7 +2,7 @@ import { alpha, createTheme, darken } from '@mui/material';
 import '@mui/lab/themeAugmentation';
 
 const themeColors = {
-  primary: '#8C7CF0',
+  primary: '#92b9f7',
   secondary: '#9EA4C1',
   success: '#57CA22',
   warning: '#FFA319',
@@ -10,7 +10,7 @@ const themeColors = {
   info: '#33C2FF',
   black: '#CBCCD2',
   white: '#111633',
-  primaryAlt: '#111633',
+  primaryAlt: '#000226',
   trueWhite: '#ffffff'
 };
 
@@ -1150,8 +1150,7 @@ export const NebulaFighterTheme = createTheme({
     borderRadius: 10
   },
   typography: {
-    fontFamily:
-      '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"',
+    fontFamily: 'sans-serif,"Roboto"',
     h1: {
       fontWeight: 700,
       fontSize: 35

@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import DocumentScannerTwoToneIcon from '@mui/icons-material/DocumentScannerTwoTone';
 import AddAlertTwoToneIcon from '@mui/icons-material/AddAlertTwoTone';
+import { useAuth } from 'src/contexts/AuthContext';
 
 const AvatarPageTitle = styled(Avatar)(
   ({ theme }) => `
@@ -35,10 +36,7 @@ const AvatarPageTitle = styled(Avatar)(
 );
 
 function PageHeader() {
-  const user = {
-    name: 'Catherine Pike',
-    avatar: '/static/images/avatars/1.jpg'
-  };
+  const { user } = useAuth();
 
   return (
     <Box
@@ -56,16 +54,15 @@ function PageHeader() {
             Welcome, {user.name}!
           </Typography>
           <Typography variant="subtitle2">
-            Manage your day to day tasks with style! Enjoy a well built UI
-            system.
+            You can view shortcuts and see analytics here.
           </Typography>
         </Box>
       </Box>
-      <Box mt={{ xs: 3, md: 0 }}>
+      {/* <Box mt={{ xs: 3, md: 0 }}>
         <Button variant="contained" startIcon={<DocumentScannerTwoToneIcon />}>
           Export
         </Button>
-      </Box>
+      </Box> */}
     </Box>
   );
 }

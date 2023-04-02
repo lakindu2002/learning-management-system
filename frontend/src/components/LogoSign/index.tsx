@@ -7,7 +7,9 @@ import {
   styled,
   useTheme
 } from '@mui/material';
+import SchoolIcon from '@mui/icons-material/School';
 import { Link } from 'react-router-dom';
+import Label from '../Label';
 
 const LogoWrapper = styled(Link)(
   ({ theme }) => `
@@ -15,7 +17,7 @@ const LogoWrapper = styled(Link)(
         display: flex;
         text-decoration: none;
         width: 53px;
-        margin: 0 auto;
+        margin-left: 20px;
         font-weight: ${theme.typography.fontWeightBold};
 `
 );
@@ -98,15 +100,15 @@ function Logo() {
   const theme = useTheme();
 
   return (
-    <TooltipWrapper
-      title="MyLMS"
-      arrow
-    >
+    <TooltipWrapper title="MyLMS" arrow>
       <LogoWrapper to="/">
         <LogoSignWrapper>
-          <LogoSign>
-            <LogoSignInner />
-          </LogoSign>
+          <Box display="flex">
+            <SchoolIcon color="primary" fontSize="large" />
+            <Box color="#92b9f7" fontSize={16} ml={2} mt={1}>
+              MyLMS
+            </Box>
+          </Box>
         </LogoSignWrapper>
       </LogoWrapper>
     </TooltipWrapper>
