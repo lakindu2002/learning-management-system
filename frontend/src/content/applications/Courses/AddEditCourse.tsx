@@ -18,12 +18,6 @@ import { useEffect } from 'react';
 import { useInstituteUsers } from 'src/hooks/use-users';
 import { InstituteUserRole } from 'src/models/user';
 
-// Temp Data
-// const lecturers = [
-//   { label: 'John Doe', value: 'L01' },
-//   { label: 'Peter Smith', value: 'L02' }
-// ];
-
 type Props = {
   setOpen: Function;
 };
