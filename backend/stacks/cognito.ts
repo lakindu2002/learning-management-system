@@ -3,9 +3,12 @@ import { Cognito, use, Function } from "sst/constructs";
 import { StringAttribute } from "aws-cdk-lib/aws-cognito";
 import { dynamodb } from "./dynamodb";
 import { Duration } from "aws-cdk-lib";
+import { s3 } from "./s3";
+import { Effect, PolicyStatement } from "aws-cdk-lib/aws-iam";
 
 export function cognito({ stack }: StackContext) {
   const { instituteTableName, instituteUserTableName, userTableName } = use(dynamodb);
+  const { staticContent } = use(s3);
 
   const postConfirmationTrigger = new Function(stack, "post-confirmation-trigger", {
     handler: "packages/triggers/src/lambda.handlePostConfirmationOnCognito",
@@ -50,6 +53,15 @@ export function cognito({ stack }: StackContext) {
       },
     },
   });
+
+  auth.attachPermissionsForAuthUsers(stack, [
+    staticContent,
+    new PolicyStatement({
+      effect: Effect.ALLOW,
+      actions: ["s3:putObject"],
+      resources: [`${staticContent.bucketArn}/\${aws:PrincipalTag/username}/*`]
+    })
+  ])
 
   const stackOutputs = {
     userPoolId: auth.userPoolId,
