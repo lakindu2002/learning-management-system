@@ -127,11 +127,21 @@ export function dynamodb({ stack }: StackContext) {
     fields: {
       instituteId: "string",
       courseId: "string",
+      studentId: 'string'
     },
     globalIndexes: {
       'by-institute-index': {
         partitionKey: "instituteId",
         sortKey: "courseId",
+        cdk: {
+          index: {
+            projectionType: ProjectionType.ALL,
+          }
+        }
+      },
+      'by-student-institute-index': {
+        partitionKey: "studentId",
+        sortKey: "instituteId",
         cdk: {
           index: {
             projectionType: ProjectionType.ALL,

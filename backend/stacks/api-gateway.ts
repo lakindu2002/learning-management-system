@@ -49,7 +49,7 @@ export function lmsApiGateway({ stack }: StackContext) {
 
   apiGateway.attachPermissionsToRoute("POST /institutes/{instituteId}/users/get", [instituteUserTable])
   apiGateway.attachPermissionsToRoute("POST /institutes/{instituteId}/users", [usersTable, instituteUserTable, "cognito-idp:AdminCreateUser"])
-  apiGateway.attachPermissionsToRoute("GET /institutes/{instituteId}/courses", [courseTable])
+  apiGateway.attachPermissionsToRoute("GET /institutes/{instituteId}/courses", [courseTable, studentCourseTable])
   apiGateway.attachPermissionsToRoute("POST /institutes/{instituteId}/courses", [courseTable])
   apiGateway.attachPermissionsToRoute("GET /me", [usersTable, instituteTable, instituteUserTable])
   apiGateway.attachPermissionsToRoute("POST /me/activate", [usersTable, instituteUserTable])

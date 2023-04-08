@@ -170,13 +170,28 @@ export const getCourses: APIGatewayProxyHandlerV2 = async (event) => {
   }
 
   if (isAuthorized(instituteId as string, institutes, [InstituteUserRole.STUDENT])) {
-    /**
-     * TODO: Will students need another table? Student_Courses - Student ID,Student Name, Course ID
-     * Concern: Course table -> 1 item can have upto 1MB data. Will we exceed 1mb per item? 
-     * Are we setting max students per course? If not, we might need a seperate table.
-     * What do you think @Semini? 
-     */
-    return SuccessWithData({ courses: [] })
+    const { Items = [], LastEvaluatedKey } = await documentClient.query({
+      TableName: STUDENT_COURSE_TABLE,
+      IndexName: 'by-student-institute-index',
+      KeyConditionExpression: 'studentId = :studentId and instituteId = :instituteId',
+      ExpressionAttributeValues: { ':studentId': userId, ':instituteId': instituteId },
+      Limit: MAX_LIMIT,
+    }).promise();
+
+    const courseIds = (Items as StudentCourse[]).map((item) => ({ id: item.courseId }));
+
+    if (courseIds.length === 0) {
+      return SuccessWithData({ courses: [], nextKey: undefined });
+    }
+
+    const { Responses = {} } = await documentClient.batchGet({
+      RequestItems: {
+        [COURSES_TABLE]: {
+          Keys: courseIds
+        }
+      }
+    }).promise()
+    return SuccessWithData({ courses: Responses[COURSES_TABLE] || [], nextKey: LastEvaluatedKey })
   }
 
   return Forbidden();
