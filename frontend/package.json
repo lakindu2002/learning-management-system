@@ -27,6 +27,8 @@
     "history": "5.3.0",
     "http-proxy-middleware": "^2.0.6",
     "lodash": "^4.17.21",
+    "multiselect-react-dropdown": "^2.0.25",
+    "ng-multiselect-dropdown": "^0.3.9",
     "nprogress": "0.2.0",
     "numeral": "2.0.6",
     "prop-types": "15.8.1",

@@ -15,12 +15,8 @@ import axios from 'src/lib/axios';
 import { Course } from 'src/models/course';
 import { useMutation } from '@tanstack/react-query';
 import { useEffect } from 'react';
-
-// Temp Data
-const lecturers = [
-  { label: 'John Doe', value: 'L01' },
-  { label: 'Peter Smith', value: 'L02' }
-];
+import { useInstituteUsers } from 'src/hooks/use-users';
+import { InstituteUserRole } from 'src/models/user';
 
 type Props = {
   setOpen: Function;
@@ -34,6 +30,17 @@ const validationSchema = yup.object({
 export default function AddEditCourse(props: Props) {
   const { setOpen } = props;
   const { user, logout } = useAuth();
+  const {
+    getInstituteUsers,
+    users: lecturers,
+    isLoading
+  } = useInstituteUsers();
+
+  //   const [selectedUsers, setSelectedUsers] = useState([]);
+
+  useEffect(() => {
+    getInstituteUsers('initial', InstituteUserRole.LECTURER);
+  }, []);
 
   const createCourse = useMutation({
     mutationFn: (course: Course) => {
@@ -57,11 +64,11 @@ export default function AddEditCourse(props: Props) {
         name: values.title,
         lecturer: {
           id: values.lecturerId,
-          name: lecturers.find(
-            (lecturer) => lecturer.value === values.lecturerId
-          ).label
+          name: lecturers.find((lecturer) => lecturer.id === values.lecturerId)
+            .name
         }
       };
+      console.log('course', course);
       createCourse.mutate(course);
     }
   }); // return resp.data.course;
@@ -126,8 +133,8 @@ export default function AddEditCourse(props: Props) {
           variant="outlined"
         >
           {lecturers.map((lecturer) => (
-            <MenuItem key={lecturer.value} value={lecturer.value}>
-              {lecturer.label}
+            <MenuItem key={lecturer.id} value={lecturer.id}>
+              {lecturer.name}
             </MenuItem>
           ))}
         </TextField>

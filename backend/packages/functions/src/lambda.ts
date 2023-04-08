@@ -10,12 +10,14 @@ import { Parse } from "@backend/core/parse-event";
 import { getDefaultInstituteUser, getDefaultUser } from "@backend/core/get-defaults";
 import { BadRequest, Forbidden, SuccessWithData, isEmailInSystem, createCognitoUser } from './utils';
 import { Status } from "@backend/core/types/common";
+import {StudentCourse, Student} from "@backend/core/types/studentCourse";
 
 const MAX_INSTITUTES = 50;
 const USERS_TABLE_NAME = process.env.USER_TABLE_NAME as string;
 const INSTITUTE_TABLE_NAME = process.env.INSTITUTE_TABLE_NAME as string;
 const INSTITUTE_USER_TABLE_NAME = process.env.INSTITUTE_USER_TABLE_NAME as string;
 const COURSES_TABLE = process.env.COURSES_TABLE as string;
+const STUDENT_COURSE_TABLE = process.env.STUDENT_COURSE_TABLE as string;
 
 export const getLoggedInUserInformation: APIGatewayProxyHandlerV2 = async (event) => {
   const { userId } = Parse(event);
@@ -366,3 +368,71 @@ export const activateUser: APIGatewayProxyHandlerV2 = async (event) => {
   return SuccessWithData({ status: 'ok' });
 
 };
+
+export const createStudentCourse: APIGatewayProxyHandlerV2 = async (event) => {
+  
+  const { institutes, pathParams, body } = Parse(event);
+  const { instituteId } = pathParams;
+  if (!isAuthorized(instituteId as string, institutes, [InstituteUserRole.OWNER])) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify({ message: 'Forbidden' })
+    }
+  }
+
+  const { courseId,studentObj, courseObj} = body;
+
+  if (!courseId || !studentObj || !courseObj) {
+    return BadRequest('Invalid Inputs Passed');
+  }
+
+  const successResponses = new Array<StudentCourse>();
+
+  studentObj.forEach(async (student:Student)=>{
+
+    const studentCourse: StudentCourse  = {
+      id: createDefinedUUID(12),
+      courseId: courseId,
+      instituteId: instituteId as string,
+      studentId:student.sid,
+      studentObj: {
+        sid: student.sid,
+        sname: student.sname.trim()
+      },
+      courseObj: {
+        cid: courseObj.cid,
+        cname: courseObj.cname.trim()
+      }
+    }
+    const documentClient = new DynamoDB.DocumentClient();
+  
+    // await documentClient.put({
+    //   TableName: STUDENT_COURSE_TABLE,
+    //   Item: studentCourse,
+    //   ConditionExpression: 'attribute_not_exists(#id)',
+    //   ExpressionAttributeNames: {
+    //     '#id': 'id'
+    //   }
+    // }).promise()
+
+    await uploadStudentCourseData (studentCourse);
+    successResponses.push(studentCourse);
+  });
+
+
+  return SuccessWithData({ successResponses })
+};
+
+async function uploadStudentCourseData (studentCourse : StudentCourse){
+  console.log(studentCourse);
+  const documentClient = new DynamoDB.DocumentClient();
+
+  await documentClient.put({
+    TableName: STUDENT_COURSE_TABLE,
+    Item: studentCourse,
+    ConditionExpression: 'attribute_not_exists(#id)',
+    ExpressionAttributeNames: {
+      '#id': 'id'
+    }
+  }).promise()
+}

@@ -8,7 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 
 function Courses() {
   const { user, logout } = useAuth();
-
+  
   const { status, data, error } = useQuery({
     queryKey: ['courses'],
     retry: false,

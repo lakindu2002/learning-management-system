@@ -5,10 +5,12 @@ import { useAuth } from 'src/contexts/AuthContext';
 
 type PageHeaderProps = {
   openModal: () => void;
+  setIsOpenAssignStudents: () => void;
+
 };
 
 function PageHeader(props: PageHeaderProps) {
-  const { openModal } = props;
+  const { openModal, setIsOpenAssignStudents } = props;
   const { user } = useAuth();
   const userData = {
     name: user.name,
@@ -34,6 +36,17 @@ function PageHeader(props: PageHeaderProps) {
         >
           Create Course
         </Button>
+        <label> </label>
+
+        <Button
+          sx={{ mt: { xs: 2, md: 0 }}}
+          variant="contained"
+          startIcon={<AddTwoToneIcon fontSize="small" />}
+          onClick={setIsOpenAssignStudents}
+        >
+          Assign Students
+        </Button>
+
       </Grid>
     </Grid>
   );
