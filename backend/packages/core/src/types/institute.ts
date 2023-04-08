@@ -4,3 +4,4 @@ export interface Institute {
   createdAt: number;
   updatedAt: number;
 }
+

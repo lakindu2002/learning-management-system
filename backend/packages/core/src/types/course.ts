@@ -10,3 +10,13 @@ export interface Course {
   instituteId: string
   lecturerId: string;
 }
+
+export interface StudentCourse {
+  id: string;
+  courseId: string;
+  instituteId: string;
+  studentId: string;
+  student: CourseUser;
+  createdAt: number,
+  updatedAt: number
+}

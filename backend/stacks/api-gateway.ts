@@ -12,6 +12,7 @@ export function lmsApiGateway({ stack }: StackContext) {
       "POST /me/activate": "packages/functions/src/lambda.activateUser",
       "GET /institutes/{instituteId}/courses": "packages/functions/src/lambda.getCourses",
       "POST /institutes/{instituteId}/courses": "packages/functions/src/lambda.createCourse",
+      "POST /institutes/{instituteId}/courses/{courseId}/students": "packages/functions/src/lambda.assignStudentsToCourse",
       "POST /institutes/{instituteId}/users": {
         function: {
           handler: "packages/functions/src/lambda.addUsersToInstitute",
@@ -21,7 +22,6 @@ export function lmsApiGateway({ stack }: StackContext) {
         }
       },
       "POST /institutes/{instituteId}/users/get": "packages/functions/src/lambda.getAllUsersInAnInstitute",
-      "POST /institutes/{instituteId}/studentCourse": "packages/functions/src/lambda.createStudentCourse",
     },
     defaults: {
       function: {
@@ -53,7 +53,7 @@ export function lmsApiGateway({ stack }: StackContext) {
   apiGateway.attachPermissionsToRoute("POST /institutes/{instituteId}/courses", [courseTable])
   apiGateway.attachPermissionsToRoute("GET /me", [usersTable, instituteTable, instituteUserTable])
   apiGateway.attachPermissionsToRoute("POST /me/activate", [usersTable, instituteUserTable])
-  apiGateway.attachPermissionsToRoute("POST /institutes/{instituteId}/studentCourse", [studentCourseTable])
+  apiGateway.attachPermissionsToRoute("POST /institutes/{instituteId}/courses/{courseId}/students", [studentCourseTable])
 
   const stackOutputs = {
     apiUrl: apiGateway.url,

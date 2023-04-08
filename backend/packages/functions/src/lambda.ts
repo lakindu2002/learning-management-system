@@ -10,7 +10,8 @@ import { Parse } from "@backend/core/parse-event";
 import { getDefaultInstituteUser, getDefaultUser } from "@backend/core/get-defaults";
 import { BadRequest, Forbidden, SuccessWithData, isEmailInSystem, createCognitoUser } from './utils';
 import { Status } from "@backend/core/types/common";
-import {StudentCourse, Student} from "@backend/core/types/studentCourse";
+import { StudentCourse, CourseUser } from "@backend/core/types/course";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 const MAX_INSTITUTES = 50;
 const USERS_TABLE_NAME = process.env.USER_TABLE_NAME as string;
@@ -369,70 +370,53 @@ export const activateUser: APIGatewayProxyHandlerV2 = async (event) => {
 
 };
 
-export const createStudentCourse: APIGatewayProxyHandlerV2 = async (event) => {
-  
+export const assignStudentsToCourse: APIGatewayProxyHandlerV2 = async (event) => {
+
   const { institutes, pathParams, body } = Parse(event);
   const { instituteId } = pathParams;
-  if (!isAuthorized(instituteId as string, institutes, [InstituteUserRole.OWNER])) {
+  if (!isAuthorized(instituteId as string, institutes, [InstituteUserRole.OWNER, InstituteUserRole.ADMINISTRATOR])) {
     return {
       statusCode: 403,
       body: JSON.stringify({ message: 'Forbidden' })
     }
   }
 
-  const { courseId,studentObj, courseObj} = body;
+  const { courseId, students = [] } = body as { courseId: string, students: CourseUser[] };
 
-  if (!courseId || !studentObj || !courseObj) {
+  if (!courseId || students.length === 0) {
     return BadRequest('Invalid Inputs Passed');
   }
 
-  const successResponses = new Array<StudentCourse>();
-
-  studentObj.forEach(async (student:Student)=>{
-
-    const studentCourse: StudentCourse  = {
-      id: createDefinedUUID(12),
-      courseId: courseId,
+  const studentCourses = students.map((student) => {
+    const timestamp = Date.now();
+    const studentCourse: StudentCourse = {
+      studentId: student.id,
+      courseId,
       instituteId: instituteId as string,
-      studentId:student.sid,
-      studentObj: {
-        sid: student.sid,
-        sname: student.sname.trim()
-      },
-      courseObj: {
-        cid: courseObj.cid,
-        cname: courseObj.cname.trim()
-      }
+      student: student,
+      id: createDefinedUUID(12),
+      createdAt: timestamp,
+      updatedAt: timestamp
     }
-    const documentClient = new DynamoDB.DocumentClient();
-  
-    // await documentClient.put({
-    //   TableName: STUDENT_COURSE_TABLE,
-    //   Item: studentCourse,
-    //   ConditionExpression: 'attribute_not_exists(#id)',
-    //   ExpressionAttributeNames: {
-    //     '#id': 'id'
-    //   }
-    // }).promise()
-
-    await uploadStudentCourseData (studentCourse);
-    successResponses.push(studentCourse);
+    return studentCourse;
   });
 
-
-  return SuccessWithData({ successResponses })
-};
-
-async function uploadStudentCourseData (studentCourse : StudentCourse){
-  console.log(studentCourse);
-  const documentClient = new DynamoDB.DocumentClient();
-
-  await documentClient.put({
-    TableName: STUDENT_COURSE_TABLE,
-    Item: studentCourse,
-    ConditionExpression: 'attribute_not_exists(#id)',
-    ExpressionAttributeNames: {
-      '#id': 'id'
+  const transactions = studentCourses.map((studentCourse) => ({
+    Put: {
+      TableName: STUDENT_COURSE_TABLE,
+      Item: studentCourse
     }
-  }).promise()
-}
+  }))
+
+  const MAX_TRANSACTIONS = 25;
+  const chunkedTransactions = chunk(transactions, MAX_TRANSACTIONS);
+
+  const documentClient = new DocumentClient();
+
+  await Promise.all(chunkedTransactions.map(async (transaction) => {
+    await documentClient.transactWrite({
+      TransactItems: transaction
+    }).promise()
+  }))
+  return SuccessWithData({ items: studentCourses })
+};

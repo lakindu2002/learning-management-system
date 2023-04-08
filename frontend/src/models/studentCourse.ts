@@ -1,6 +1,6 @@
 export interface Student{
-    sid: string; 
-    sname: string;
+    id: string; 
+    name: string;
 }
 
 export interface StudentCourse {
