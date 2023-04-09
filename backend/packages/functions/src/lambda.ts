@@ -164,7 +164,6 @@ export const getCourseById: APIGatewayProxyHandlerV2 = async (event) => {
       TableName: COURSES_TABLE,
       Key: {
         id: courseId,
-        instituteId: instituteId,
       },
     })
     .promise();

@@ -70,6 +70,10 @@ export function lmsApiGateway({ stack }: StackContext) {
     studentCourseTable,
   ]);
   apiGateway.attachPermissionsToRoute(
+    "GET /institutes/{instituteId}/courses/{courseId}",
+    [courseTable]
+  );
+  apiGateway.attachPermissionsToRoute(
     "POST /institutes/{instituteId}/courses",
     [courseTable]
   );
