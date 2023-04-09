@@ -7,7 +7,7 @@ import {
   InstituteUserRole,
 } from "@backend/core/types/user";
 import { createDefinedUUID } from "@backend/core/nano-id";
-import { Course } from "@backend/core/types/course";
+import { Course, LessonCourse } from "@backend/core/types/course";
 import { isAuthorized } from "@backend/core/is-authorized";
 import { Institute } from "@backend/core/types/institute";
 import { Parse } from "@backend/core/parse-event";
@@ -33,6 +33,7 @@ const INSTITUTE_USER_TABLE_NAME = process.env
   .INSTITUTE_USER_TABLE_NAME as string;
 const COURSES_TABLE = process.env.COURSES_TABLE as string;
 const STUDENT_COURSE_TABLE = process.env.STUDENT_COURSE_TABLE as string;
+const COURSE_LESSON_TABLE = process.env.COURSE_LESSON_TABLE as string;
 
 export const getLoggedInUserInformation: APIGatewayProxyHandlerV2 = async (
   event
@@ -576,4 +577,44 @@ export const assignStudentsToCourse: APIGatewayProxyHandlerV2 = async (
     })
   );
   return SuccessWithData({ items: studentCourses });
+};
+
+export const createLessonCourse: APIGatewayProxyHandlerV2 = async (event) => {
+  const { institutes, pathParams, body } = Parse(event);
+  const { instituteId } = pathParams;
+  if (
+    !isAuthorized(instituteId as string, institutes, [InstituteUserRole.OWNER])
+  ) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify({ message: "Forbidden" }),
+    };
+  }
+
+  const { courseId, lessonObj } = body;
+
+  if (!courseId || !lessonObj) {
+    return BadRequest("Invalid Inputs Passed");
+  }
+
+  const lessonCourse: LessonCourse = {
+    id: createDefinedUUID(12),
+    courseId: courseId,
+    instituteId: instituteId as string,
+    lessonObj: lessonObj,
+  };
+  const documentClient = new DynamoDB.DocumentClient();
+
+  await documentClient
+    .put({
+      TableName: COURSE_LESSON_TABLE,
+      Item: lessonCourse,
+      ConditionExpression: "attribute_not_exists(#id)",
+      ExpressionAttributeNames: {
+        "#id": "id",
+      },
+    })
+    .promise();
+
+  return SuccessWithData({ lessonCourse });
 };
