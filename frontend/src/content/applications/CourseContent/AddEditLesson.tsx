@@ -69,7 +69,7 @@ export default function AddEditLesson(props: Props) {
   const createLesson = useMutation({
     mutationFn: (lessonCourse: LessonCourse) => {
       return axios.post(
-        `/api/institutes/${user.institutes[0].id}/lessonCourse`,
+        `/api/institutes/${user.institutes[0].id}/courses/${courseId}/lessons`,
         lessonCourse
       );
     },

@@ -590,7 +590,7 @@ export const createLessonCourse: APIGatewayProxyHandlerV2 = async (event) => {
       body: JSON.stringify({ message: "Forbidden" }),
     };
   }
-
+  const timestamp = Date.now();
   const { courseId, lessonObj } = body;
 
   if (!courseId || !lessonObj) {
@@ -602,6 +602,8 @@ export const createLessonCourse: APIGatewayProxyHandlerV2 = async (event) => {
     courseId: courseId,
     instituteId: instituteId as string,
     lessonObj: lessonObj,
+    createdAt: timestamp,
+    updatedAt: timestamp,
   };
   const documentClient = new DynamoDB.DocumentClient();
 
@@ -609,10 +611,6 @@ export const createLessonCourse: APIGatewayProxyHandlerV2 = async (event) => {
     .put({
       TableName: COURSE_LESSON_TABLE,
       Item: lessonCourse,
-      ConditionExpression: "attribute_not_exists(#id)",
-      ExpressionAttributeNames: {
-        "#id": "id",
-      },
     })
     .promise();
 

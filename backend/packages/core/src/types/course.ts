@@ -36,4 +36,6 @@ export interface LessonCourse {
   courseId: string;
   instituteId: string;
   lessonObj: Lesson;
+  createdAt: number;
+  updatedAt: number;
 }
