@@ -13,7 +13,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { useAuth } from 'src/contexts/AuthContext';
 import axios from 'src/lib/axios';
 import { Course } from 'src/models/course';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useInstituteUsers } from 'src/hooks/use-users';
 import { InstituteUserRole } from 'src/models/user';
@@ -35,6 +35,7 @@ export default function AddEditCourse(props: Props) {
     users: lecturers,
     isLoading
   } = useInstituteUsers();
+  const queryClient = useQueryClient();
 
   //   const [selectedUsers, setSelectedUsers] = useState([]);
 
@@ -48,6 +49,10 @@ export default function AddEditCourse(props: Props) {
         `/api/institutes/${user.institutes[0].id}/courses`,
         course
       );
+    },
+    onSuccess: () => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ['courses'] });
     }
   });
 

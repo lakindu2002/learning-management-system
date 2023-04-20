@@ -20,18 +20,24 @@ const Overview = Loader(lazy(() => import('src/content/overview')));
 const Login = Loader(lazy(() => import('src/content/pages/Login')));
 const SignUp = Loader(lazy(() => import('src/content/pages/SignUp')));
 const VerifyCode = Loader(lazy(() => import('src/content/pages/VerifyCode')));
-const ResetDefaultPassword = Loader(lazy(() => import('src/content/pages/ResetPassword')));
+const ResetDefaultPassword = Loader(
+  lazy(() => import('src/content/pages/ResetPassword'))
+);
 
 const Tasks = Loader(lazy(() => import('src/content/dashboards/Tasks')));
 
 const UserListPage = Loader(
   lazy(() => import('src/content/applications/Users/list'))
-)
+);
 
 const Messenger = Loader(
   lazy(() => import('src/content/applications/Messenger'))
 );
 const Courses = Loader(lazy(() => import('src/content/applications/Courses')));
+const CourseContent = Loader(
+  lazy(() => import('src/content/applications/CourseContent'))
+);
+
 const UserProfile = Loader(
   lazy(() => import('src/content/applications/Users/profile'))
 );
@@ -81,10 +87,11 @@ const routes: RouteObject[] = [
       },
       {
         path: '/reset-password',
-        element:
+        element: (
           <AuthGuard>
             <ResetDefaultPassword />
           </AuthGuard>
+        )
       },
       {
         path: 'status',
@@ -145,11 +152,24 @@ const routes: RouteObject[] = [
       },
       {
         path: 'courses',
-        element: (
-          <AuthGuard>
-            <Courses />
-          </AuthGuard>
-        )
+        children: [
+          {
+            path: '',
+            element: (
+              <AuthGuard>
+                <Courses />
+              </AuthGuard>
+            )
+          },
+          {
+            path: ':id',
+            element: (
+              <AuthGuard>
+                <CourseContent />
+              </AuthGuard>
+            )
+          }
+        ]
       },
       {
         path: 'users',
