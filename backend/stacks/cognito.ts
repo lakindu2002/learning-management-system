@@ -58,10 +58,19 @@ export function cognito({ stack }: StackContext) {
     staticContent,
     new PolicyStatement({
       effect: Effect.ALLOW,
-      actions: ["s3:putObject"],
+      actions: ["s3:PutObject"],
       resources: [`${staticContent.bucketArn}/\${aws:PrincipalTag/username}/*`]
     })
   ])
+
+  // auth.attachPermissionsForAuthUsers(stack, [
+  //   staticContent,
+  //   new PolicyStatement({
+  //     effect: Effect.ALLOW,
+  //     actions: ["s3:GetObject"],
+  //     resources: ["*"]
+  //   })
+  // ])
 
   const stackOutputs = {
     userPoolId: auth.userPoolId,

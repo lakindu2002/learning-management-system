@@ -11,4 +11,15 @@ module.exports = function (app) {
       changeOrigin: true
     })
   );
+
+  app.use(
+    '/uploads',
+    createProxyMiddleware({
+      target: 'https://lakinduhewawasam-lms-bac-staticcontentbucket63763-etcnmyio47n4.s3.ap-southeast-1.amazonaws.com',
+      pathRewrite: {
+        '^/uploads': ''
+      },
+      changeOrigin: true
+    })
+  );
 };

@@ -165,23 +165,23 @@ export function dynamodb({ stack }: StackContext) {
 
   const courseLessonTable = new Table(stack, "courseLessonTable", {
     primaryIndex: {
-      partitionKey: "courseId",
-      sortKey: "instituteId",
+      partitionKey: "id",
     },
     fields: {
-      instituteId: "string",
-      courseId: "string",
+      id: 'string',
+      courseIdInstituteId: 'string',
+      visibility: 'string',
     },
     globalIndexes: {
-      "by-institute-index": {
-        partitionKey: "instituteId",
-        sortKey: "courseId",
+      "by-courseIdInstituteId-visibility": {
+        partitionKey: "courseIdInstituteId",
+        sortKey: "visibility",
         cdk: {
           index: {
             projectionType: ProjectionType.ALL,
           },
         },
-      },
+      }
     },
     cdk: {
       table: {

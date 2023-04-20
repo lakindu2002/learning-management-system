@@ -1,22 +1,12 @@
 import * as yup from 'yup';
 import { useFormik } from 'formik';
-
-import {
-  Typography,
-  Button,
-  Grid,
-  TextField,
-  Box,
-  MenuItem
-} from '@mui/material';
+import { Typography, Button, Grid, TextField, Box } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useAuth } from 'src/contexts/AuthContext';
 import axios from 'src/lib/axios';
-import { Course, Lesson, LessonCourse } from 'src/models/course';
+import { CourseLesson } from 'src/models/course';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
-import { useInstituteUsers } from 'src/hooks/use-users';
-import { InstituteUserRole } from 'src/models/user';
 import {
   BtnBold,
   BtnItalic,
@@ -28,18 +18,10 @@ import {
   BtnUnderline,
   BtnUndo,
   BtnRedo,
-  BtnNumberedList,
-  BtnStrikeThrough,
-  BtnBulletList,
-  BtnStyles,
-  BtnClearFormatting
+  BtnStyles
 } from 'react-simple-wysiwyg';
-import Label from 'src/components/Label';
-import {
-  ArticleOutlined,
-  ImageOutlined,
-  VideoFileOutlined
-} from '@mui/icons-material';
+import { ArticleOutlined } from '@mui/icons-material';
+import { uploadFile } from 'src/hooks/use-storage';
 
 type Props = {
   setOpen: Function;
@@ -47,30 +29,20 @@ type Props = {
 };
 
 const validationSchema = yup.object({
-  title: yup.string().required('Title is required')
+  title: yup.string().required('Title is required'),
+  description: yup.string().required('Description is required')
 });
 
 export default function AddEditLesson(props: Props) {
   const { setOpen, courseId } = props;
-  const { user, logout } = useAuth();
-  const {
-    getInstituteUsers,
-    users: lecturers,
-    isLoading
-  } = useInstituteUsers();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  //   const [selectedUsers, setSelectedUsers] = useState([]);
-
-  useEffect(() => {
-    getInstituteUsers('initial', InstituteUserRole.LECTURER);
-  }, []);
-
   const createLesson = useMutation({
-    mutationFn: (lessonCourse: LessonCourse) => {
+    mutationFn: (lesson: Partial<CourseLesson>) => {
       return axios.post(
-        `/api/institutes/${user.institutes[0].id}/courses/${courseId}/lessons`,
-        lessonCourse
+        `/api/institutes/${user?.currentInstitute.id}/courses/${courseId}/lessons`,
+        lesson
       );
     },
     onSuccess: () => {
@@ -82,24 +54,25 @@ export default function AddEditLesson(props: Props) {
   const formik = useFormik({
     initialValues: {
       title: '',
-      editorContent: '',
-      lecVideo: {} as File,
-      files: [] as File[],
-      additionalFiles: [] as File[],
-      additionalEditorContent: '',
-      image: {} as File
+      description: '',
+      files: undefined as FileList
     },
     validationSchema: validationSchema,
 
-    onSubmit: (values) => {
-      const lessonCourse: LessonCourse = {
-        courseId: courseId,
-        lessonObj: {
-          title: values.title,
-          editorContent: values.editorContent
-        }
+    onSubmit: async (values) => {
+      const files = values.files;
+      const fileUploads = Array.from(files || []).map(async (file) => {
+        const resp = await uploadFile(file, 'course-content');
+        return { url: resp.url, type: resp.type, name: file.name };
+      });
+      const fileData = await Promise.all(fileUploads);
+      const lessonCourse: Partial<CourseLesson> = {
+        courseId,
+        title: values.title,
+        description: values.description,
+        files: fileData,
+        instituteId: user?.currentInstitute.id
       };
-
       createLesson.mutate(lessonCourse);
     }
   });
@@ -108,11 +81,9 @@ export default function AddEditLesson(props: Props) {
     if (createLesson.isSuccess) setOpen(false);
   }, [createLesson.isSuccess]);
 
-  console.log('error', createLesson.error);
-
   return (
     <div>
-      <form onSubmit={formik.handleSubmit}>
+      <form noValidate onSubmit={formik.handleSubmit}>
         <Box
           pb={4}
           display={{ xs: 'block', md: 'flex' }}
@@ -148,17 +119,15 @@ export default function AddEditLesson(props: Props) {
           }}
           variant="h3"
         >
-          Main Content
+          Content
         </Typography>
 
-        <Typography fontWeight="normal" variant="h4">
-          Description:{' '}
-        </Typography>
         <EditorProvider>
           <Editor
-            value={formik.values.editorContent}
+            placeholder="What is this lesson about?"
+            value={formik.values.description}
             onChange={(event) =>
-              formik.setFieldValue('editorContent', event.target.value)
+              formik.setFieldValue('description', event.target.value)
             }
           >
             <Toolbar>
@@ -178,60 +147,7 @@ export default function AddEditLesson(props: Props) {
         <Grid container mt={2}>
           <Grid item xs={3} my={2}>
             <Button variant="contained" component="label" fullWidth>
-              Upload Recording
-              <input
-                type="file"
-                hidden
-                accept="video/mp4,video/x-m4v,video/*"
-                onChange={(event) => {
-                  formik.setFieldValue(
-                    'lecVideo',
-                    event.currentTarget.files[0]
-                  );
-                }}
-              />
-            </Button>
-          </Grid>
-          <Grid item xs={9} my={2}>
-            <Box display="flex" mt={1} ml={4}>
-              {formik.values.lecVideo?.name && (
-                <>
-                  <VideoFileOutlined />
-                  <Box paddingTop="1px" paddingLeft="3px">
-                    <a href=""> {formik.values.lecVideo.name} </a>
-                  </Box>
-                </>
-              )}
-            </Box>
-          </Grid>
-          <Grid item xs={3} my={2}>
-            <Button variant="contained" component="label" fullWidth>
-              Upload Image
-              <input
-                type="file"
-                hidden
-                accept="image/*"
-                onChange={(event) => {
-                  formik.setFieldValue('image', event.currentTarget.files[0]);
-                }}
-              />
-            </Button>
-          </Grid>
-          <Grid item xs={9} my={2}>
-            <Box display="flex" mt={1} ml={4}>
-              {formik.values.image?.name && (
-                <>
-                  <ImageOutlined />
-                  <Box paddingTop="1px" paddingLeft="3px">
-                    <a href=""> {formik.values.image.name} </a>
-                  </Box>
-                </>
-              )}
-            </Box>
-          </Grid>
-          <Grid item xs={3} my={2}>
-            <Button variant="contained" component="label" fullWidth>
-              Upload Documents
+              Upload Material
               <input
                 type="file"
                 hidden
@@ -245,102 +161,21 @@ export default function AddEditLesson(props: Props) {
           </Grid>
           <Grid item xs={9} my={2}>
             <Box display="flex" mt={1} ml={2}>
-              {formik.values.additionalFiles &&
-                Object.entries(formik.values.additionalFiles).map(
-                  (file, index) => {
-                    return (
-                      <Box
-                        key={`${file[1].name} + ${index}`}
-                        ml={2}
-                        display="flex"
-                      >
-                        <ArticleOutlined />
-                        <Box paddingTop="1px" paddingLeft="3px">
-                          <a href=""> {file[1].name} </a>
-                        </Box>
+              {formik.values.files &&
+                Object.entries(formik.values.files).map((file, index) => {
+                  return (
+                    <Box
+                      key={`${file[1].name} + ${index}`}
+                      ml={2}
+                      display="flex"
+                    >
+                      <ArticleOutlined />
+                      <Box paddingTop="1px" paddingLeft="3px">
+                        <a href=""> {file[1].name} </a>
                       </Box>
-                    );
-                  }
-                )}
-            </Box>
-          </Grid>
-        </Grid>
-
-        <Typography
-          sx={{
-            my: 3
-          }}
-          variant="h3"
-        >
-          Additional Resources
-        </Typography>
-
-        <Typography variant="h4" fontWeight="normal">
-          Description:{' '}
-        </Typography>
-
-        <EditorProvider>
-          <Editor
-            value={formik.values.additionalEditorContent}
-            onChange={(event) =>
-              formik.setFieldValue(
-                'additionalEditorContent',
-                event.target.value
-              )
-            }
-          >
-            <Toolbar>
-              <BtnUndo />
-              <BtnRedo />
-              <Separator />
-              <BtnBold />
-              <BtnItalic />
-              <BtnUnderline />
-              <Separator />
-              <BtnLink />
-              <Separator />
-              <BtnStyles />
-            </Toolbar>
-          </Editor>
-        </EditorProvider>
-
-        <Grid container mt={2}>
-          <Grid item xs={3} my={2}>
-            <Button variant="contained" component="label" fullWidth>
-              Upload Documents
-              <input
-                type="file"
-                hidden
-                accept=".xlsx,.xls,image/*,.doc, .docx,.ppt, .pptx,.txt,.pdf"
-                multiple
-                onChange={(event) => {
-                  formik.setFieldValue(
-                    'additionalFiles',
-                    event.currentTarget.files
+                    </Box>
                   );
-                }}
-              />
-            </Button>
-          </Grid>
-          <Grid item xs={9} my={2}>
-            <Box display="flex" mt={1} ml={2}>
-              {formik.values.additionalFiles &&
-                Object.entries(formik.values.additionalFiles).map(
-                  (file, index) => {
-                    return (
-                      <Box
-                        key={`${file[1].name} + ${index}`}
-                        ml={2}
-                        display="flex"
-                      >
-                        <ArticleOutlined />
-                        <Box paddingTop="1px" paddingLeft="3px">
-                          <a href=""> {file[1].name} </a>
-                        </Box>
-                      </Box>
-                    );
-                  }
-                )}
+                })}
             </Box>
           </Grid>
         </Grid>
@@ -366,7 +201,7 @@ export default function AddEditLesson(props: Props) {
             variant="contained"
             type="submit"
             fullWidth
-            loading={createLesson.isLoading}
+            loading={formik.isSubmitting || createLesson.isLoading}
           >
             Submit
           </LoadingButton>

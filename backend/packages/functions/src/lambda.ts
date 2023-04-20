@@ -1,36 +1,21 @@
 import { DynamoDB } from "aws-sdk";
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 import { chunk } from "lodash";
-import {
-  User,
-  InstituteUser,
-  InstituteUserRole,
-} from "@backend/core/types/user";
+import { User, InstituteUser, InstituteUserRole, } from "@backend/core/types/user";
 import { createDefinedUUID } from "@backend/core/nano-id";
-import { Course, LessonCourse } from "@backend/core/types/course";
+import { Course, CourseLesson, StudentCourse, CourseUser, LessonVisbility } from "@backend/core/types/course";
 import { isAuthorized } from "@backend/core/is-authorized";
 import { Institute } from "@backend/core/types/institute";
 import { Parse } from "@backend/core/parse-event";
-import {
-  getDefaultInstituteUser,
-  getDefaultUser,
-} from "@backend/core/get-defaults";
-import {
-  BadRequest,
-  Forbidden,
-  SuccessWithData,
-  isEmailInSystem,
-  createCognitoUser,
-} from "./utils";
+import { getDefaultInstituteUser, getDefaultUser, } from "@backend/core/get-defaults";
+import { BadRequest, Forbidden, SuccessWithData, isEmailInSystem, createCognitoUser } from "./utils";
 import { Status } from "@backend/core/types/common";
-import { StudentCourse, CourseUser } from "@backend/core/types/course";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 const MAX_INSTITUTES = 50;
 const USERS_TABLE_NAME = process.env.USER_TABLE_NAME as string;
 const INSTITUTE_TABLE_NAME = process.env.INSTITUTE_TABLE_NAME as string;
-const INSTITUTE_USER_TABLE_NAME = process.env
-  .INSTITUTE_USER_TABLE_NAME as string;
+const INSTITUTE_USER_TABLE_NAME = process.env.INSTITUTE_USER_TABLE_NAME as string;
 const COURSES_TABLE = process.env.COURSES_TABLE as string;
 const STUDENT_COURSE_TABLE = process.env.STUDENT_COURSE_TABLE as string;
 const COURSE_LESSON_TABLE = process.env.COURSE_LESSON_TABLE as string;
@@ -353,13 +338,13 @@ export const addUsersToInstitute: APIGatewayProxyHandlerV2 = async (event) => {
           },
           ...(appUser
             ? [
-                {
-                  Put: {
-                    TableName: USERS_TABLE_NAME,
-                    Item: appUser,
-                  },
+              {
+                Put: {
+                  TableName: USERS_TABLE_NAME,
+                  Item: appUser,
                 },
-              ]
+              },
+            ]
             : []),
         ],
       })
@@ -583,7 +568,7 @@ export const createLessonCourse: APIGatewayProxyHandlerV2 = async (event) => {
   const { institutes, pathParams, body } = Parse(event);
   const { instituteId } = pathParams;
   if (
-    !isAuthorized(instituteId as string, institutes, [InstituteUserRole.OWNER])
+    !isAuthorized(instituteId as string, institutes, [InstituteUserRole.OWNER, InstituteUserRole.ADMINISTRATOR, InstituteUserRole.LECTURER])
   ) {
     return {
       statusCode: 403,
@@ -591,28 +576,79 @@ export const createLessonCourse: APIGatewayProxyHandlerV2 = async (event) => {
     };
   }
   const timestamp = Date.now();
-  const { courseId, lessonObj } = body;
+  const { courseId, title, description, files } = body as CourseLesson;
 
-  if (!courseId || !lessonObj) {
+  if (!courseId || !title || !description) {
     return BadRequest("Invalid Inputs Passed");
   }
 
-  const lessonCourse: LessonCourse = {
+  const lesson: CourseLesson = {
     id: createDefinedUUID(12),
     courseId: courseId,
     instituteId: instituteId as string,
-    lessonObj: lessonObj,
     createdAt: timestamp,
+    title,
+    description,
+    files,
     updatedAt: timestamp,
+    visibility: LessonVisbility.HIDDEN,
+    courseIdInstituteId: `${courseId}#${instituteId}`
   };
   const documentClient = new DynamoDB.DocumentClient();
 
   await documentClient
     .put({
       TableName: COURSE_LESSON_TABLE,
-      Item: lessonCourse,
+      Item: lesson,
     })
     .promise();
 
-  return SuccessWithData({ lessonCourse });
+  return SuccessWithData({ lesson });
+};
+
+export const getCourseLessons: APIGatewayProxyHandlerV2 = async (event) => {
+  const { institutes, pathParams, body } = Parse(event);
+
+  const { instituteId, courseId } = pathParams;
+  const { nextKey } = body;
+  const documentClient = new DocumentClient();
+
+  if (isAuthorized(instituteId as string, institutes, [InstituteUserRole.ADMINISTRATOR, InstituteUserRole.LECTURER, InstituteUserRole.OWNER])) {
+    // show all hidden, visible content for a course.
+    const resp = await documentClient.query({
+      TableName: COURSE_LESSON_TABLE,
+      IndexName: 'by-courseIdInstituteId-visibility',
+      KeyConditionExpression: '#courseIdInstituteId = :courseIdInstituteId',
+      ExpressionAttributeNames: {
+        '#courseIdInstituteId': 'courseIdInstituteId'
+      },
+      ExpressionAttributeValues: {
+        ':courseIdInstituteId': `${courseId}#${instituteId}`
+      },
+      ExclusiveStartKey: nextKey
+    }).promise();
+    return SuccessWithData({ lessons: resp.Items || [], nextKey: resp.LastEvaluatedKey })
+  }
+
+
+  if (isAuthorized(instituteId as string, institutes, [InstituteUserRole.STUDENT])) {
+    // show all hidden, visible content for a course.
+    const resp = await documentClient.query({
+      TableName: COURSE_LESSON_TABLE,
+      IndexName: 'by-courseIdInstituteId-visibility',
+      KeyConditionExpression: '#courseIdInstituteId = :courseIdInstituteId and #visibility = :visibility',
+      ExpressionAttributeNames: {
+        '#courseIdInstituteId': 'courseIdInstituteId',
+        '#visibility': 'visibility'
+      },
+      ExpressionAttributeValues: {
+        ':courseIdInstituteId': `${courseId}#${instituteId}`,
+        ':visibility': LessonVisbility.VISIBLE
+      },
+      ExclusiveStartKey: nextKey
+    }).promise();
+    return SuccessWithData({ lessons: resp.Items || [], nextKey: resp.LastEvaluatedKey })
+  }
+
+  return Forbidden();
 };

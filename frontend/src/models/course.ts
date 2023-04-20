@@ -5,18 +5,20 @@ export interface Course {
   instituteId?: string;
 }
 
-export interface Lesson {
-  title: string;
-  lecVideo?: string;
-  files?: string[];
-  editorContent?: string;
-  additionalEditorContent?: string;
-  additionalFiles?: string[];
+export enum LessonVisbility {
+  VISIBLE = 'visible',
+  HIDDEN = 'hidden',
 }
 
-export interface LessonCourse {
-  id?: string;
+export interface CourseLesson {
+  id: string;
   courseId: string;
-  instituteId?: string;
-  lessonObj: Lesson;
+  instituteId: string;
+  title: string;
+  files?: { url: string, type: string, name: string }[];
+  description?: string;
+  createdAt: number,
+  updatedAt: number,
+  visibility: LessonVisbility,
+  courseIdInstituteId: string,
 }

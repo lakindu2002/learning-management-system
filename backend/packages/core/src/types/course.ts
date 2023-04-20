@@ -21,21 +21,20 @@ export interface StudentCourse {
   updatedAt: number;
 }
 
-export interface Lesson {
-  title: string;
-  lecVideo?: string;
-  files?: string[];
-  editorContent?: string;
-  additionalEditorContent?: string;
-  additionalFiles?: string[];
-  image?: string;
+export enum LessonVisbility {
+  VISIBLE = 'visible',
+  HIDDEN = 'hidden',
 }
 
-export interface LessonCourse {
-  id?: string;
+export interface CourseLesson {
+  id: string;
   courseId: string;
   instituteId: string;
-  lessonObj: Lesson;
-  createdAt: number;
-  updatedAt: number;
+  title: string;
+  files?: { url: string, type: string, name: string }[];
+  description?: string;
+  createdAt: number,
+  updatedAt: number,
+  visibility: LessonVisbility,
+  courseIdInstituteId: string,
 }
