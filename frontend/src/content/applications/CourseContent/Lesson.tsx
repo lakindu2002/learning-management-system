@@ -40,10 +40,10 @@ const LessonFile: FC<{ file: { url: string; type: string; name: string } }> = ({
           }
         }}
       >
+        {fileIcons[file.type]}
         <Typography variant="h6" fontWeight={500} color="textPrimary">
           {file.name.split('.')[0]}
         </Typography>
-        {fileIcons[file.type]}
       </Box>
     </Link>
   );
