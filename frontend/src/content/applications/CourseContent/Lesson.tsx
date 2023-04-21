@@ -10,10 +10,14 @@ import {
   Typography
 } from '@mui/material';
 import { FC } from 'react';
+import { useAuth } from 'src/contexts/AuthContext';
 import { CourseLesson, LessonVisbility } from 'src/models/course';
+import { InstituteUserRole } from 'src/models/user';
+import { LessonManagePopper } from './LessonManagePopper';
 
 interface LessonProps {
   lesson: CourseLesson;
+  onUpdate: (patchAttr: Partial<CourseLesson>) => Promise<void>;
 }
 
 const fileIcons = {
@@ -45,20 +49,41 @@ const LessonFile: FC<{ file: { url: string; type: string; name: string } }> = ({
   );
 };
 
-export const Lesson: FC<LessonProps> = ({ lesson }) => {
+export const Lesson: FC<LessonProps> = ({ lesson, onUpdate }) => {
+  const { user } = useAuth();
+
+  const handleToggleVisibility = async () => {
+    await onUpdate({
+      visibility:
+        lesson.visibility === LessonVisbility.VISIBLE
+          ? LessonVisbility.HIDDEN
+          : LessonVisbility.VISIBLE
+    });
+  };
+
   return (
     <Card>
       <CardHeader
         title={
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Typography variant="h4">{lesson.title}</Typography>
-            {lesson.visibility === LessonVisbility.HIDDEN && (
-              <Chip
-                label="Hidden from students"
-                color="warning"
-                sx={{ ml: 'auto' }}
-              />
-            )}
+            <Box
+              sx={{ ml: 'auto', display: 'flex', gap: 1, alignItems: 'center' }}
+            >
+              {lesson.visibility === LessonVisbility.HIDDEN && (
+                <Chip
+                  label="Hidden from students"
+                  color="warning"
+                  sx={{ ml: 'auto' }}
+                />
+              )}
+              {user?.currentInstitute.role !== InstituteUserRole.STUDENT && (
+                <LessonManagePopper
+                  lesson={lesson}
+                  onToggleVisibility={handleToggleVisibility}
+                />
+              )}
+            </Box>
           </Box>
         }
         subheader={lesson.description}

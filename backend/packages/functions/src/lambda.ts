@@ -625,7 +625,8 @@ export const getCourseLessons: APIGatewayProxyHandlerV2 = async (event) => {
       ExpressionAttributeValues: {
         ':courseIdInstituteId': `${courseId}#${instituteId}`
       },
-      ExclusiveStartKey: nextKey
+      ExclusiveStartKey: nextKey,
+      ScanIndexForward: false,
     }).promise();
     return SuccessWithData({ lessons: resp.Items || [], nextKey: resp.LastEvaluatedKey })
   }
@@ -645,10 +646,56 @@ export const getCourseLessons: APIGatewayProxyHandlerV2 = async (event) => {
         ':courseIdInstituteId': `${courseId}#${instituteId}`,
         ':visibility': LessonVisbility.VISIBLE
       },
-      ExclusiveStartKey: nextKey
+      ExclusiveStartKey: nextKey,
+      ScanIndexForward: false,
     }).promise();
     return SuccessWithData({ lessons: resp.Items || [], nextKey: resp.LastEvaluatedKey })
   }
 
   return Forbidden();
 };
+
+export const updateCourseLesson: APIGatewayProxyHandlerV2 = async (event) => {
+  const pe = Parse(event);
+  const { body, institutes, pathParams } = pe;
+  const { instituteId, lessonId } = pathParams;
+
+  if (!isAuthorized(instituteId as string, institutes, [InstituteUserRole.LECTURER, InstituteUserRole.ADMINISTRATOR, InstituteUserRole.OWNER])) {
+    return Forbidden();
+  }
+
+  const { lastUpdatedAt, patchAttr } = body as { patchAttr: Partial<CourseLesson>, lastUpdatedAt: number };
+  const { description, files = [], title, visibility } = patchAttr;
+
+  const newUpdatedAt = Date.now();
+
+  const parsedPatchObject = {
+    ...description && { description },
+    ...files.length > 0 && { files },
+    ...title && { title },
+    ...visibility && { visibility },
+    updatedAt: newUpdatedAt
+  }
+
+  let updateExpression = '';
+  let updateExpressionNames = {};
+  let updateExpressionValues = {};
+
+  Object.entries(parsedPatchObject).forEach(([key, value]) => {
+    updateExpression += updateExpression ? `, #${key} = :${key}` : `SET #${key} = :${key}`;
+    updateExpressionNames = { ...updateExpressionNames, [`#${key}`]: key, }
+    updateExpressionValues = { ...updateExpressionValues, [`:${key}`]: value, }
+  });
+
+  const client = new DocumentClient();
+  await client.update({
+    TableName: COURSE_LESSON_TABLE,
+    Key: { id: lessonId },
+    ConditionExpression: '#cupdatedAt = :cupdatedAt',
+    ExpressionAttributeNames: { ...updateExpressionNames, '#cupdatedAt': 'updatedAt' },
+    ExpressionAttributeValues: { ...updateExpressionValues, ':cupdatedAt': lastUpdatedAt },
+    UpdateExpression: updateExpression
+  }).promise();
+
+  return SuccessWithData({ ...parsedPatchObject, updatedAt: newUpdatedAt })
+}

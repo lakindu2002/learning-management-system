@@ -12,6 +12,7 @@ import { useAuth } from 'src/contexts/AuthContext';
 import { useCourseLessons } from 'src/hooks/use-course-lessons';
 import { Lesson } from './Lesson';
 import { LoadingButton } from '@mui/lab';
+import { CourseLesson, LessonVisbility } from 'src/models/course';
 
 function CourseContent() {
   const { user } = useAuth();
@@ -22,7 +23,8 @@ function CourseContent() {
     hasMore,
     loadingLessons,
     loadingMoreLessons,
-    lessons
+    lessons,
+    updateLesson
   } = useCourseLessons();
 
   useEffect(() => {
@@ -37,6 +39,13 @@ function CourseContent() {
     queryKey: ['courses', id],
     queryFn: () => fetchCourse(user?.currentInstitute.id, id)
   });
+
+  const handleUpdate = async (
+    patchAttr: Partial<CourseLesson>,
+    lesson: CourseLesson
+  ) => {
+    await updateLesson(patchAttr, lesson.courseId, lesson.id);
+  };
 
   return (
     <>
@@ -63,7 +72,10 @@ function CourseContent() {
                 )}
                 {lessons.map((lesson) => (
                   <Box sx={{ my: 2 }} key={lesson.id}>
-                    <Lesson lesson={lesson} />
+                    <Lesson
+                      lesson={lesson}
+                      onUpdate={(patchAttr) => handleUpdate(patchAttr, lesson)}
+                    />
                   </Box>
                 ))}
               </>

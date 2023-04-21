@@ -11,6 +11,27 @@ export const useCourseLessons = () => {
   const [loadingLessons, setLoadingLessons] = useState<boolean>(false);
   const [loadingMoreLessons, setLoadingMoreLessons] = useState<boolean>(false);
 
+  const updateLesson = async (
+    patchAttr: Partial<CourseLesson>,
+    courseId: string,
+    lessonId: string
+  ) => {
+    console.log(lessons);
+    const lesson = lessons.find((lesson) => lesson.id === lessonId);
+    console.log(lesson);
+    const resp = await axios.patch<Partial<CourseLesson>>(
+      `/api/institutes/${user?.currentInstitute.id}/courses/${courseId}/lessons/${lessonId}`,
+      { patchAttr, lastUpdatedAt: lesson.updatedAt }
+    );
+    const newLessons = lessons.map((lesson) => {
+      if (lesson.id === lessonId) {
+        return { ...lesson, ...resp.data };
+      }
+      return lesson;
+    });
+    setLessons(newLessons);
+  };
+
   const getCourseLessons = async (courseId: string) => {
     try {
       setLoadingLessons(true);
@@ -47,6 +68,7 @@ export const useCourseLessons = () => {
     hasMore: !!nextKey,
     lessons,
     loadingLessons,
-    loadingMoreLessons
+    loadingMoreLessons,
+    updateLesson
   };
 };
