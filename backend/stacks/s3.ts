@@ -16,7 +16,13 @@ export function s3({ stack }: StackContext) {
               HttpMethods.PUT,
               HttpMethods.HEAD,
             ],
-            allowedOrigins: ["http://localhost:3000"],
+            allowedOrigins: [
+              "http://localhost:3000",
+              "https://learning-management-system-13zdot6i3-lakinduhewa.vercel.app",
+              "https://learning-management-system-iota.vercel.app",
+              "https://learning-management-system-lakinduhewa.vercel.app",
+              "https://learning-management-system-git-main-lakinduhewa.vercel.app"
+            ],
             allowedHeaders: ["*"],
             exposedHeaders: [
               "x-amz-server-side-encryption",
