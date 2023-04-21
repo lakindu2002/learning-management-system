@@ -10,12 +10,16 @@ export enum LessonVisbility {
   HIDDEN = 'hidden',
 }
 
+export interface LessonFile {
+  url: string, type: string, name: string
+}
+
 export interface CourseLesson {
   id: string;
   courseId: string;
   instituteId: string;
   title: string;
-  files?: { url: string, type: string, name: string }[];
+  files?: LessonFile[]
   description?: string;
   createdAt: number,
   updatedAt: number,

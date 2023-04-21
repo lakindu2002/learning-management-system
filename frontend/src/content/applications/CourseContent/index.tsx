@@ -4,7 +4,7 @@ import PageTitleWrapper from 'src/components/PageTitleWrapper';
 import { Grid, Container, CircularProgress, Box, Alert } from '@mui/material';
 import Footer from 'src/components/Footer';
 
-import { Fragment, FunctionComponent, useEffect } from 'react';
+import { Fragment, FunctionComponent, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router';
 import { fetchCourse } from 'src/api/courseAPIs';
@@ -12,11 +12,17 @@ import { useAuth } from 'src/contexts/AuthContext';
 import { useCourseLessons } from 'src/hooks/use-course-lessons';
 import { Lesson } from './Lesson';
 import { LoadingButton } from '@mui/lab';
-import { CourseLesson, LessonVisbility } from 'src/models/course';
+import { CourseLesson } from 'src/models/course';
+import AddEditLesson from './AddEditLesson';
+import CustomModal from 'src/components/CustomModal';
 
 function CourseContent() {
   const { user } = useAuth();
   const { id } = useParams();
+  const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
+  const [updatingLessonId, setUpdatingLessonId] = useState<string | undefined>(
+    undefined
+  );
   const {
     getCourseLessons,
     getMoreCourseLessons,
@@ -47,6 +53,10 @@ function CourseContent() {
     await updateLesson(patchAttr, lesson.courseId, lesson.id);
   };
 
+  const lessonToUpdate = lessons.find(
+    (lesson) => lesson.id === updatingLessonId
+  );
+
   return (
     <>
       <Helmet>
@@ -74,6 +84,10 @@ function CourseContent() {
                   <Box sx={{ my: 2 }} key={lesson.id}>
                     <Lesson
                       lesson={lesson}
+                      onEdit={() => {
+                        setUpdatingLessonId(lesson.id);
+                        setEditModalOpen(true);
+                      }}
                       onUpdate={(patchAttr) => handleUpdate(patchAttr, lesson)}
                     />
                   </Box>
@@ -96,7 +110,17 @@ function CourseContent() {
           )}
         </Grid>
       </Container>
-
+      {editModalOpen && (
+        <CustomModal open={editModalOpen}>
+          <AddEditLesson
+            courseId={id}
+            setOpen={setEditModalOpen}
+            mode="edit"
+            onUpdate={(patchAttr) => handleUpdate(patchAttr, lessonToUpdate)}
+            initialValues={lessonToUpdate}
+          />
+        </CustomModal>
+      )}
       <Footer />
     </>
   );

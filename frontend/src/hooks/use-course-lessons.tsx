@@ -16,9 +16,7 @@ export const useCourseLessons = () => {
     courseId: string,
     lessonId: string
   ) => {
-    console.log(lessons);
     const lesson = lessons.find((lesson) => lesson.id === lessonId);
-    console.log(lesson);
     const resp = await axios.patch<Partial<CourseLesson>>(
       `/api/institutes/${user?.currentInstitute.id}/courses/${courseId}/lessons/${lessonId}`,
       { patchAttr, lastUpdatedAt: lesson.updatedAt }

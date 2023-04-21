@@ -1,12 +1,19 @@
 import * as yup from 'yup';
 import { useFormik } from 'formik';
-import { Typography, Button, Grid, TextField, Box } from '@mui/material';
+import {
+  Typography,
+  Button,
+  Grid,
+  TextField,
+  Box,
+  IconButton
+} from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useAuth } from 'src/contexts/AuthContext';
 import axios from 'src/lib/axios';
-import { CourseLesson } from 'src/models/course';
+import { CourseLesson, LessonFile } from 'src/models/course';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   BtnBold,
   BtnItalic,
@@ -20,12 +27,17 @@ import {
   BtnRedo,
   BtnStyles
 } from 'react-simple-wysiwyg';
-import { ArticleOutlined } from '@mui/icons-material';
+import { ArticleOutlined, Close } from '@mui/icons-material';
 import { uploadFile } from 'src/hooks/use-storage';
+import { toast } from 'react-hot-toast';
+import { LessonFileViewer } from './LessonFileViewer';
 
 type Props = {
   setOpen: Function;
   courseId: string;
+  mode?: 'create' | 'edit';
+  initialValues?: Partial<CourseLesson>;
+  onUpdate?: (params: Partial<CourseLesson>) => Promise<void>;
 };
 
 const validationSchema = yup.object({
@@ -34,9 +46,12 @@ const validationSchema = yup.object({
 });
 
 export default function AddEditLesson(props: Props) {
-  const { setOpen, courseId } = props;
+  const { setOpen, courseId, mode = 'create', onUpdate, initialValues } = props;
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [currentFiles, setCurrentFiles] = useState<LessonFile[]>(
+    initialValues?.files || []
+  );
 
   const createLesson = useMutation({
     mutationFn: (lesson: Partial<CourseLesson>) => {
@@ -53,14 +68,14 @@ export default function AddEditLesson(props: Props) {
 
   const formik = useFormik({
     initialValues: {
-      title: '',
-      description: '',
+      title: initialValues?.title || '',
+      description: initialValues?.description || '',
       files: undefined as FileList
     },
     validationSchema: validationSchema,
 
     onSubmit: async (values) => {
-      const files = values.files;
+      const files = values.files as FileList;
       const fileUploads = Array.from(files || []).map(async (file) => {
         const resp = await uploadFile(file, 'course-content');
         return { url: resp.url, type: resp.type, name: file.name };
@@ -70,10 +85,19 @@ export default function AddEditLesson(props: Props) {
         courseId,
         title: values.title,
         description: values.description,
-        files: fileData,
+        files: [...currentFiles, ...fileData],
         instituteId: user?.currentInstitute.id
       };
-      createLesson.mutate(lessonCourse);
+      if (mode === 'create') {
+        createLesson.mutate(lessonCourse);
+        return;
+      }
+      try {
+        await onUpdate(lessonCourse);
+        setOpen(false);
+      } catch (err) {
+        toast.error('We could not update the content');
+      }
     }
   });
 
@@ -98,7 +122,7 @@ export default function AddEditLesson(props: Props) {
             }}
             variant="h2"
           >
-            Create New Lesson
+            {mode === 'create' ? 'Create New Lesson' : 'Edit Lesson'}
           </Typography>
         </Box>
         <TextField
@@ -151,7 +175,7 @@ export default function AddEditLesson(props: Props) {
               <input
                 type="file"
                 hidden
-                accept=".xlsx,.xls,image/*,.doc, .docx,.ppt, .pptx,.txt,.pdf"
+                accept=".xlsx,.xls,image/jpeg,image/png,image/svg,image/jpg,image/gif,.doc, .docx,.ppt, .pptx,.txt,.pdf"
                 multiple
                 onChange={(event) => {
                   formik.setFieldValue('files', event.currentTarget.files);
@@ -159,8 +183,25 @@ export default function AddEditLesson(props: Props) {
               />
             </Button>
           </Grid>
-          <Grid item xs={9} my={2}>
-            <Box display="flex" mt={1} ml={2}>
+          <Grid item xs={12} my={2}>
+            <Box mt={1} ml={2}>
+              {currentFiles.map((file) => (
+                <Box
+                  key={file.url}
+                  sx={{ my: 1, display: 'flex', gap: 1, alignItems: 'center' }}
+                >
+                  <LessonFileViewer file={file} />
+                  <IconButton
+                    onClick={() => {
+                      setCurrentFiles((prev) =>
+                        prev.filter((listFile) => file.url !== listFile.url)
+                      );
+                    }}
+                  >
+                    <Close />
+                  </IconButton>
+                </Box>
+              ))}
               {formik.values.files &&
                 Object.entries(formik.values.files).map((file, index) => {
                   return (
@@ -203,7 +244,7 @@ export default function AddEditLesson(props: Props) {
             fullWidth
             loading={formik.isSubmitting || createLesson.isLoading}
           >
-            Submit
+            {mode === 'create' ? 'Create Lesson' : 'Update Lesson'}
           </LoadingButton>
         </Box>
       </form>

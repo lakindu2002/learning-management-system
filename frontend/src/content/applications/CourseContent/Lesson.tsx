@@ -6,7 +6,6 @@ import {
   CardHeader,
   Chip,
   Divider,
-  Link,
   Typography
 } from '@mui/material';
 import { FC } from 'react';
@@ -14,42 +13,14 @@ import { useAuth } from 'src/contexts/AuthContext';
 import { CourseLesson, LessonVisbility } from 'src/models/course';
 import { InstituteUserRole } from 'src/models/user';
 import { LessonManagePopper } from './LessonManagePopper';
+import { LessonFileViewer } from './LessonFileViewer';
 
 interface LessonProps {
   lesson: CourseLesson;
   onUpdate: (patchAttr: Partial<CourseLesson>) => Promise<void>;
+  onEdit: () => void;
 }
-
-const fileIcons = {
-  'application/pdf': <img src="/pdf-logo.png" width={40} />
-};
-
-const LessonFile: FC<{ file: { url: string; type: string; name: string } }> = ({
-  file
-}) => {
-  return (
-    <Link href={file.url} target="_blank">
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 2,
-          ':hover': {
-            boxShadow: (theme) => theme.shadows[15],
-            cursor: 'pointer'
-          }
-        }}
-      >
-        {fileIcons[file.type]}
-        <Typography variant="h6" fontWeight={500} color="textPrimary">
-          {file.name.split('.')[0]}
-        </Typography>
-      </Box>
-    </Link>
-  );
-};
-
-export const Lesson: FC<LessonProps> = ({ lesson, onUpdate }) => {
+export const Lesson: FC<LessonProps> = ({ lesson, onUpdate, onEdit }) => {
   const { user } = useAuth();
 
   const handleToggleVisibility = async () => {
@@ -59,6 +30,10 @@ export const Lesson: FC<LessonProps> = ({ lesson, onUpdate }) => {
           ? LessonVisbility.HIDDEN
           : LessonVisbility.VISIBLE
     });
+  };
+
+  const handleEditLesson = () => {
+    onEdit();
   };
 
   return (
@@ -80,6 +55,7 @@ export const Lesson: FC<LessonProps> = ({ lesson, onUpdate }) => {
               {user?.currentInstitute.role !== InstituteUserRole.STUDENT && (
                 <LessonManagePopper
                   lesson={lesson}
+                  onEditClick={handleEditLesson}
                   onToggleVisibility={handleToggleVisibility}
                 />
               )}
@@ -93,7 +69,7 @@ export const Lesson: FC<LessonProps> = ({ lesson, onUpdate }) => {
         <Divider sx={{ my: 2 }} />
         {lesson.files?.map((file) => (
           <Box sx={{ my: 2 }} key={file.url}>
-            <LessonFile file={file} />
+            <LessonFileViewer file={file} />
           </Box>
         ))}
         {lesson.files?.length === 0 && (

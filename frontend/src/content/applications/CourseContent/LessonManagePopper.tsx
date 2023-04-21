@@ -14,10 +14,12 @@ import { CourseLesson, LessonVisbility } from 'src/models/course';
 interface LessonManagePopperProps {
   lesson: CourseLesson;
   onToggleVisibility: () => Promise<void>;
+  onEditClick: () => void;
 }
 
 export const LessonManagePopper: FC<LessonManagePopperProps> = ({
   lesson,
+  onEditClick,
   onToggleVisibility
 }) => {
   const [open, setOpen] = useState<boolean>(false);
@@ -39,6 +41,10 @@ export const LessonManagePopper: FC<LessonManagePopperProps> = ({
     } finally {
       setTogglingVisibility(false);
     }
+  };
+
+  const handleEditLesson = () => {
+    onEditClick();
   };
 
   return (
@@ -63,6 +69,8 @@ export const LessonManagePopper: FC<LessonManagePopperProps> = ({
                 ? 'Visible'
                 : 'Hidden'}
             </MenuItem>
+
+            <MenuItem onClick={handleEditLesson}>Edit Lesson</MenuItem>
           </Paper>
         </ClickAwayListener>
       </Popper>
