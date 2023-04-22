@@ -4,7 +4,7 @@ module.exports = function (app) {
   app.use(
     '/api',
     createProxyMiddleware({
-      target: 'https://a9tf5wkei0.execute-api.ap-southeast-1.amazonaws.com',
+      target: 'https://a9tf5wkei0.execute-api.ap-southeast-1.amazonaws.coms',
       pathRewrite: {
         '^/api': ''
       },
