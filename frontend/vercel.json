@@ -2,7 +2,11 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://axdcc2rf11.execute-api.ap-southeast-1.amazonaws.com/:path*"
+      "destination": "https://ihiq7jfp5e.execute-api.ap-southeast-1.amazonaws.com/:path*"
+    },
+    {
+      "source": "/uploads/:path*",
+      "destination": "https://lakinduhewawasam-lms-bac-staticcontentbucket63763-f7m75quakfin.s3.ap-southeast-1.amazonaws.com/:path*"
     }
   ]
 }
