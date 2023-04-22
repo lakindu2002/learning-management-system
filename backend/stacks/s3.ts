@@ -6,7 +6,7 @@ export function s3({ stack }: StackContext) {
   const staticContent = new Bucket(stack, "static-content", {
     cdk: {
       bucket: {
-        publicReadAccess: true,
+        publicReadAccess: false,
         cors: [
           {
             allowedMethods: [
