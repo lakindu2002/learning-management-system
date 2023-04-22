@@ -76,6 +76,7 @@ export function cognito({ stack }: StackContext) {
     userPoolId: auth.userPoolId,
     clientId: auth.userPoolClientId,
     userPoolArn: auth.userPoolArn,
+    identityPoolId: auth.cognitoIdentityPoolId as string,
   }
 
   stack.addOutputs({
