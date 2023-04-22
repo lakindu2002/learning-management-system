@@ -14,3 +14,11 @@ The frontend contains a React application that will bootstrap the UI needed to h
 - Recommended node version `v19.6.0`. (nvm use v19.6.0)
 - Install dependencies: `npm install`
 - Start the project: `npm start`
+
+### Frontend Deployment 
+
+The frontend application is deployed on Vercel.
+
+The frontend creates rewrites to an AWS Serverless API. 
+
+Rewrites are defined in the `vercel.json` file.
