@@ -2,6 +2,7 @@ import { Typography, Button, Grid } from '@mui/material';
 
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import { useAuth } from 'src/contexts/AuthContext';
+import { InstituteUserRole } from 'src/models/user';
 
 type PageHeaderProps = {
   openModal: () => void;
@@ -11,10 +12,6 @@ type PageHeaderProps = {
 function PageHeader(props: PageHeaderProps) {
   const { openModal, setIsOpenAssignStudents } = props;
   const { user } = useAuth();
-  const userData = {
-    name: user.name,
-    avatar: '/static/images/avatars/1.jpg'
-  };
   return (
     <Grid container justifyContent="space-between" alignItems="center">
       <Grid item>
@@ -26,25 +23,32 @@ function PageHeader(props: PageHeaderProps) {
         </Typography>
       </Grid>
       <Grid item>
-        <Button
-          sx={{ mt: { xs: 2, md: 0 } }}
-          variant="contained"
-          color="primary"
-          startIcon={<AddTwoToneIcon fontSize="small" />}
-          onClick={openModal}
-        >
-          Create Course
-        </Button>
+        {user?.currentInstitute?.role !== InstituteUserRole.STUDENT &&
+          user?.currentInstitute?.role !== InstituteUserRole.LECTURER && (
+            <Button
+              sx={{ mt: { xs: 2, md: 0 } }}
+              variant="contained"
+              color="primary"
+              startIcon={<AddTwoToneIcon fontSize="small" />}
+              onClick={openModal}
+            >
+              Create Course
+            </Button>
+          )}
+
         <label> </label>
 
-        <Button
-          sx={{ mt: { xs: 2, md: 0 } }}
-          variant="contained"
-          startIcon={<AddTwoToneIcon fontSize="small" />}
-          onClick={setIsOpenAssignStudents}
-        >
-          Assign Students
-        </Button>
+        {(user?.currentInstitute.role === InstituteUserRole.ADMINISTRATOR ||
+          user?.currentInstitute.role === InstituteUserRole.OWNER) && (
+          <Button
+            sx={{ mt: { xs: 2, md: 0 } }}
+            variant="contained"
+            startIcon={<AddTwoToneIcon fontSize="small" />}
+            onClick={setIsOpenAssignStudents}
+          >
+            Assign Students
+          </Button>
+        )}
       </Grid>
     </Grid>
   );

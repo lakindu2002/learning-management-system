@@ -22,6 +22,8 @@ import DisplaySettingsTwoToneIcon from '@mui/icons-material/DisplaySettingsTwoTo
 import GroupIcon from '@mui/icons-material/Group';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import { useAuth } from 'src/contexts/AuthContext';
+import { InstituteUserRole } from 'src/models/user';
 
 const MenuWrapper = styled(Box)(
   ({ theme }) => `
@@ -167,6 +169,7 @@ const SubMenuWrapper = styled(Box)(
 
 function SidebarMenu() {
   const { closeSidebar } = useContext(SidebarContext);
+  const { user } = useAuth();
 
   return (
     <>
@@ -250,17 +253,20 @@ function SidebarMenu() {
                   Courses
                 </Button>
               </ListItem>
-              <ListItem component="div">
-                <Button
-                  disableRipple
-                  component={RouterLink}
-                  onClick={closeSidebar}
-                  to="/app/management/users"
-                  startIcon={<GroupIcon />}
-                >
-                  Users
-                </Button>
-              </ListItem>
+              {user?.currentInstitute.role !== InstituteUserRole.STUDENT &&
+                user?.currentInstitute.role !== InstituteUserRole.LECTURER && (
+                  <ListItem component="div">
+                    <Button
+                      disableRipple
+                      component={RouterLink}
+                      onClick={closeSidebar}
+                      to="/app/management/users"
+                      startIcon={<GroupIcon />}
+                    >
+                      Users
+                    </Button>
+                  </ListItem>
+                )}
             </List>
           </SubMenuWrapper>
         </List>
