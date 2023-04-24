@@ -20,10 +20,13 @@ import { useAuth } from 'src/contexts/AuthContext';
 import { useCourseLessons } from 'src/hooks/use-course-lessons';
 import { Lesson } from './Lesson';
 import { LoadingButton } from '@mui/lab';
-import { CourseLesson } from 'src/models/course';
+import { CourseAssignment, CourseLesson } from 'src/models/course';
 import AddEditLesson from './AddEditLesson';
 import CustomModal from 'src/components/CustomModal';
 import AddEditAssignment from './AddEditAssignment';
+import { useCourseAssignments } from 'src/hooks/use-course-assignment';
+import { Assessment } from '@mui/icons-material';
+import { Assignment } from './Assignment';
 
 function CourseContent() {
   const { user } = useAuth();
@@ -35,6 +38,9 @@ function CourseContent() {
   const [updatingLessonId, setUpdatingLessonId] = useState<string | undefined>(
     undefined
   );
+  const [updatingAssignmentId, setUpdatingAssignmentId] = useState<
+    string | undefined
+  >(undefined);
   const [updatingAsgId, setUpdatingAsgId] = useState<string | undefined>(
     undefined
   );
@@ -47,6 +53,17 @@ function CourseContent() {
     lessons,
     updateLesson
   } = useCourseLessons();
+
+  const {
+    getCourseAssignments,
+    getMoreCourseAssignments,
+    hasMore: hasMoreAssignments,
+    loadingAssignments,
+    loadingMoreAssignments,
+    assignments,
+    updateAssignment
+  } = useCourseAssignments();
+
   const {
     isLoading,
     isError,
@@ -68,6 +85,12 @@ function CourseContent() {
     }
   }, [editModalOpen]);
 
+  useEffect(() => {
+    if (!asgEditModalOpen) {
+      getCourseAssignments(id);
+    }
+  }, [asgEditModalOpen]);
+
   const handleUpdate = async (
     patchAttr: Partial<CourseLesson>,
     lesson: CourseLesson
@@ -75,11 +98,20 @@ function CourseContent() {
     await updateLesson(patchAttr, lesson.courseId, lesson.id);
   };
 
+  const handleAssignmentUpdate = async (
+    patchAttr: Partial<CourseAssignment>,
+    assignment: CourseAssignment
+  ) => {
+    await updateAssignment(patchAttr, assignment.courseId, assignment.id);
+  };
+
   const lessonToUpdate = lessons.find(
     (lesson) => lesson.id === updatingLessonId
   );
 
-  const asgToUpdate = lessons.find((lesson) => lesson.id === updatingLessonId);
+  const asgToUpdate = assignments.find(
+    (asg) => asg.id === updatingAssignmentId
+  );
 
   const handleTabChange = (event, newTabIndex) => {
     setTabIndex(newTabIndex);
@@ -147,6 +179,54 @@ function CourseContent() {
             )}
           </Grid>
         )}
+
+        {tabIndex === 1 && (
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              {loadingAssignments ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', my: 15 }}>
+                  <CircularProgress />
+                </Box>
+              ) : (
+                <>
+                  {assignments.length === 0 && (
+                    <Alert>
+                      There are no assigments given for this course yet.
+                    </Alert>
+                  )}
+                  {assignments.map((assigment) => (
+                    <Box sx={{ my: 2 }} key={assigment.id}>
+                      <Assignment
+                        assignment={assigment}
+                        onEdit={() => {
+                          console.log('edit a', asgEditModalOpen);
+                          setUpdatingAssignmentId(assigment.id);
+                          setAsgEditModalOpen(true);
+                        }}
+                        onUpdate={(patchAttr) =>
+                          handleAssignmentUpdate(patchAttr, assigment)
+                        }
+                      />
+                    </Box>
+                  ))}
+                </>
+              )}
+            </Grid>
+            {hasMore && (
+              <Grid item xs={12}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
+                  <LoadingButton
+                    variant="contained"
+                    loading={loadingMoreAssignments}
+                    onClick={() => getMoreCourseAssignments(id)}
+                  >
+                    Load More
+                  </LoadingButton>
+                </Box>
+              </Grid>
+            )}
+          </Grid>
+        )}
       </Container>
       {editModalOpen && (
         <CustomModal open={editModalOpen}>
@@ -160,13 +240,15 @@ function CourseContent() {
         </CustomModal>
       )}
       {asgEditModalOpen && (
-        <CustomModal open={editModalOpen}>
+        <CustomModal open={asgEditModalOpen}>
           <AddEditAssignment
             courseId={id}
             setOpen={setAsgEditModalOpen}
             mode="edit"
-            onUpdate={(patchAttr) => handleUpdate(patchAttr, lessonToUpdate)}
-            initialValues={lessonToUpdate}
+            onUpdate={(patchAttr) =>
+              handleAssignmentUpdate(patchAttr, asgToUpdate)
+            }
+            initialValues={asgToUpdate}
           />
         </CustomModal>
       )}

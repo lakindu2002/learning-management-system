@@ -75,9 +75,9 @@ export default function AddEditAssignment(props: Props) {
     initialValues: {
       title: initialValues?.title || '',
       description: initialValues?.description || '',
-      submissionDate: '',
+      submissionDate: initialValues?.submissionDate || '',
       files: undefined as FileList,
-      weightage: 0
+      weightage: initialValues?.weightage || 0
     },
     validationSchema: validationSchema,
 

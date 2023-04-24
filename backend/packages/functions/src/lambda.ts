@@ -938,7 +938,7 @@ export const updateCourseAssignment: APIGatewayProxyHandlerV2 = async (
   const client = new DocumentClient();
   await client
     .update({
-      TableName: COURSE_LESSON_TABLE,
+      TableName: COURSE_ASSIGNMENT_TABLE,
       Key: { id: assignmentId },
       ConditionExpression: "#cupdatedAt = :cupdatedAt",
       ExpressionAttributeNames: {
