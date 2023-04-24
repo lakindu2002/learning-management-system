@@ -22,8 +22,8 @@ export interface StudentCourse {
 }
 
 export enum LessonVisbility {
-  VISIBLE = 'visible',
-  HIDDEN = 'hidden',
+  VISIBLE = "visible",
+  HIDDEN = "hidden",
 }
 
 export interface CourseLesson {
@@ -31,10 +31,25 @@ export interface CourseLesson {
   courseId: string;
   instituteId: string;
   title: string;
-  files?: { url: string, type: string, name: string }[];
+  files?: { url: string; type: string; name: string }[];
   description?: string;
-  createdAt: number,
-  updatedAt: number,
-  visibility: LessonVisbility,
-  courseIdInstituteId: string,
+  createdAt: number;
+  updatedAt: number;
+  visibility: LessonVisbility;
+  courseIdInstituteId: string;
+}
+
+export interface CourseAssignment {
+  id: string;
+  courseId: string;
+  instituteId: string;
+  title: string;
+  files?: { url: string; type: string; name: string }[];
+  description?: string;
+  createdAt: number;
+  updatedAt: number;
+  visibility: LessonVisbility;
+  courseIdInstituteId: string;
+  submissionDate: string;
+  weightage: number;
 }
