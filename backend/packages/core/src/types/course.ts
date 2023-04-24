@@ -1,3 +1,9 @@
+export interface CourseFile {
+  url: string;
+  type: string;
+  name: string;
+}
+
 export interface CourseUser {
   id: string;
   name: string;
@@ -31,7 +37,7 @@ export interface CourseLesson {
   courseId: string;
   instituteId: string;
   title: string;
-  files?: { url: string; type: string; name: string }[];
+  files?: CourseFile[];
   description?: string;
   createdAt: number;
   updatedAt: number;
@@ -44,7 +50,7 @@ export interface CourseAssignment {
   courseId: string;
   instituteId: string;
   title: string;
-  files?: { url: string; type: string; name: string }[];
+  files?: CourseFile[];
   description?: string;
   createdAt: number;
   updatedAt: number;
