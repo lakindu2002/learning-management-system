@@ -1,7 +1,15 @@
 import { Helmet } from 'react-helmet-async';
 import PageHeader from './PageHeader';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
-import { Grid, Container, CircularProgress, Box, Alert } from '@mui/material';
+import {
+  Grid,
+  Container,
+  CircularProgress,
+  Box,
+  Alert,
+  Tabs,
+  Tab
+} from '@mui/material';
 import Footer from 'src/components/Footer';
 
 import { Fragment, FunctionComponent, useEffect, useState } from 'react';
@@ -15,12 +23,19 @@ import { LoadingButton } from '@mui/lab';
 import { CourseLesson } from 'src/models/course';
 import AddEditLesson from './AddEditLesson';
 import CustomModal from 'src/components/CustomModal';
+import AddEditAssignment from './AddEditAssignment';
 
 function CourseContent() {
   const { user } = useAuth();
   const { id } = useParams();
+
+  const [tabIndex, setTabIndex] = useState(0);
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
+  const [asgEditModalOpen, setAsgEditModalOpen] = useState<boolean>(false);
   const [updatingLessonId, setUpdatingLessonId] = useState<string | undefined>(
+    undefined
+  );
+  const [updatingAsgId, setUpdatingAsgId] = useState<string | undefined>(
     undefined
   );
   const {
@@ -32,19 +47,26 @@ function CourseContent() {
     lessons,
     updateLesson
   } = useCourseLessons();
-
-  useEffect(() => {
-    getCourseLessons(id);
-  }, []);
-
   const {
     isLoading,
     isError,
-    data: course
+    data: course,
+    refetch
   } = useQuery({
-    queryKey: ['courses', id],
-    queryFn: () => fetchCourse(user?.currentInstitute.id, id)
+    queryKey: ['', id],
+    queryFn: () => fetchCourse(user?.currentInstitute.id, id),
+    enabled: false
   });
+
+  useEffect(() => {
+    refetch();
+  }, []);
+
+  useEffect(() => {
+    if (!editModalOpen) {
+      getCourseLessons(id);
+    }
+  }, [editModalOpen]);
 
   const handleUpdate = async (
     patchAttr: Partial<CourseLesson>,
@@ -57,6 +79,12 @@ function CourseContent() {
     (lesson) => lesson.id === updatingLessonId
   );
 
+  const asgToUpdate = lessons.find((lesson) => lesson.id === updatingLessonId);
+
+  const handleTabChange = (event, newTabIndex) => {
+    setTabIndex(newTabIndex);
+  };
+
   return (
     <>
       <Helmet>
@@ -64,57 +92,78 @@ function CourseContent() {
       </Helmet>
 
       <PageTitleWrapper>
-        {course && <PageHeader course={course} />}
+        {course && <PageHeader course={course} tab={tabIndex} />}
         {isLoading && <CircularProgress />}
         {isError && <Alert color="error">Failed to load course header</Alert>}
       </PageTitleWrapper>
       <Container maxWidth="lg">
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            {loadingLessons ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', my: 15 }}>
-                <CircularProgress />
-              </Box>
-            ) : (
-              <>
-                {lessons.length === 0 && (
-                  <Alert>There are no lessons available in this course.</Alert>
-                )}
-                {lessons.map((lesson) => (
-                  <Box sx={{ my: 2 }} key={lesson.id}>
-                    <Lesson
-                      lesson={lesson}
-                      onEdit={() => {
-                        setUpdatingLessonId(lesson.id);
-                        setEditModalOpen(true);
-                      }}
-                      onUpdate={(patchAttr) => handleUpdate(patchAttr, lesson)}
-                    />
-                  </Box>
-                ))}
-              </>
+        <Tabs value={tabIndex} onChange={handleTabChange}>
+          <Tab label="Lessons" />
+          <Tab label="Assignments" />
+        </Tabs>
+        {tabIndex === 0 && (
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              {loadingLessons ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', my: 15 }}>
+                  <CircularProgress />
+                </Box>
+              ) : (
+                <>
+                  {lessons.length === 0 && (
+                    <Alert>
+                      There are no lessons available in this course.
+                    </Alert>
+                  )}
+                  {lessons.map((lesson) => (
+                    <Box sx={{ my: 2 }} key={lesson.id}>
+                      <Lesson
+                        lesson={lesson}
+                        onEdit={() => {
+                          setUpdatingLessonId(lesson.id);
+                          setEditModalOpen(true);
+                        }}
+                        onUpdate={(patchAttr) =>
+                          handleUpdate(patchAttr, lesson)
+                        }
+                      />
+                    </Box>
+                  ))}
+                </>
+              )}
+            </Grid>
+            {hasMore && (
+              <Grid item xs={12}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
+                  <LoadingButton
+                    variant="contained"
+                    loading={loadingMoreLessons}
+                    onClick={() => getMoreCourseLessons(id)}
+                  >
+                    Load More
+                  </LoadingButton>
+                </Box>
+              </Grid>
             )}
           </Grid>
-          {hasMore && (
-            <Grid item xs={12}>
-              <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
-                <LoadingButton
-                  variant="contained"
-                  loading={loadingMoreLessons}
-                  onClick={() => getMoreCourseLessons(id)}
-                >
-                  Load More
-                </LoadingButton>
-              </Box>
-            </Grid>
-          )}
-        </Grid>
+        )}
       </Container>
       {editModalOpen && (
         <CustomModal open={editModalOpen}>
           <AddEditLesson
             courseId={id}
             setOpen={setEditModalOpen}
+            mode="edit"
+            onUpdate={(patchAttr) => handleUpdate(patchAttr, lessonToUpdate)}
+            initialValues={lessonToUpdate}
+          />
+        </CustomModal>
+      )}
+      {asgEditModalOpen && (
+        <CustomModal open={editModalOpen}>
+          <AddEditAssignment
+            courseId={id}
+            setOpen={setAsgEditModalOpen}
             mode="edit"
             onUpdate={(patchAttr) => handleUpdate(patchAttr, lessonToUpdate)}
             initialValues={lessonToUpdate}
