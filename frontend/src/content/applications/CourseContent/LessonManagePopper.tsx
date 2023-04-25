@@ -15,12 +15,14 @@ interface LessonManagePopperProps {
   lesson: CourseLesson;
   onToggleVisibility: () => Promise<void>;
   onEditClick: () => void;
+  isAssignmentMode?: boolean;
 }
 
 export const LessonManagePopper: FC<LessonManagePopperProps> = ({
   lesson,
   onEditClick,
-  onToggleVisibility
+  onToggleVisibility,
+  isAssignmentMode = false
 }) => {
   const [open, setOpen] = useState<boolean>(false);
   const popperRef = useRef<HTMLButtonElement | null>(null);
@@ -32,7 +34,7 @@ export const LessonManagePopper: FC<LessonManagePopperProps> = ({
       await onToggleVisibility();
       setOpen(false);
       toast.success(
-        `This lesson is now ${
+        `This ${isAssignmentMode ? 'assignment' : 'lesson'} is now ${
           LessonVisbility.HIDDEN ? 'hidden' : 'visible'
         } for students.`
       );
@@ -70,7 +72,9 @@ export const LessonManagePopper: FC<LessonManagePopperProps> = ({
                 : 'Hidden'}
             </MenuItem>
 
-            <MenuItem onClick={handleEditLesson}>Edit Lesson</MenuItem>
+            <MenuItem onClick={handleEditLesson}>
+              Edit {isAssignmentMode ? 'Assignment' : 'Lesson'}
+            </MenuItem>
           </Paper>
         </ClickAwayListener>
       </Popper>

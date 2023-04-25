@@ -11,15 +11,19 @@ export function lmsApiGateway({ stack }: StackContext) {
     courseTable,
     studentCourseTable,
     courseLessonTable,
+    courseAssignmentTable,
   } = use(dynamodb);
   const { clientId, userPoolId } = use(cognito);
   const apiGateway = new Api(stack, "lms-api-gateway", {
     routes: {
       "GET /me": "packages/functions/src/lambda.getLoggedInUserInformation",
       "POST /me/activate": "packages/functions/src/lambda.activateUser",
-      "GET /institutes/{instituteId}/courses": "packages/functions/src/lambda.getCourses",
-      "POST /institutes/{instituteId}/courses": "packages/functions/src/lambda.createCourse",
-      "POST /institutes/{instituteId}/courses/{courseId}/students": "packages/functions/src/lambda.assignStudentsToCourse",
+      "GET /institutes/{instituteId}/courses":
+        "packages/functions/src/lambda.getCourses",
+      "POST /institutes/{instituteId}/courses":
+        "packages/functions/src/lambda.createCourse",
+      "POST /institutes/{instituteId}/courses/{courseId}/students":
+        "packages/functions/src/lambda.assignStudentsToCourse",
       "POST /institutes/{instituteId}/users": {
         function: {
           handler: "packages/functions/src/lambda.addUsersToInstitute",
@@ -28,11 +32,22 @@ export function lmsApiGateway({ stack }: StackContext) {
           },
         },
       },
-      "POST /institutes/{instituteId}/users/get": "packages/functions/src/lambda.getAllUsersInAnInstitute",
-      "POST /institutes/{instituteId}/courses/{courseId}/lessons": "packages/functions/src/lambda.createLessonCourse",
-      "POST /institutes/{instituteId}/courses/{courseId}/lessons/get": "packages/functions/src/lambda.getCourseLessons",
-      "GET /institutes/{instituteId}/courses/{courseId}": "packages/functions/src/lambda.getCourseById",
-      "PATCH /institutes/{instituteId}/courses/{courseId}/lessons/{lessonId}": "packages/functions/src/lambda.updateCourseLesson",
+      "POST /institutes/{instituteId}/users/get":
+        "packages/functions/src/lambda.getAllUsersInAnInstitute",
+      "POST /institutes/{instituteId}/courses/{courseId}/lessons":
+        "packages/functions/src/lambda.createLessonCourse",
+      "POST /institutes/{instituteId}/courses/{courseId}/assignments":
+        "packages/functions/src/lambda.createAssignmentCourse",
+      "POST /institutes/{instituteId}/courses/{courseId}/lessons/get":
+        "packages/functions/src/lambda.getCourseLessons",
+      "POST /institutes/{instituteId}/courses/{courseId}/assignments/get":
+        "packages/functions/src/lambda.getCourseAssignments",
+      "GET /institutes/{instituteId}/courses/{courseId}":
+        "packages/functions/src/lambda.getCourseById",
+      "PATCH /institutes/{instituteId}/courses/{courseId}/lessons/{lessonId}":
+        "packages/functions/src/lambda.updateCourseLesson",
+      "PATCH /institutes/{instituteId}/courses/{courseId}/assignments/{assignmentId}":
+        "packages/functions/src/lambda.updateCourseAssignment",
     },
     defaults: {
       function: {
@@ -43,6 +58,7 @@ export function lmsApiGateway({ stack }: StackContext) {
           COURSES_TABLE: courseTable.tableName,
           STUDENT_COURSE_TABLE: studentCourseTable.tableName,
           COURSE_LESSON_TABLE: courseLessonTable.tableName,
+          COURSE_ASSIGNMENT_TABLE: courseAssignmentTable.tableName,
         },
       },
       authorizer: "Authorizer",
@@ -96,7 +112,6 @@ export function lmsApiGateway({ stack }: StackContext) {
     "POST /institutes/{instituteId}/courses/{courseId}/lessons",
     [courseLessonTable]
   );
-
   apiGateway.attachPermissionsToRoute(
     "POST /institutes/{instituteId}/courses/{courseId}/lessons/get",
     [courseLessonTable]
@@ -105,6 +120,21 @@ export function lmsApiGateway({ stack }: StackContext) {
   apiGateway.attachPermissionsToRoute(
     "PATCH /institutes/{instituteId}/courses/{courseId}/lessons/{lessonId}",
     [courseLessonTable]
+  );
+
+  apiGateway.attachPermissionsToRoute(
+    "POST /institutes/{instituteId}/courses/{courseId}/assignments",
+    [courseAssignmentTable]
+  );
+
+  apiGateway.attachPermissionsToRoute(
+    "POST /institutes/{instituteId}/courses/{courseId}/assignments/get",
+    [courseAssignmentTable]
+  );
+
+  apiGateway.attachPermissionsToRoute(
+    "PATCH /institutes/{instituteId}/courses/{courseId}/assignments/{assignmentId}",
+    [courseAssignmentTable]
   );
 
   const stackOutputs = {

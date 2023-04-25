@@ -163,14 +163,14 @@ export function dynamodb({ stack }: StackContext) {
     },
   });
 
-  const courseLessonTable = new Table(stack, "courseLessonTable", {
+  const courseLessonTable = new Table(stack, "course-LessonTable", {
     primaryIndex: {
       partitionKey: "id",
     },
     fields: {
-      id: 'string',
-      courseIdInstituteId: 'string',
-      visibility: 'string',
+      id: "string",
+      courseIdInstituteId: "string",
+      visibility: "string",
     },
     globalIndexes: {
       "by-courseIdInstituteId-visibility": {
@@ -181,7 +181,34 @@ export function dynamodb({ stack }: StackContext) {
             projectionType: ProjectionType.ALL,
           },
         },
-      }
+      },
+    },
+    cdk: {
+      table: {
+        billingMode: BillingMode.PAY_PER_REQUEST,
+      },
+    },
+  });
+
+  const courseAssignmentTable = new Table(stack, "courseAssignmentTable", {
+    primaryIndex: {
+      partitionKey: "id",
+    },
+    fields: {
+      id: "string",
+      courseIdInstituteId: "string",
+      visibility: "string",
+    },
+    globalIndexes: {
+      "by-courseIdInstituteId-visibility": {
+        partitionKey: "courseIdInstituteId",
+        sortKey: "visibility",
+        cdk: {
+          index: {
+            projectionType: ProjectionType.ALL,
+          },
+        },
+      },
     },
     cdk: {
       table: {
@@ -197,6 +224,7 @@ export function dynamodb({ stack }: StackContext) {
     courseTableName: courseTable.tableName,
     studentCourseTableName: studentCourseTable.tableName,
     courseLessonTableName: courseLessonTable.tableName,
+    courseAssignmentTableName: courseAssignmentTable.tableName,
   };
 
   stack.addOutputs({
@@ -211,5 +239,6 @@ export function dynamodb({ stack }: StackContext) {
     courseTable,
     studentCourseTable,
     courseLessonTable,
+    courseAssignmentTable,
   };
 }
