@@ -7,6 +7,7 @@ import {
   Box
 } from '@mui/material';
 
+import DeleteIcon from '@mui/icons-material/Delete';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 
@@ -17,6 +18,10 @@ import { useNavigate, useParams } from 'react-router';
 import AddEditLesson from './AddEditLesson';
 import CustomModal from 'src/components/CustomModal';
 import AddEditAssignment from './AddEditAssignment';
+import { InstituteUserRole } from 'src/models/user';
+import { toast } from 'react-hot-toast';
+import { LoadingButton } from '@mui/lab';
+import { deleteCourse } from 'src/api/courseAPIs';
 
 type PageHeaderProps = {
   course: Course;
@@ -28,8 +33,25 @@ function PageHeader(props: PageHeaderProps) {
   const navigate = useNavigate();
   const [isAddLessonModalOpen, setIsAddLessonModalOpen] = useState(false);
   const [isAddAsgModalOpen, setIsAddAsgModalOpen] = useState(false);
+  const [deletingCourse, setDeletingCourse] = useState(false);
 
+  const { user } = useAuth();
   const { id } = useParams();
+
+  const handleCourseDelete = async () => {
+    setDeletingCourse(true);
+    try {
+      await deleteCourse(user?.currentInstitute.id, course.id);
+      toast.success('The course was deleted successfully');
+      navigate('/app/management/courses');
+    } catch (err) {
+      toast.error(
+        'We ran into an error while removing the course. Please try again'
+      );
+    } finally {
+      setDeletingCourse(false);
+    }
+  };
 
   return (
     <Grid container justifyContent="space-between" alignItems="center">
@@ -51,12 +73,24 @@ function PageHeader(props: PageHeaderProps) {
             <Typography variant="subtitle2">
               Lecturer: {course.lecturer.name}
             </Typography>
-            {/* <Typography variant="subtitle2">Description:</Typography> */}
           </Box>
         </Box>
       </Grid>
 
-      <Grid item>
+      <Grid item sx={{ display: 'flex', gap: 1.5 }}>
+        {user?.currentInstitute.role !== InstituteUserRole.STUDENT &&
+          user?.currentInstitute.role !== InstituteUserRole.LECTURER && (
+            <LoadingButton
+              sx={{ mt: { xs: 2, md: 0 } }}
+              variant="outlined"
+              color="error"
+              loading={deletingCourse}
+              startIcon={<DeleteIcon fontSize="small" />}
+              onClick={handleCourseDelete}
+            >
+              Delete
+            </LoadingButton>
+          )}
         {tab === 0 ? (
           <Button
             sx={{ mt: { xs: 2, md: 0 } }}
@@ -78,12 +112,11 @@ function PageHeader(props: PageHeaderProps) {
             Add Assignment
           </Button>
         )}
-
-        <label> </label>
       </Grid>
       <CustomModal open={isAddLessonModalOpen}>
         <AddEditLesson setOpen={setIsAddLessonModalOpen} courseId={id} />
       </CustomModal>
+
       <CustomModal open={isAddAsgModalOpen}>
         <AddEditAssignment setOpen={setIsAddAsgModalOpen} courseId={id} />
       </CustomModal>

@@ -126,15 +126,15 @@ export function dynamodb({ stack }: StackContext) {
     },
   });
 
-  const studentCourseTable = new Table(stack, "studentCourseTable", {
+  const studentCourseTable = new Table(stack, "student-courses", {
     primaryIndex: {
-      partitionKey: "courseId",
-      sortKey: "instituteId",
+      partitionKey: "id",
     },
     fields: {
       instituteId: "string",
       courseId: "string",
       studentId: "string",
+      id: "string"
     },
     globalIndexes: {
       "by-institute-index": {
@@ -163,7 +163,7 @@ export function dynamodb({ stack }: StackContext) {
     },
   });
 
-  const courseLessonTable = new Table(stack, "course-LessonTable", {
+  const courseLessonTable = new Table(stack, "course-Lesson-table", {
     primaryIndex: {
       partitionKey: "id",
     },
@@ -190,7 +190,7 @@ export function dynamodb({ stack }: StackContext) {
     },
   });
 
-  const courseAssignmentTable = new Table(stack, "courseAssignmentTable", {
+  const courseAssignmentTable = new Table(stack, "course-assignment-table", {
     primaryIndex: {
       partitionKey: "id",
     },

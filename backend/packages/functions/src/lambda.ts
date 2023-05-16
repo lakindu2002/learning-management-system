@@ -360,13 +360,13 @@ export const addUsersToInstitute: APIGatewayProxyHandlerV2 = async (event) => {
           },
           ...(appUser
             ? [
-                {
-                  Put: {
-                    TableName: USERS_TABLE_NAME,
-                    Item: appUser,
-                  },
+              {
+                Put: {
+                  TableName: USERS_TABLE_NAME,
+                  Item: appUser,
                 },
-              ]
+              },
+            ]
             : []),
         ],
       })
@@ -955,3 +955,114 @@ export const updateCourseAssignment: APIGatewayProxyHandlerV2 = async (
 
   return SuccessWithData({ ...parsedPatchObject, updatedAt: newUpdatedAt });
 };
+
+export const deleteCourseById: APIGatewayProxyHandlerV2 = async (event) => {
+  const pe = Parse(event);
+  const { institutes, pathParams, } = pe;
+  const { instituteId, courseId } = pathParams;
+
+  if (!isAuthorized(instituteId as string, institutes, [InstituteUserRole.ADMINISTRATOR, InstituteUserRole.OWNER])) {
+    return Forbidden();
+  }
+
+  if (!courseId) {
+    return BadRequest();
+  }
+
+  const documentClient = new DynamoDB.DocumentClient();
+
+  // remove all submissions allocated for course.
+
+  // get students in course
+  const students: StudentCourse[] = [];
+  let studentsNextKey: any;
+  do {
+    const { Items, LastEvaluatedKey } = await documentClient.query({
+      TableName: STUDENT_COURSE_TABLE,
+      IndexName: 'by-institute-index',
+      KeyConditionExpression: 'instituteId = :instituteId AND courseId = :courseId',
+      ExpressionAttributeValues: { ':instituteId': instituteId as string, ':courseId': courseId },
+      ExclusiveStartKey: studentsNextKey
+    }).promise();
+
+    studentsNextKey = LastEvaluatedKey;
+    students.push(...Items as StudentCourse[]);
+  } while (studentsNextKey !== undefined)
+
+  const assignments: CourseAssignment[] = [];
+  let assignmentsNextKey: any;
+  do {
+    const { Items, LastEvaluatedKey } = await documentClient.query({
+      TableName: COURSE_ASSIGNMENT_TABLE,
+      IndexName: 'by-courseIdInstituteId-visibility',
+      KeyConditionExpression: 'courseIdInstituteId = :courseIdInstituteId',
+      ExpressionAttributeValues: { ':courseIdInstituteId': `${courseId}#${instituteId}` },
+      ExclusiveStartKey: assignmentsNextKey
+    }).promise();
+
+    assignmentsNextKey = LastEvaluatedKey;
+    assignments.push(...Items as CourseAssignment[]);
+  } while (assignmentsNextKey !== undefined)
+
+  const lessons: CourseLesson[] = [];
+  let lessonsNextNey: any;
+  do {
+    const { Items, LastEvaluatedKey } = await documentClient.query({
+      TableName: COURSE_LESSON_TABLE,
+      IndexName: 'by-courseIdInstituteId-visibility',
+      KeyConditionExpression: 'courseIdInstituteId = :courseIdInstituteId',
+      ExpressionAttributeValues: { ':courseIdInstituteId': `${courseId}#${instituteId}` },
+      ExclusiveStartKey: lessonsNextNey
+    }).promise();
+
+    lessonsNextNey = LastEvaluatedKey;
+    lessons.push(...Items as CourseLesson[]);
+  } while (studentsNextKey !== undefined)
+
+  const transactions: any[] = [];
+
+  students.forEach((student) => {
+    transactions.push({
+      Delete: {
+        TableName: STUDENT_COURSE_TABLE,
+        Key: { id: student.id }
+      }
+    })
+  });
+
+  assignments.forEach((assignment) => {
+    transactions.push({
+      Delete: {
+        TableName: COURSE_ASSIGNMENT_TABLE,
+        Key: { id: assignment.id }
+      }
+    })
+  });
+
+  lessons.forEach((lesson) => {
+    transactions.push({
+      Delete: {
+        TableName: COURSE_LESSON_TABLE,
+        Key: { id: lesson.id }
+      }
+    })
+  });
+
+  transactions.push({
+    Delete: {
+      TableName: COURSES_TABLE,
+      Key: { id: courseId }
+    }
+  })
+
+  const chunkedTransactions = chunk(transactions, 25);
+
+  const promises = chunkedTransactions.map(async (transaction) => {
+    await documentClient.transactWrite({
+      TransactItems: transaction
+    }).promise();
+  })
+
+  await Promise.all(promises);
+  return SuccessWithData({ status: 'DELETED' });
+}

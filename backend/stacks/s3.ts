@@ -39,7 +39,7 @@ export function s3({ stack }: StackContext) {
 
   stack.addOutputs({
     staticBucketName: staticContent.bucketName,
-    staticBucketArn: staticContent.bucketName,
+    staticBucketArn: staticContent.bucketArn,
   });
 
   return {

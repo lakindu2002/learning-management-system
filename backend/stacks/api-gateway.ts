@@ -38,6 +38,7 @@ export function lmsApiGateway({ stack }: StackContext) {
         "packages/functions/src/lambda.createLessonCourse",
       "POST /institutes/{instituteId}/courses/{courseId}/assignments":
         "packages/functions/src/lambda.createAssignmentCourse",
+      "DELETE /institutes/{instituteId}/courses/{courseId}": "packages/functions/src/lambda.deleteCourseById",
       "POST /institutes/{instituteId}/courses/{courseId}/lessons/get":
         "packages/functions/src/lambda.getCourseLessons",
       "POST /institutes/{instituteId}/courses/{courseId}/assignments/get":
@@ -136,6 +137,13 @@ export function lmsApiGateway({ stack }: StackContext) {
     "PATCH /institutes/{instituteId}/courses/{courseId}/assignments/{assignmentId}",
     [courseAssignmentTable]
   );
+
+  apiGateway.attachPermissionsToRoute(
+    "DELETE /institutes/{instituteId}/courses/{courseId}",
+    [courseAssignmentTable, courseLessonTable, courseTable, studentCourseTable]
+  );
+
+
 
   const stackOutputs = {
     apiUrl: apiGateway.url,

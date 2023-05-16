@@ -7,3 +7,7 @@ export async function fetchCourse(instituteId: string, courseId: string) {
   );
   return response.data.course;
 }
+
+export async function deleteCourse(instituteId: string, courseId: string) {
+  await axios.delete(`/api/institutes/${instituteId}/courses/${courseId}`);
+}
