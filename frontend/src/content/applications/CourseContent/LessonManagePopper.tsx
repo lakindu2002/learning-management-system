@@ -2,6 +2,7 @@ import { MoreVert } from '@mui/icons-material';
 import {
   CircularProgress,
   ClickAwayListener,
+  Divider,
   IconButton,
   MenuItem,
   Paper,
@@ -14,6 +15,7 @@ import { CourseLesson, LessonVisbility } from 'src/models/course';
 interface LessonManagePopperProps {
   lesson: CourseLesson;
   onToggleVisibility: () => Promise<void>;
+  onDelete: () => Promise<void>;
   onEditClick: () => void;
   isAssignmentMode?: boolean;
 }
@@ -22,9 +24,11 @@ export const LessonManagePopper: FC<LessonManagePopperProps> = ({
   lesson,
   onEditClick,
   onToggleVisibility,
-  isAssignmentMode = false
+  isAssignmentMode = false,
+  onDelete
 }) => {
   const [open, setOpen] = useState<boolean>(false);
+  const [deleting, setDeleting] = useState<boolean>(false);
   const popperRef = useRef<HTMLButtonElement | null>(null);
   const [togglingVisibility, setTogglingVisibility] = useState<boolean>(false);
 
@@ -47,6 +51,17 @@ export const LessonManagePopper: FC<LessonManagePopperProps> = ({
 
   const handleEditLesson = () => {
     onEditClick();
+  };
+
+  const handleDeleteClick = async () => {
+    try {
+      setDeleting(true);
+      await onDelete();
+    } catch (err) {
+      toast.error('We ran into an error while removing this.');
+    } finally {
+      setDeleting(false);
+    }
   };
 
   return (
@@ -74,6 +89,11 @@ export const LessonManagePopper: FC<LessonManagePopperProps> = ({
 
             <MenuItem onClick={handleEditLesson}>
               Edit {isAssignmentMode ? 'Assignment' : 'Lesson'}
+            </MenuItem>
+            <Divider sx={{ my: 1 }} />
+            <MenuItem onClick={handleDeleteClick}>
+              {deleting && <CircularProgress size={'1rem'} sx={{ mr: 2 }} />}
+              Delete
             </MenuItem>
           </Paper>
         </ClickAwayListener>

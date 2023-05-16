@@ -51,12 +51,13 @@ export const useCourseAssignments = () => {
 
   const getMoreCourseAssignments = async (assignmentId: string) => {
     try {
+      const assignment = assignments.find((asg) => asg.id === assignmentId);
       setLoadingMoreAssignments(true);
       const resp = await axios.post<{
         assignments: CourseAssignment[];
         nextKey: any;
       }>(
-        `/api/institutes/${user?.currentInstitute.id}/courses/${assignmentId}/assignments/get`
+        `/api/institutes/${user?.currentInstitute.id}/courses/${assignment.courseId}/assignments/get`
       );
       setAssignments([...assignments, ...resp.data.assignments]);
       setNextKey(resp.data.nextKey);
@@ -67,6 +68,16 @@ export const useCourseAssignments = () => {
     }
   };
 
+  const deleteAssignment = async (assignmentId: string) => {
+    const assignment = assignments.find((asg) => asg.id === assignmentId);
+    await axios.delete(
+      `/api/institutes/${user?.currentInstitute.id}/courses/${assignment.courseId}/assignments/${assignmentId}`
+    );
+    setAssignments((prev) =>
+      prev.filter((assignment) => assignment.id !== assignmentId)
+    );
+  };
+
   return {
     getCourseAssignments,
     getMoreCourseAssignments,
@@ -74,6 +85,7 @@ export const useCourseAssignments = () => {
     assignments,
     loadingAssignments,
     loadingMoreAssignments,
-    updateAssignment
+    updateAssignment,
+    deleteAssignment
   };
 };

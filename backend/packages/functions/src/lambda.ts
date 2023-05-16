@@ -971,7 +971,7 @@ export const deleteCourseById: APIGatewayProxyHandlerV2 = async (event) => {
 
   const documentClient = new DynamoDB.DocumentClient();
 
-  // remove all submissions allocated for course.
+  // TODO: remove all submissions allocated for course.
 
   // get students in course
   const students: StudentCourse[] = [];
@@ -1066,3 +1066,45 @@ export const deleteCourseById: APIGatewayProxyHandlerV2 = async (event) => {
   await Promise.all(promises);
   return SuccessWithData({ status: 'DELETED' });
 }
+
+export const removeLessonFromCourse: APIGatewayProxyHandlerV2 = async (event) => {
+  const pe = Parse(event);
+  const { institutes, pathParams } = pe;
+  const { instituteId, lessonId, courseId } = pathParams;
+  if (!isAuthorized(instituteId as string, institutes, [InstituteUserRole.ADMINISTRATOR, InstituteUserRole.LECTURER, InstituteUserRole.OWNER])) {
+    return Forbidden();
+  }
+
+  const documentClient = new DynamoDB.DocumentClient();
+
+  await documentClient.delete({
+    TableName: COURSE_LESSON_TABLE,
+    Key: { id: lessonId },
+    ConditionExpression: '#courseId = :courseId',
+    ExpressionAttributeNames: { '#courseId': 'courseId' },
+    ExpressionAttributeValues: { ':courseId': courseId },
+  }).promise();
+
+  return SuccessWithData({ status: 'DELETED' });
+};
+
+export const removeAssignmentFromCourse: APIGatewayProxyHandlerV2 = async (event) => {
+  const pe = Parse(event);
+  const { institutes, pathParams } = pe;
+  const { instituteId, assignmentId, courseId } = pathParams;
+  if (!isAuthorized(instituteId as string, institutes, [InstituteUserRole.ADMINISTRATOR, InstituteUserRole.LECTURER, InstituteUserRole.OWNER])) {
+    return Forbidden();
+  }
+
+  const documentClient = new DynamoDB.DocumentClient();
+
+  await documentClient.delete({
+    TableName: COURSE_ASSIGNMENT_TABLE,
+    Key: { id: assignmentId },
+    ConditionExpression: '#courseId = :courseId',
+    ExpressionAttributeNames: { '#courseId': 'courseId' },
+    ExpressionAttributeValues: { ':courseId': courseId },
+  }).promise();
+
+  return SuccessWithData({ status: 'DELETED' });
+};

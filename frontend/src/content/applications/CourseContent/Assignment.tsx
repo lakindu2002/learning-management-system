@@ -21,11 +21,13 @@ interface AssignmentProps {
   assignment: CourseAssignment;
   onUpdate: (patchAttr: Partial<CourseAssignment>) => Promise<void>;
   onEdit: () => void;
+  onDelete: () => Promise<void>;
 }
 export const Assignment: FC<AssignmentProps> = ({
   assignment,
   onUpdate,
-  onEdit
+  onEdit,
+  onDelete
 }) => {
   const { user } = useAuth();
 
@@ -40,6 +42,10 @@ export const Assignment: FC<AssignmentProps> = ({
 
   const handleEditAssignment = () => {
     onEdit();
+  };
+
+  const handleDelete = async () => {
+    await onDelete();
   };
 
   const givenDate = new Date(assignment.createdAt);
@@ -68,6 +74,7 @@ export const Assignment: FC<AssignmentProps> = ({
                   onEditClick={handleEditAssignment}
                   onToggleVisibility={handleToggleVisibility}
                   isAssignmentMode
+                  onDelete={handleDelete}
                 />
               )}
             </Box>

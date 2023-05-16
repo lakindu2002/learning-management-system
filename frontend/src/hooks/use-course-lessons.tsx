@@ -60,6 +60,14 @@ export const useCourseLessons = () => {
     }
   };
 
+  const deleteLesson = async (lessonId: string) => {
+    const lesson = lessons.find((lesson) => lesson.id === lessonId);
+    await axios.delete(
+      `/api/institutes/${user?.currentInstitute.id}/courses/${lesson.courseId}/lessons/${lessonId}`
+    );
+    setLessons((prev) => prev.filter((lesson) => lesson.id !== lessonId));
+  };
+
   return {
     getCourseLessons,
     getMoreCourseLessons,
@@ -67,6 +75,7 @@ export const useCourseLessons = () => {
     lessons,
     loadingLessons,
     loadingMoreLessons,
-    updateLesson
+    updateLesson,
+    deleteLesson
   };
 };

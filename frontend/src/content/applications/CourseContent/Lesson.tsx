@@ -18,9 +18,15 @@ import { LessonFileViewer } from './LessonFileViewer';
 interface LessonProps {
   lesson: CourseLesson;
   onUpdate: (patchAttr: Partial<CourseLesson>) => Promise<void>;
+  onDelete: () => Promise<void>;
   onEdit: () => void;
 }
-export const Lesson: FC<LessonProps> = ({ lesson, onUpdate, onEdit }) => {
+export const Lesson: FC<LessonProps> = ({
+  lesson,
+  onUpdate,
+  onEdit,
+  onDelete
+}) => {
   const { user } = useAuth();
 
   const handleToggleVisibility = async () => {
@@ -34,6 +40,10 @@ export const Lesson: FC<LessonProps> = ({ lesson, onUpdate, onEdit }) => {
 
   const handleEditLesson = () => {
     onEdit();
+  };
+
+  const handleDeleteLesson = async () => {
+    await onDelete();
   };
 
   return (
@@ -56,6 +66,7 @@ export const Lesson: FC<LessonProps> = ({ lesson, onUpdate, onEdit }) => {
                 <LessonManagePopper
                   lesson={lesson}
                   onEditClick={handleEditLesson}
+                  onDelete={handleDeleteLesson}
                   onToggleVisibility={handleToggleVisibility}
                 />
               )}

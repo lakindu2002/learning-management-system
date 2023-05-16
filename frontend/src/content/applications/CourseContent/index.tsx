@@ -51,7 +51,8 @@ function CourseContent() {
     loadingLessons,
     loadingMoreLessons,
     lessons,
-    updateLesson
+    updateLesson,
+    deleteLesson
   } = useCourseLessons();
 
   const {
@@ -61,7 +62,8 @@ function CourseContent() {
     loadingAssignments,
     loadingMoreAssignments,
     assignments,
-    updateAssignment
+    updateAssignment,
+    deleteAssignment
   } = useCourseAssignments();
 
   const {
@@ -117,6 +119,14 @@ function CourseContent() {
     setTabIndex(newTabIndex);
   };
 
+  const handleDelete = async (id: string) => {
+    if (tabIndex === 1) {
+      await deleteAssignment(id);
+      return;
+    }
+    await deleteLesson(id);
+  };
+
   return (
     <>
       <Helmet>
@@ -158,6 +168,7 @@ function CourseContent() {
                         onUpdate={(patchAttr) =>
                           handleUpdate(patchAttr, lesson)
                         }
+                        onDelete={() => handleDelete(lesson.id)}
                       />
                     </Box>
                   ))}
@@ -199,13 +210,13 @@ function CourseContent() {
                       <Assignment
                         assignment={assigment}
                         onEdit={() => {
-                          console.log('edit a', asgEditModalOpen);
                           setUpdatingAssignmentId(assigment.id);
                           setAsgEditModalOpen(true);
                         }}
                         onUpdate={(patchAttr) =>
                           handleAssignmentUpdate(patchAttr, assigment)
                         }
+                        onDelete={() => handleDelete(assigment.id)}
                       />
                     </Box>
                   ))}

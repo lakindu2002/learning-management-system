@@ -24,6 +24,10 @@ export function lmsApiGateway({ stack }: StackContext) {
         "packages/functions/src/lambda.createCourse",
       "POST /institutes/{instituteId}/courses/{courseId}/students":
         "packages/functions/src/lambda.assignStudentsToCourse",
+      "DELETE /institutes/{instituteId}/courses/{courseId}/lessons/{lessonId}":
+        "packages/functions/src/lambda.removeLessonFromCourse",
+      "DELETE /institutes/{instituteId}/courses/{courseId}/assignments/{assignmentId}":
+        "packages/functions/src/lambda.removeAssignmentFromCourse",
       "POST /institutes/{instituteId}/users": {
         function: {
           handler: "packages/functions/src/lambda.addUsersToInstitute",
@@ -141,6 +145,16 @@ export function lmsApiGateway({ stack }: StackContext) {
   apiGateway.attachPermissionsToRoute(
     "DELETE /institutes/{instituteId}/courses/{courseId}",
     [courseAssignmentTable, courseLessonTable, courseTable, studentCourseTable]
+  );
+
+  apiGateway.attachPermissionsToRoute(
+    "DELETE /institutes/{instituteId}/courses/{courseId}/assignments/{assignmentId}",
+    [courseAssignmentTable]
+  );
+
+  apiGateway.attachPermissionsToRoute(
+    "DELETE /institutes/{instituteId}/courses/{courseId}/lessons/{lessonId}",
+    [courseLessonTable]
   );
 
 
