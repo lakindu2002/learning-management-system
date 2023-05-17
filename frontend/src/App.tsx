@@ -10,10 +10,16 @@ import { CssBaseline } from '@mui/material';
 import ThemeProvider from './theme/ThemeProvider';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext';
+import { useEffect } from 'react';
+import { hotjar, hotjarConfig } from './lib/hotjar';
 
 function App() {
   const content = useRoutes(router);
   const queryClient = new QueryClient();
+
+  useEffect(() => {
+    hotjar.initialize(hotjarConfig as any);
+  }, []);
 
   return (
     <ThemeProvider>
