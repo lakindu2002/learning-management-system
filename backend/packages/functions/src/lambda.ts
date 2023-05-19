@@ -14,6 +14,7 @@ import {
   CourseUser,
   LessonVisbility,
   CourseAssignment,
+  CourseSubmissionStudent,
 } from "@backend/core/types/course";
 import { isAuthorized } from "@backend/core/is-authorized";
 import { Institute } from "@backend/core/types/institute";
@@ -41,6 +42,8 @@ const COURSES_TABLE = process.env.COURSES_TABLE as string;
 const STUDENT_COURSE_TABLE = process.env.STUDENT_COURSE_TABLE as string;
 const COURSE_LESSON_TABLE = process.env.COURSE_LESSON_TABLE as string;
 const COURSE_ASSIGNMENT_TABLE = process.env.COURSE_ASSIGNMENT_TABLE as string;
+const COURSE_ASSIGNMENT_SUBMISSION_TABLE = process.env
+  .COURSE_ASSIGNMENT_SUBMISSION_TABLE as string;
 
 export const getLoggedInUserInformation: APIGatewayProxyHandlerV2 = async (
   event
@@ -360,13 +363,13 @@ export const addUsersToInstitute: APIGatewayProxyHandlerV2 = async (event) => {
           },
           ...(appUser
             ? [
-              {
-                Put: {
-                  TableName: USERS_TABLE_NAME,
-                  Item: appUser,
+                {
+                  Put: {
+                    TableName: USERS_TABLE_NAME,
+                    Item: appUser,
+                  },
                 },
-              },
-            ]
+              ]
             : []),
         ],
       })
@@ -683,6 +686,58 @@ export const createAssignmentCourse: APIGatewayProxyHandlerV2 = async (
   return SuccessWithData({ assignment });
 };
 
+export const createAssignmentSubmission: APIGatewayProxyHandlerV2 = async (
+  event
+) => {
+  const { pathParams, body } = Parse(event);
+  const { instituteId } = pathParams;
+
+  const timestamp = Date.now();
+  const {
+    courseId,
+    student,
+    assignmentId,
+    studentId,
+    marks,
+    weightage,
+    graded,
+    feedback,
+    file,
+  } = body as CourseSubmissionStudent;
+
+  if (!courseId || !studentId || !assignmentId || !file || !weightage) {
+    return BadRequest("Invalid Inputs Passed");
+  }
+
+  const assignment: CourseSubmissionStudent = {
+    id: createDefinedUUID(12),
+    courseId: courseId,
+    instituteId: instituteId as string,
+    createdAt: timestamp,
+    studentId: studentId,
+    student,
+    assignmentId,
+    marks,
+    file,
+    updatedAt: timestamp,
+    graded: graded ? graded : false,
+    weightage,
+    feedback: "",
+    courseIdInstituteIdAssignmentId: `${courseId}#${instituteId}#${assignmentId}`,
+    courseIdInstituteIdAssignmentIdStudentId: `${courseId}#${instituteId}#${assignmentId}#${studentId}`,
+  };
+  const documentClient = new DynamoDB.DocumentClient();
+
+  await documentClient
+    .put({
+      TableName: COURSE_ASSIGNMENT_SUBMISSION_TABLE,
+      Item: assignment,
+    })
+    .promise();
+
+  return SuccessWithData({ assignment });
+};
+
 export const getCourseLessons: APIGatewayProxyHandlerV2 = async (event) => {
   const { institutes, pathParams, body } = Parse(event);
 
@@ -817,6 +872,75 @@ export const getCourseAssignments: APIGatewayProxyHandlerV2 = async (event) => {
   return Forbidden();
 };
 
+export const getAssignmentSubmissions: APIGatewayProxyHandlerV2 = async (
+  event
+) => {
+  const { institutes, pathParams, body } = Parse(event);
+
+  const { instituteId, courseId, assignmentId } = pathParams;
+  const { nextKey, studentId } = body;
+  const documentClient = new DocumentClient();
+
+  if (
+    isAuthorized(instituteId as string, institutes, [
+      InstituteUserRole.ADMINISTRATOR,
+      InstituteUserRole.LECTURER,
+      InstituteUserRole.OWNER,
+    ])
+  ) {
+    // show all student submissions for an assignment.
+    const resp = await documentClient
+      .query({
+        TableName: COURSE_ASSIGNMENT_SUBMISSION_TABLE,
+        IndexName: "by-courseIdInstituteIdAssignmentId",
+        KeyConditionExpression:
+          "#courseIdInstituteIdAssignmentId = :courseIdInstituteIdAssignmentId",
+        ExpressionAttributeNames: {
+          "#courseIdInstituteIdAssignmentId": "courseIdInstituteIdAssignmentId",
+        },
+        ExpressionAttributeValues: {
+          ":courseIdInstituteIdAssignmentId": `${courseId}#${instituteId}#${assignmentId}`,
+        },
+        ExclusiveStartKey: nextKey,
+        ScanIndexForward: false,
+      })
+      .promise();
+    return SuccessWithData({
+      submissions: resp.Items || [],
+      nextKey: resp.LastEvaluatedKey,
+    });
+  }
+
+  if (
+    isAuthorized(instituteId as string, institutes, [InstituteUserRole.STUDENT])
+  ) {
+    // show only student's own submission for the assignment
+    const resp = await documentClient
+      .query({
+        TableName: COURSE_ASSIGNMENT_SUBMISSION_TABLE,
+        IndexName: "by-courseIdInstituteIdAssignmentIdStudentId",
+        KeyConditionExpression:
+          "#courseIdInstituteIdAssignmentIdStudentId = :courseIdInstituteIdAssignmentIdStudentId",
+        ExpressionAttributeNames: {
+          "#courseIdInstituteIdAssignmentIdStudentId":
+            "courseIdInstituteIdAssignmentIdStudentId",
+        },
+        ExpressionAttributeValues: {
+          ":courseIdInstituteIdAssignmentIdStudentId": `${courseId}#${instituteId}#${assignmentId}#${studentId}`,
+        },
+        ExclusiveStartKey: nextKey,
+        ScanIndexForward: false,
+      })
+      .promise();
+    return SuccessWithData({
+      submissions: resp.Items || [],
+      nextKey: resp.LastEvaluatedKey,
+    });
+  }
+
+  return Forbidden();
+};
+
 export const updateCourseLesson: APIGatewayProxyHandlerV2 = async (event) => {
   const pe = Parse(event);
   const { body, institutes, pathParams } = pe;
@@ -865,6 +989,62 @@ export const updateCourseLesson: APIGatewayProxyHandlerV2 = async (event) => {
     .update({
       TableName: COURSE_LESSON_TABLE,
       Key: { id: lessonId },
+      ConditionExpression: "#cupdatedAt = :cupdatedAt",
+      ExpressionAttributeNames: {
+        ...updateExpressionNames,
+        "#cupdatedAt": "updatedAt",
+      },
+      ExpressionAttributeValues: {
+        ...updateExpressionValues,
+        ":cupdatedAt": lastUpdatedAt,
+      },
+      UpdateExpression: updateExpression,
+    })
+    .promise();
+
+  return SuccessWithData({ ...parsedPatchObject, updatedAt: newUpdatedAt });
+};
+
+export const updateAssignmentSubmission: APIGatewayProxyHandlerV2 = async (
+  event
+) => {
+  const pe = Parse(event);
+  const { body, pathParams } = pe;
+  const { assignmentSubmissionId } = pathParams;
+
+  const { lastUpdatedAt, patchAttr } = body as {
+    patchAttr: Partial<CourseSubmissionStudent>;
+    lastUpdatedAt: number;
+  };
+  const { graded, file, feedback, marks } = patchAttr;
+
+  const newUpdatedAt = Date.now();
+
+  const parsedPatchObject = {
+    ...(graded && { graded }),
+    ...(file && { file }),
+    ...(feedback && { feedback }),
+    ...(marks && { marks }),
+    updatedAt: newUpdatedAt,
+  };
+
+  let updateExpression = "";
+  let updateExpressionNames = {};
+  let updateExpressionValues = {};
+
+  Object.entries(parsedPatchObject).forEach(([key, value]) => {
+    updateExpression += updateExpression
+      ? `, #${key} = :${key}`
+      : `SET #${key} = :${key}`;
+    updateExpressionNames = { ...updateExpressionNames, [`#${key}`]: key };
+    updateExpressionValues = { ...updateExpressionValues, [`:${key}`]: value };
+  });
+
+  const client = new DocumentClient();
+  await client
+    .update({
+      TableName: COURSE_ASSIGNMENT_SUBMISSION_TABLE,
+      Key: { id: assignmentSubmissionId },
       ConditionExpression: "#cupdatedAt = :cupdatedAt",
       ExpressionAttributeNames: {
         ...updateExpressionNames,
@@ -958,10 +1138,15 @@ export const updateCourseAssignment: APIGatewayProxyHandlerV2 = async (
 
 export const deleteCourseById: APIGatewayProxyHandlerV2 = async (event) => {
   const pe = Parse(event);
-  const { institutes, pathParams, } = pe;
+  const { institutes, pathParams } = pe;
   const { instituteId, courseId } = pathParams;
 
-  if (!isAuthorized(instituteId as string, institutes, [InstituteUserRole.ADMINISTRATOR, InstituteUserRole.OWNER])) {
+  if (
+    !isAuthorized(instituteId as string, institutes, [
+      InstituteUserRole.ADMINISTRATOR,
+      InstituteUserRole.OWNER,
+    ])
+  ) {
     return Forbidden();
   }
 
@@ -977,47 +1162,61 @@ export const deleteCourseById: APIGatewayProxyHandlerV2 = async (event) => {
   const students: StudentCourse[] = [];
   let studentsNextKey: any;
   do {
-    const { Items, LastEvaluatedKey } = await documentClient.query({
-      TableName: STUDENT_COURSE_TABLE,
-      IndexName: 'by-institute-index',
-      KeyConditionExpression: 'instituteId = :instituteId AND courseId = :courseId',
-      ExpressionAttributeValues: { ':instituteId': instituteId as string, ':courseId': courseId },
-      ExclusiveStartKey: studentsNextKey
-    }).promise();
+    const { Items, LastEvaluatedKey } = await documentClient
+      .query({
+        TableName: STUDENT_COURSE_TABLE,
+        IndexName: "by-institute-index",
+        KeyConditionExpression:
+          "instituteId = :instituteId AND courseId = :courseId",
+        ExpressionAttributeValues: {
+          ":instituteId": instituteId as string,
+          ":courseId": courseId,
+        },
+        ExclusiveStartKey: studentsNextKey,
+      })
+      .promise();
 
     studentsNextKey = LastEvaluatedKey;
-    students.push(...Items as StudentCourse[]);
-  } while (studentsNextKey !== undefined)
+    students.push(...(Items as StudentCourse[]));
+  } while (studentsNextKey !== undefined);
 
   const assignments: CourseAssignment[] = [];
   let assignmentsNextKey: any;
   do {
-    const { Items, LastEvaluatedKey } = await documentClient.query({
-      TableName: COURSE_ASSIGNMENT_TABLE,
-      IndexName: 'by-courseIdInstituteId-visibility',
-      KeyConditionExpression: 'courseIdInstituteId = :courseIdInstituteId',
-      ExpressionAttributeValues: { ':courseIdInstituteId': `${courseId}#${instituteId}` },
-      ExclusiveStartKey: assignmentsNextKey
-    }).promise();
+    const { Items, LastEvaluatedKey } = await documentClient
+      .query({
+        TableName: COURSE_ASSIGNMENT_TABLE,
+        IndexName: "by-courseIdInstituteId-visibility",
+        KeyConditionExpression: "courseIdInstituteId = :courseIdInstituteId",
+        ExpressionAttributeValues: {
+          ":courseIdInstituteId": `${courseId}#${instituteId}`,
+        },
+        ExclusiveStartKey: assignmentsNextKey,
+      })
+      .promise();
 
     assignmentsNextKey = LastEvaluatedKey;
-    assignments.push(...Items as CourseAssignment[]);
-  } while (assignmentsNextKey !== undefined)
+    assignments.push(...(Items as CourseAssignment[]));
+  } while (assignmentsNextKey !== undefined);
 
   const lessons: CourseLesson[] = [];
   let lessonsNextNey: any;
   do {
-    const { Items, LastEvaluatedKey } = await documentClient.query({
-      TableName: COURSE_LESSON_TABLE,
-      IndexName: 'by-courseIdInstituteId-visibility',
-      KeyConditionExpression: 'courseIdInstituteId = :courseIdInstituteId',
-      ExpressionAttributeValues: { ':courseIdInstituteId': `${courseId}#${instituteId}` },
-      ExclusiveStartKey: lessonsNextNey
-    }).promise();
+    const { Items, LastEvaluatedKey } = await documentClient
+      .query({
+        TableName: COURSE_LESSON_TABLE,
+        IndexName: "by-courseIdInstituteId-visibility",
+        KeyConditionExpression: "courseIdInstituteId = :courseIdInstituteId",
+        ExpressionAttributeValues: {
+          ":courseIdInstituteId": `${courseId}#${instituteId}`,
+        },
+        ExclusiveStartKey: lessonsNextNey,
+      })
+      .promise();
 
     lessonsNextNey = LastEvaluatedKey;
-    lessons.push(...Items as CourseLesson[]);
-  } while (studentsNextKey !== undefined)
+    lessons.push(...(Items as CourseLesson[]));
+  } while (studentsNextKey !== undefined);
 
   const transactions: any[] = [];
 
@@ -1025,86 +1224,108 @@ export const deleteCourseById: APIGatewayProxyHandlerV2 = async (event) => {
     transactions.push({
       Delete: {
         TableName: STUDENT_COURSE_TABLE,
-        Key: { id: student.id }
-      }
-    })
+        Key: { id: student.id },
+      },
+    });
   });
 
   assignments.forEach((assignment) => {
     transactions.push({
       Delete: {
         TableName: COURSE_ASSIGNMENT_TABLE,
-        Key: { id: assignment.id }
-      }
-    })
+        Key: { id: assignment.id },
+      },
+    });
   });
 
   lessons.forEach((lesson) => {
     transactions.push({
       Delete: {
         TableName: COURSE_LESSON_TABLE,
-        Key: { id: lesson.id }
-      }
-    })
+        Key: { id: lesson.id },
+      },
+    });
   });
 
   transactions.push({
     Delete: {
       TableName: COURSES_TABLE,
-      Key: { id: courseId }
-    }
-  })
+      Key: { id: courseId },
+    },
+  });
 
   const chunkedTransactions = chunk(transactions, 25);
 
   const promises = chunkedTransactions.map(async (transaction) => {
-    await documentClient.transactWrite({
-      TransactItems: transaction
-    }).promise();
-  })
+    await documentClient
+      .transactWrite({
+        TransactItems: transaction,
+      })
+      .promise();
+  });
 
   await Promise.all(promises);
-  return SuccessWithData({ status: 'DELETED' });
-}
+  return SuccessWithData({ status: "DELETED" });
+};
 
-export const removeLessonFromCourse: APIGatewayProxyHandlerV2 = async (event) => {
+export const removeLessonFromCourse: APIGatewayProxyHandlerV2 = async (
+  event
+) => {
   const pe = Parse(event);
   const { institutes, pathParams } = pe;
   const { instituteId, lessonId, courseId } = pathParams;
-  if (!isAuthorized(instituteId as string, institutes, [InstituteUserRole.ADMINISTRATOR, InstituteUserRole.LECTURER, InstituteUserRole.OWNER])) {
+  if (
+    !isAuthorized(instituteId as string, institutes, [
+      InstituteUserRole.ADMINISTRATOR,
+      InstituteUserRole.LECTURER,
+      InstituteUserRole.OWNER,
+    ])
+  ) {
     return Forbidden();
   }
 
   const documentClient = new DynamoDB.DocumentClient();
 
-  await documentClient.delete({
-    TableName: COURSE_LESSON_TABLE,
-    Key: { id: lessonId },
-    ConditionExpression: '#courseId = :courseId',
-    ExpressionAttributeNames: { '#courseId': 'courseId' },
-    ExpressionAttributeValues: { ':courseId': courseId },
-  }).promise();
+  await documentClient
+    .delete({
+      TableName: COURSE_LESSON_TABLE,
+      Key: { id: lessonId },
+      ConditionExpression: "#courseId = :courseId",
+      ExpressionAttributeNames: { "#courseId": "courseId" },
+      ExpressionAttributeValues: { ":courseId": courseId },
+    })
+    .promise();
 
-  return SuccessWithData({ status: 'DELETED' });
+  return SuccessWithData({ status: "DELETED" });
 };
 
-export const removeAssignmentFromCourse: APIGatewayProxyHandlerV2 = async (event) => {
+export const removeAssignmentFromCourse: APIGatewayProxyHandlerV2 = async (
+  event
+) => {
   const pe = Parse(event);
   const { institutes, pathParams } = pe;
   const { instituteId, assignmentId, courseId } = pathParams;
-  if (!isAuthorized(instituteId as string, institutes, [InstituteUserRole.ADMINISTRATOR, InstituteUserRole.LECTURER, InstituteUserRole.OWNER])) {
+  if (
+    !isAuthorized(instituteId as string, institutes, [
+      InstituteUserRole.ADMINISTRATOR,
+      InstituteUserRole.LECTURER,
+      InstituteUserRole.OWNER,
+    ])
+  ) {
     return Forbidden();
   }
 
   const documentClient = new DynamoDB.DocumentClient();
 
-  await documentClient.delete({
-    TableName: COURSE_ASSIGNMENT_TABLE,
-    Key: { id: assignmentId },
-    ConditionExpression: '#courseId = :courseId',
-    ExpressionAttributeNames: { '#courseId': 'courseId' },
-    ExpressionAttributeValues: { ':courseId': courseId },
-  }).promise();
+  await documentClient
+    .delete({
+      TableName: COURSE_ASSIGNMENT_TABLE,
+      Key: { id: assignmentId },
+      ConditionExpression: "#courseId = :courseId",
+      ExpressionAttributeNames: { "#courseId": "courseId" },
+      ExpressionAttributeValues: { ":courseId": courseId },
+    })
+    .promise();
 
-  return SuccessWithData({ status: 'DELETED' });
+  return SuccessWithData({ status: "DELETED" });
 };

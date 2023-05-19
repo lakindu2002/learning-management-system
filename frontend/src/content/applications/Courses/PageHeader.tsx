@@ -19,7 +19,7 @@ function PageHeader(props: PageHeaderProps) {
           Courses
         </Typography>
         <Typography variant="subtitle2">
-          {user.name}, manage courses here.
+          {user?.name}, manage courses here.
         </Typography>
       </Grid>
       <Grid item>
@@ -35,8 +35,6 @@ function PageHeader(props: PageHeaderProps) {
               Create Course
             </Button>
           )}
-
-        <label> </label>
 
         {(user?.currentInstitute.role === InstituteUserRole.ADMINISTRATOR ||
           user?.currentInstitute.role === InstituteUserRole.OWNER) && (

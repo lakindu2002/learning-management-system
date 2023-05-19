@@ -134,7 +134,7 @@ export function dynamodb({ stack }: StackContext) {
       instituteId: "string",
       courseId: "string",
       studentId: "string",
-      id: "string"
+      id: "string",
     },
     globalIndexes: {
       "by-institute-index": {
@@ -217,6 +217,47 @@ export function dynamodb({ stack }: StackContext) {
     },
   });
 
+  const courseAssignmentSubmissionTable = new Table(
+    stack,
+    "course-assignment-submission-table",
+    {
+      primaryIndex: {
+        partitionKey: "id",
+      },
+      fields: {
+        id: "string",
+        courseIdInstituteIdAssignmentId: "string",
+        courseIdInstituteIdAssignmentIdStudentId: "string",
+        assignmentId: "string",
+        studentId: "string",
+      },
+      globalIndexes: {
+        "by-courseIdInstituteIdAssignmentId": {
+          partitionKey: "courseIdInstituteIdAssignmentId",
+          sortKey: "studentId",
+          cdk: {
+            index: {
+              projectionType: ProjectionType.ALL,
+            },
+          },
+        },
+        "by-courseIdInstituteIdAssignmentIdStudentId": {
+          partitionKey: "courseIdInstituteIdAssignmentIdStudentId",
+          cdk: {
+            index: {
+              projectionType: ProjectionType.ALL,
+            },
+          },
+        },
+      },
+      cdk: {
+        table: {
+          billingMode: BillingMode.PAY_PER_REQUEST,
+        },
+      },
+    }
+  );
+
   const stackOutputs = {
     userTableName: usersTable.tableName,
     instituteTableName: instituteTable.tableName,
@@ -225,6 +266,8 @@ export function dynamodb({ stack }: StackContext) {
     studentCourseTableName: studentCourseTable.tableName,
     courseLessonTableName: courseLessonTable.tableName,
     courseAssignmentTableName: courseAssignmentTable.tableName,
+    courseAssignmentSubmissionTableName:
+      courseAssignmentSubmissionTable.tableName,
   };
 
   stack.addOutputs({
@@ -240,5 +283,6 @@ export function dynamodb({ stack }: StackContext) {
     studentCourseTable,
     courseLessonTable,
     courseAssignmentTable,
+    courseAssignmentSubmissionTable,
   };
 }

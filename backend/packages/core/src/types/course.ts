@@ -59,3 +59,21 @@ export interface CourseAssignment {
   submissionDate: string;
   weightage: number;
 }
+
+export interface CourseSubmissionStudent {
+  id: string;
+  courseId: string;
+  assignmentId: string;
+  instituteId: string;
+  studentId: string;
+  student: CourseUser;
+  marks?: number;
+  weightage: number;
+  graded: boolean;
+  feedback: string;
+  createdAt: number;
+  updatedAt: number;
+  courseIdInstituteIdAssignmentIdStudentId: string;
+  courseIdInstituteIdAssignmentId: string;
+  file?: CourseFile;
+}
