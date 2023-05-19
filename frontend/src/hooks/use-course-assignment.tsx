@@ -78,6 +78,17 @@ export const useCourseAssignments = () => {
     );
   };
 
+  const createAssignment = async (
+    assignment: Partial<CourseAssignment>,
+    courseId: string
+  ) => {
+    const resp = await axios.post<{ assignment: CourseAssignment }>(
+      `/api/institutes/${user?.currentInstitute.id}/courses/${courseId}/assignments`,
+      assignment
+    );
+    setAssignments([resp.data.assignment, ...assignments]);
+  };
+
   return {
     getCourseAssignments,
     getMoreCourseAssignments,
@@ -86,6 +97,7 @@ export const useCourseAssignments = () => {
     loadingAssignments,
     loadingMoreAssignments,
     updateAssignment,
-    deleteAssignment
+    deleteAssignment,
+    createAssignment
   };
 };

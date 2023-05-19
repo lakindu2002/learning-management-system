@@ -124,12 +124,12 @@ export const createCourse: APIGatewayProxyHandlerV2 = async (event) => {
   const { institutes, pathParams, body } = Parse(event);
   const { instituteId } = pathParams;
   if (
-    !isAuthorized(instituteId as string, institutes, [InstituteUserRole.OWNER])
+    !isAuthorized(instituteId as string, institutes, [
+      InstituteUserRole.OWNER,
+      InstituteUserRole.ADMINISTRATOR,
+    ])
   ) {
-    return {
-      statusCode: 403,
-      body: JSON.stringify({ message: "Forbidden" }),
-    };
+    return Forbidden();
   }
 
   const { name, lecturer } = body;
