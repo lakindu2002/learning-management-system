@@ -12,6 +12,7 @@ export function lmsApiGateway({ stack }: StackContext) {
     studentCourseTable,
     courseLessonTable,
     courseAssignmentTable,
+    courseAssignmentSubmissionTable,
   } = use(dynamodb);
   const { clientId, userPoolId } = use(cognito);
   const apiGateway = new Api(stack, "lms-api-gateway", {
@@ -42,17 +43,24 @@ export function lmsApiGateway({ stack }: StackContext) {
         "packages/functions/src/lambda.createLessonCourse",
       "POST /institutes/{instituteId}/courses/{courseId}/assignments":
         "packages/functions/src/lambda.createAssignmentCourse",
-      "DELETE /institutes/{instituteId}/courses/{courseId}": "packages/functions/src/lambda.deleteCourseById",
+      "POST /institutes/{instituteId}/courses/{courseId}/assignments/{assignmentId}/submissions":
+        "packages/functions/src/lambda.createAssignmentSubmission",
+      "DELETE /institutes/{instituteId}/courses/{courseId}":
+        "packages/functions/src/lambda.deleteCourseById",
       "POST /institutes/{instituteId}/courses/{courseId}/lessons/get":
         "packages/functions/src/lambda.getCourseLessons",
       "POST /institutes/{instituteId}/courses/{courseId}/assignments/get":
         "packages/functions/src/lambda.getCourseAssignments",
+      "POST /institutes/{instituteId}/courses/{courseId}/assignments/{assignmentId}/submissions/get":
+        "packages/functions/src/lambda.getAssignmentSubmissions",
       "GET /institutes/{instituteId}/courses/{courseId}":
         "packages/functions/src/lambda.getCourseById",
       "PATCH /institutes/{instituteId}/courses/{courseId}/lessons/{lessonId}":
         "packages/functions/src/lambda.updateCourseLesson",
       "PATCH /institutes/{instituteId}/courses/{courseId}/assignments/{assignmentId}":
         "packages/functions/src/lambda.updateCourseAssignment",
+      "PATCH /institutes/{instituteId}/courses/{courseId}/assignments/{assignmentId}/submissions/{assignmentSubmissionId}":
+        "packages/functions/src/lambda.updateAssignmentSubmission",
     },
     defaults: {
       function: {
@@ -64,6 +72,8 @@ export function lmsApiGateway({ stack }: StackContext) {
           STUDENT_COURSE_TABLE: studentCourseTable.tableName,
           COURSE_LESSON_TABLE: courseLessonTable.tableName,
           COURSE_ASSIGNMENT_TABLE: courseAssignmentTable.tableName,
+          COURSE_ASSIGNMENT_SUBMISSION_TABLE:
+            courseAssignmentSubmissionTable.tableName,
         },
       },
       authorizer: "Authorizer",
@@ -133,13 +143,28 @@ export function lmsApiGateway({ stack }: StackContext) {
   );
 
   apiGateway.attachPermissionsToRoute(
+    "POST /institutes/{instituteId}/courses/{courseId}/assignments/{assignmentId}/submissions",
+    [courseAssignmentSubmissionTable]
+  );
+
+  apiGateway.attachPermissionsToRoute(
     "POST /institutes/{instituteId}/courses/{courseId}/assignments/get",
     [courseAssignmentTable]
   );
 
   apiGateway.attachPermissionsToRoute(
+    "POST /institutes/{instituteId}/courses/{courseId}/assignments/{assignmentId}/submissions/get",
+    [courseAssignmentSubmissionTable]
+  );
+
+  apiGateway.attachPermissionsToRoute(
     "PATCH /institutes/{instituteId}/courses/{courseId}/assignments/{assignmentId}",
     [courseAssignmentTable]
+  );
+
+  apiGateway.attachPermissionsToRoute(
+    "PATCH /institutes/{instituteId}/courses/{courseId}/assignments/{assignmentId}/submissions/{assignmentSubmissionId}",
+    [courseAssignmentSubmissionTable]
   );
 
   apiGateway.attachPermissionsToRoute(
@@ -156,8 +181,6 @@ export function lmsApiGateway({ stack }: StackContext) {
     "DELETE /institutes/{instituteId}/courses/{courseId}/lessons/{lessonId}",
     [courseLessonTable]
   );
-
-
 
   const stackOutputs = {
     apiUrl: apiGateway.url,

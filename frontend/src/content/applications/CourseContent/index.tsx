@@ -82,15 +82,11 @@ function CourseContent() {
   }, []);
 
   useEffect(() => {
-    if (!editModalOpen) {
-      getCourseLessons(id);
-    }
+    getCourseLessons(id);
   }, [editModalOpen]);
 
   useEffect(() => {
-    if (!asgEditModalOpen) {
-      getCourseAssignments(id);
-    }
+    getCourseAssignments(id);
   }, [asgEditModalOpen]);
 
   const handleUpdate = async (
