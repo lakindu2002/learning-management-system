@@ -68,6 +68,17 @@ export const useCourseLessons = () => {
     setLessons((prev) => prev.filter((lesson) => lesson.id !== lessonId));
   };
 
+  const createLesson = async (
+    lesson: Partial<CourseLesson>,
+    courseId: string
+  ) => {
+    const resp = await axios.post<{ lesson: CourseLesson }>(
+      `/api/institutes/${user?.currentInstitute.id}/courses/${courseId}/lessons`,
+      lesson
+    );
+    setLessons([resp.data.lesson, ...lessons]);
+  };
+
   return {
     getCourseLessons,
     getMoreCourseLessons,
@@ -76,6 +87,7 @@ export const useCourseLessons = () => {
     loadingLessons,
     loadingMoreLessons,
     updateLesson,
-    deleteLesson
+    deleteLesson,
+    createLesson
   };
 };

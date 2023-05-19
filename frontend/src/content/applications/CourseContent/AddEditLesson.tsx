@@ -31,6 +31,8 @@ import { ArticleOutlined, Close } from '@mui/icons-material';
 import { uploadFile } from 'src/hooks/use-storage';
 import { toast } from 'react-hot-toast';
 import { LessonFileViewer } from './LessonFileViewer';
+import { useCourseAssignments } from 'src/hooks/use-course-assignment';
+import { useCourseLessons } from 'src/hooks/use-course-lessons';
 
 type Props = {
   setOpen: Function;
@@ -38,6 +40,7 @@ type Props = {
   mode?: 'create' | 'edit';
   initialValues?: Partial<CourseLesson>;
   onUpdate?: (params: Partial<CourseLesson>) => Promise<void>;
+  createLesson?: (lesson: Partial<CourseLesson>) => Promise<void>;
 };
 
 const validationSchema = yup.object({
@@ -46,25 +49,19 @@ const validationSchema = yup.object({
 });
 
 export default function AddEditLesson(props: Props) {
-  const { setOpen, courseId, mode = 'create', onUpdate, initialValues } = props;
+  const {
+    setOpen,
+    courseId,
+    mode = 'create',
+    onUpdate,
+    initialValues,
+    createLesson
+  } = props;
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [currentFiles, setCurrentFiles] = useState<LessonFile[]>(
     initialValues?.files || []
   );
-
-  const createLesson = useMutation({
-    mutationFn: (lesson: Partial<CourseLesson>) => {
-      return axios.post(
-        `/api/institutes/${user?.currentInstitute.id}/courses/${courseId}/lessons`,
-        lesson
-      );
-    },
-    onSuccess: () => {
-      // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: ['lessons'] });
-    }
-  });
 
   const formik = useFormik({
     initialValues: {
@@ -89,7 +86,9 @@ export default function AddEditLesson(props: Props) {
         instituteId: user?.currentInstitute.id
       };
       if (mode === 'create') {
-        createLesson.mutate(lessonCourse);
+        // createLesson.mutate(lessonCourse);
+        await createLesson(lessonCourse);
+        setOpen(false);
         return;
       }
       try {
@@ -100,10 +99,6 @@ export default function AddEditLesson(props: Props) {
       }
     }
   });
-
-  useEffect(() => {
-    if (createLesson.isSuccess) setOpen(false);
-  }, [createLesson.isSuccess]);
 
   return (
     <div>
@@ -242,7 +237,7 @@ export default function AddEditLesson(props: Props) {
             variant="contained"
             type="submit"
             fullWidth
-            loading={formik.isSubmitting || createLesson.isLoading}
+            loading={formik.isSubmitting}
           >
             {mode === 'create' ? 'Create Lesson' : 'Update Lesson'}
           </LoadingButton>

@@ -27,6 +27,7 @@ import AddEditAssignment from './AddEditAssignment';
 import { useCourseAssignments } from 'src/hooks/use-course-assignment';
 import { Assessment } from '@mui/icons-material';
 import { Assignment } from './Assignment';
+import { toast } from 'react-hot-toast';
 
 function CourseContent() {
   const { user } = useAuth();
@@ -52,7 +53,8 @@ function CourseContent() {
     loadingMoreLessons,
     lessons,
     updateLesson,
-    deleteLesson
+    deleteLesson,
+    createLesson
   } = useCourseLessons();
 
   const {
@@ -63,7 +65,8 @@ function CourseContent() {
     loadingMoreAssignments,
     assignments,
     updateAssignment,
-    deleteAssignment
+    deleteAssignment,
+    createAssignment
   } = useCourseAssignments();
 
   const {
@@ -123,6 +126,24 @@ function CourseContent() {
     await deleteLesson(id);
   };
 
+  const createNewLesson = async (lesson: CourseLesson) => {
+    try {
+      await createLesson(lesson, id);
+      toast.success('Created lesson');
+    } catch (error) {
+      toast.error('Failed to create lesson');
+    }
+  };
+
+  const createNewAssignment = async (assignment: CourseAssignment) => {
+    try {
+      await createAssignment(assignment, id);
+      toast.success('Created assignment.');
+    } catch (error) {
+      toast.error('Failed to create assignment.');
+    }
+  };
+
   return (
     <>
       <Helmet>
@@ -130,7 +151,14 @@ function CourseContent() {
       </Helmet>
 
       <PageTitleWrapper>
-        {course && <PageHeader course={course} tab={tabIndex} />}
+        {course && (
+          <PageHeader
+            course={course}
+            tab={tabIndex}
+            createLesson={createNewLesson}
+            createAssignment={createNewAssignment}
+          />
+        )}
         {isLoading && <CircularProgress />}
         {isError && <Alert color="error">Failed to load course header</Alert>}
       </PageTitleWrapper>
