@@ -13,7 +13,7 @@ import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
 
 import { useAuth } from 'src/contexts/AuthContext';
 import { useState } from 'react';
-import { Course, CourseLesson } from 'src/models/course';
+import { Course, CourseAssignment, CourseLesson } from 'src/models/course';
 import { useNavigate, useParams } from 'react-router';
 import AddEditLesson from './AddEditLesson';
 import CustomModal from 'src/components/CustomModal';
@@ -27,10 +27,11 @@ type PageHeaderProps = {
   course: Course;
   tab: number;
   createLesson: (lesson: Partial<CourseLesson>) => Promise<void>;
+  createAssignment: (assignment: Partial<CourseAssignment>) => Promise<void>;
 };
 
 function PageHeader(props: PageHeaderProps) {
-  const { course, tab, createLesson } = props;
+  const { course, tab, createLesson, createAssignment } = props;
   const navigate = useNavigate();
   const [isAddLessonModalOpen, setIsAddLessonModalOpen] = useState(false);
   const [isAddAsgModalOpen, setIsAddAsgModalOpen] = useState(false);
@@ -126,7 +127,11 @@ function PageHeader(props: PageHeaderProps) {
       </CustomModal>
 
       <CustomModal open={isAddAsgModalOpen}>
-        <AddEditAssignment setOpen={setIsAddAsgModalOpen} courseId={id} />
+        <AddEditAssignment
+          setOpen={setIsAddAsgModalOpen}
+          courseId={id}
+          createAssignment={createAssignment}
+        />
       </CustomModal>
     </Grid>
   );

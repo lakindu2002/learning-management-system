@@ -63,19 +63,6 @@ export default function AddEditLesson(props: Props) {
     initialValues?.files || []
   );
 
-  // const createLesson = useMutation({
-  //   mutationFn: (lesson: Partial<CourseLesson>) => {
-  //     return axios.post(
-  //       `/api/institutes/${user?.currentInstitute.id}/courses/${courseId}/lessons`,
-  //       lesson
-  //     );
-  //   },
-  //   onSuccess: () => {
-  //     // Invalidate and refetch
-  //     queryClient.invalidateQueries({ queryKey: ['lessons'] });
-  //   }
-  // });
-
   const formik = useFormik({
     initialValues: {
       title: initialValues?.title || '',
@@ -112,10 +99,6 @@ export default function AddEditLesson(props: Props) {
       }
     }
   });
-
-  // useEffect(() => {
-  //   if (createLesson.isSuccess) setOpen(false);
-  // }, [createLesson.isSuccess]);
 
   return (
     <div>

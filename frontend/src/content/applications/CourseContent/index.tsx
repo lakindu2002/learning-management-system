@@ -65,7 +65,8 @@ function CourseContent() {
     loadingMoreAssignments,
     assignments,
     updateAssignment,
-    deleteAssignment
+    deleteAssignment,
+    createAssignment
   } = useCourseAssignments();
 
   const {
@@ -134,6 +135,15 @@ function CourseContent() {
     }
   };
 
+  const createNewAssignment = async (assignment: CourseAssignment) => {
+    try {
+      await createAssignment(assignment, id);
+      toast.success('Created assignment.');
+    } catch (error) {
+      toast.error('Failed to create assignment.');
+    }
+  };
+
   return (
     <>
       <Helmet>
@@ -146,6 +156,7 @@ function CourseContent() {
             course={course}
             tab={tabIndex}
             createLesson={createNewLesson}
+            createAssignment={createNewAssignment}
           />
         )}
         {isLoading && <CircularProgress />}

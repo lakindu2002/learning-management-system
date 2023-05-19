@@ -38,6 +38,7 @@ type Props = {
   mode?: 'create' | 'edit';
   initialValues?: Partial<CourseAssignment>;
   onUpdate?: (params: Partial<CourseAssignment>) => Promise<void>;
+  createAssignment?: (params: Partial<CourseAssignment>) => Promise<void>;
 };
 
 const validationSchema = yup.object({
@@ -51,25 +52,31 @@ const validationSchema = yup.object({
 });
 
 export default function AddEditAssignment(props: Props) {
-  const { setOpen, courseId, mode = 'create', onUpdate, initialValues } = props;
+  const {
+    setOpen,
+    courseId,
+    mode = 'create',
+    onUpdate,
+    initialValues,
+    createAssignment
+  } = props;
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [currentFiles, setCurrentFiles] = useState<LessonFile[]>(
     initialValues?.files || []
   );
 
-  const createAssignment = useMutation({
-    mutationFn: (assignment: Partial<CourseAssignment>) => {
-      return axios.post(
-        `/api/institutes/${user?.currentInstitute.id}/courses/${courseId}/assignments`,
-        assignment
-      );
-    },
-    onSuccess: () => {
-      // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: ['assignments'] });
-    }
-  });
+  // const createAssignment = useMutation({
+  //   mutationFn: (assignment: Partial<CourseAssignment>) => {
+  //     return axios.post(
+  //       `/api/institutes/${user?.currentInstitute.id}/courses/${courseId}/assignments`,
+  //       assignment
+  //     );
+  //   },
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({ queryKey: ['assignments'] });
+  //   }
+  // });
 
   const formik = useFormik({
     initialValues: {
@@ -98,7 +105,8 @@ export default function AddEditAssignment(props: Props) {
         weightage: values.weightage
       };
       if (mode === 'create') {
-        createAssignment.mutate(assignmentCourse);
+        await createAssignment(assignmentCourse);
+        setOpen(false);
         return;
       }
       try {
@@ -109,10 +117,6 @@ export default function AddEditAssignment(props: Props) {
       }
     }
   });
-
-  useEffect(() => {
-    if (createAssignment.isSuccess) setOpen(false);
-  }, [createAssignment.isSuccess]);
 
   return (
     <div>
@@ -297,7 +301,7 @@ export default function AddEditAssignment(props: Props) {
             variant="contained"
             type="submit"
             fullWidth
-            loading={formik.isSubmitting || createAssignment.isLoading}
+            loading={formik.isSubmitting}
           >
             {mode === 'create' ? 'Create Assignment' : 'Update Assignment'}
           </LoadingButton>
