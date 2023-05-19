@@ -39,7 +39,7 @@ export const LessonManagePopper: FC<LessonManagePopperProps> = ({
       setOpen(false);
       toast.success(
         `This ${isAssignmentMode ? 'assignment' : 'lesson'} is now ${
-          LessonVisbility.HIDDEN ? 'hidden' : 'visible'
+          lesson.visibility !== LessonVisbility.HIDDEN ? 'hidden' : 'visible'
         } for students.`
       );
     } catch (err) {
