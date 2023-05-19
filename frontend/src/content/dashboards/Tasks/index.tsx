@@ -12,7 +12,9 @@ import {
   Box,
   useTheme,
   Avatar,
-  styled
+  styled,
+  Paper,
+  Typography
 } from '@mui/material';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 
@@ -111,10 +113,7 @@ function DashboardTasks() {
 
   const [currentTab, setCurrentTab] = useState<string>('analytics');
 
-  const tabs = [
-    { value: 'analytics', label: 'Analytics Overview' },
-    { value: 'taskSearch', label: 'Task Search' }
-  ];
+  const tabs = [{ value: 'analytics', label: 'Analytics Overview' }];
 
   const handleTabsChange = (_event: ChangeEvent<{}>, value: string): void => {
     setCurrentTab(value);
@@ -129,7 +128,7 @@ function DashboardTasks() {
         <PageHeader />
       </PageTitleWrapper>
       <Container maxWidth="lg">
-        {/* <TabsContainerWrapper>
+        <TabsContainerWrapper>
           <Tabs
             onChange={handleTabsChange}
             value={currentTab}
@@ -155,34 +154,80 @@ function DashboardTasks() {
               <>
                 <Grid item xs={12}>
                   <Box p={4}>
-                    <TeamOverview />
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'space-around',
+                        p: 2
+                      }}
+                    >
+                      <Paper
+                        sx={{
+                          p: 3,
+                          textAlign: 'center',
+                          color: 'black',
+                          borderRadius: '15px',
+                          backgroundColor: '#e6b800',
+                          width: '200px'
+                        }}
+                      >
+                        <Typography variant="h6" gutterBottom>
+                          Total Students
+                        </Typography>
+                        <Typography
+                          variant="h1"
+                          sx={{ fontSize: '2.5em' }}
+                          gutterBottom
+                        >
+                          24
+                        </Typography>
+                      </Paper>
+                      <Paper
+                        sx={{
+                          p: 3,
+                          textAlign: 'center',
+                          color: 'black',
+                          borderRadius: '15px',
+                          backgroundColor: '#006600',
+                          width: '200px'
+                        }}
+                      >
+                        <Typography variant="h6" gutterBottom>
+                          Total Courses
+                        </Typography>
+                        <Typography
+                          variant="h1"
+                          sx={{ fontSize: '2.5em' }}
+                          gutterBottom
+                        >
+                          09
+                        </Typography>
+                      </Paper>
+                      <Paper
+                        sx={{
+                          p: 3,
+                          textAlign: 'center',
+                          color: 'black',
+                          borderRadius: '15px',
+                          backgroundColor: '#9966ff',
+                          width: '200px'
+                        }}
+                      >
+                        <Typography variant="h6" gutterBottom>
+                          Total Lecturers
+                        </Typography>
+                        <Typography
+                          variant="h1"
+                          sx={{ fontSize: '2.5em' }}
+                          gutterBottom
+                        >
+                          09
+                        </Typography>
+                      </Paper>
+                    </Box>
                   </Box>
                 </Grid>
-                <Grid item xs={12}>
-                  <Divider />
-                  <Box
-                    p={4}
-                    sx={{
-                      background: `${theme.colors.alpha.black[5]}`
-                    }}
-                  >
-                    <Grid container spacing={4}>
-                      <Grid item xs={12} sm={6} md={8}>
-                        <TasksAnalytics />
-                      </Grid>
-                      <Grid item xs={12} sm={6} md={4}>
-                        <Performance />
-                      </Grid>
-                    </Grid>
-                  </Box>
-                  <Divider />
-                </Grid>
-                <Grid item xs={12}>
-                  <Box p={4}>
-                    <Projects />
-                  </Box>
-                  <Divider />
-                </Grid>
+
                 <Grid item xs={12}>
                   <Box
                     sx={{
@@ -201,24 +246,20 @@ function DashboardTasks() {
                         </Box>
                       </Grid>
                       <Grid item xs={12} md={6}>
-                        <Box p={4}>
-                          <Profile />
-                        </Box>
+                        <Grid item xs={12}>
+                          <Box p={4}>
+                            <Projects />
+                          </Box>
+                          <Divider />
+                        </Grid>
                       </Grid>
                     </Grid>
                   </Box>
                 </Grid>
               </>
             )}
-            {currentTab === 'taskSearch' && (
-              <Grid item xs={12}>
-                <Box p={4}>
-                  <TaskSearch />
-                </Box>
-              </Grid>
-            )}
           </Grid>
-        </Card> */}
+        </Card>
       </Container>
       <Footer />
     </>
