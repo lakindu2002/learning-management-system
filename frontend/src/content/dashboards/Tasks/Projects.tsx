@@ -67,12 +67,7 @@ function Projects() {
           pb: 3
         }}
       >
-        <Typography variant="h3">Projects</Typography>
-        <Box>
-          <Button size="small" variant="outlined">
-            View all projects
-          </Button>
-        </Box>
+        <Typography variant="h3">Courses Offered</Typography>
       </Box>
       <Grid container spacing={4}>
         <Grid item xs={12} md={4}>
@@ -87,384 +82,57 @@ function Projects() {
                   <CheckTwoToneIcon />
                 </AvatarWrapperSuccess>
               }
-              action={
-                <IconButton size="small" color="primary">
-                  <MoreVertTwoToneIcon />
-                </IconButton>
-              }
-              title="Fix Urgent Mobile App Bugs"
+              title="RAD"
               titleTypographyProps={{
                 variant: 'h5',
                 color: 'textPrimary'
               }}
             />
-            <Box>
-              <Typography variant="subtitle2" gutterBottom>
-                Tasks done:{' '}
-                <Text color="black">
-                  <b>25</b>
-                </Text>
-                <b> /100</b>
-              </Typography>
-              <LinearProgressWrapper
-                value={25}
-                color="primary"
-                variant="determinate"
-              />
-            </Box>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between'
-              }}
-            >
-              <AvatarGroup>
-                <Tooltip arrow title="View profile for Remy Sharp">
-                  <Avatar
-                    sx={{
-                      width: 30,
-                      height: 30
-                    }}
-                    component={RouterLink}
-                    to="#"
-                    alt="Remy Sharp"
-                    src="/static/images/avatars/1.jpg"
-                  />
-                </Tooltip>
-                <Tooltip arrow title="View profile for Travis Howard">
-                  <Avatar
-                    sx={{
-                      width: 30,
-                      height: 30
-                    }}
-                    component={RouterLink}
-                    to="#"
-                    alt="Travis Howard"
-                    src="/static/images/avatars/2.jpg"
-                  />
-                </Tooltip>
-                <Tooltip arrow title="View profile for Cindy Baker">
-                  <Avatar
-                    sx={{
-                      width: 30,
-                      height: 30
-                    }}
-                    component={RouterLink}
-                    to="#"
-                    alt="Cindy Baker"
-                    src="/static/images/avatars/3.jpg"
-                  />
-                </Tooltip>
-                <Tooltip arrow title="View profile for Agnes Walker">
-                  <Avatar
-                    sx={{
-                      width: 30,
-                      height: 30
-                    }}
-                    component={RouterLink}
-                    to="#"
-                    alt="Agnes Walker"
-                    src="/static/images/avatars/4.jpg"
-                  />
-                </Tooltip>
-                <Tooltip arrow title="View profile for Trevor Henderson">
-                  <Avatar
-                    sx={{
-                      width: 30,
-                      height: 30
-                    }}
-                    component={RouterLink}
-                    to="#"
-                    alt="Trevor Henderson"
-                    src="/static/images/avatars/5.jpg"
-                  />
-                </Tooltip>
-              </AvatarGroup>
-              <Box>
-                <Tooltip arrow title="View project calendar" placement="top">
-                  <IconButton
-                    size="small"
-                    color="secondary"
-                    sx={{
-                      ml: 0.5
-                    }}
-                  >
-                    <CalendarTodayTwoToneIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip
-                  arrow
-                  title="Mark project as favourite"
-                  placement="top"
-                >
-                  <IconButton
-                    size="small"
-                    sx={{
-                      color: `${theme.colors.warning.main}`,
-                      ml: 0.5
-                    }}
-                  >
-                    <StarTwoToneIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-            </Box>
           </Box>
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Box>
-            <CardHeader
-              sx={{
-                px: 0,
-                pt: 0
-              }}
-              avatar={
-                <Avatar
-                  sx={{
-                    background: `${theme.colors.gradients.blue1}`
-                  }}
-                >
-                  RP
-                </Avatar>
-              }
-              action={
-                <IconButton size="small" color="primary">
-                  <MoreVertTwoToneIcon />
-                </IconButton>
-              }
-              title="Replace Placeholder Images"
-              titleTypographyProps={{
-                variant: 'h5',
-                color: 'textPrimary'
-              }}
-            />
+          <Grid item xs={12} md={4}>
             <Box>
-              <Typography variant="subtitle2" gutterBottom>
-                Tasks done:{' '}
-                <Text color="black">
-                  <b>80</b>
-                </Text>
-                <b> /100</b>
-              </Typography>
-              <LinearProgressWrapper
-                value={80}
-                color="primary"
-                variant="determinate"
+              <CardHeader
+                sx={{
+                  px: 0,
+                  pt: 0
+                }}
+                avatar={
+                  <AvatarWrapperSuccess>
+                    <CheckTwoToneIcon />
+                  </AvatarWrapperSuccess>
+                }
+                title="FCC"
+                titleTypographyProps={{
+                  variant: 'h5',
+                  color: 'textPrimary'
+                }}
               />
             </Box>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between'
-              }}
-            >
-              <AvatarGroup>
-                <Tooltip arrow title="View profile for Remy Sharp">
-                  <Avatar
-                    sx={{
-                      width: 30,
-                      height: 30
-                    }}
-                    component={RouterLink}
-                    to="#"
-                    alt="Remy Sharp"
-                    src="/static/images/avatars/4.jpg"
-                  />
-                </Tooltip>
-                <Tooltip arrow title="View profile for Travis Howard">
-                  <Avatar
-                    sx={{
-                      width: 30,
-                      height: 30
-                    }}
-                    component={RouterLink}
-                    to="#"
-                    alt="Travis Howard"
-                    src="/static/images/avatars/3.jpg"
-                  />
-                </Tooltip>
-                <Tooltip arrow title="View profile for Trevor Henderson">
-                  <Avatar
-                    sx={{
-                      width: 30,
-                      height: 30
-                    }}
-                    component={RouterLink}
-                    to="#"
-                    alt="Trevor Henderson"
-                    src="/static/images/avatars/1.jpg"
-                  />
-                </Tooltip>
-              </AvatarGroup>
-              <Box>
-                <Tooltip arrow title="View project calendar" placement="top">
-                  <IconButton
-                    size="small"
-                    color="secondary"
-                    sx={{
-                      ml: 0.5
-                    }}
-                  >
-                    <CalendarTodayTwoToneIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip
-                  arrow
-                  title="Mark project as favourite"
-                  placement="top"
-                >
-                  <IconButton
-                    size="small"
-                    sx={{
-                      color: `${theme.colors.warning.main}`,
-                      ml: 0.5
-                    }}
-                  >
-                    <StarTwoToneIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-            </Box>
-          </Box>
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Box>
-            <CardHeader
-              sx={{
-                px: 0,
-                pt: 0
-              }}
-              avatar={
-                <Badge
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right'
-                  }}
-                  overlap="circular"
-                  badgeContent={
-                    <Tooltip arrow placement="top" title="Online right now">
-                      <DotLegend
-                        style={{ background: `${theme.colors.success.main}` }}
-                      />
-                    </Tooltip>
-                  }
-                >
-                  <Avatar alt="Remy Sharp" src="/static/images/avatars/1.jpg" />
-                </Badge>
-              }
-              action={
-                <IconButton size="small" color="primary">
-                  <MoreVertTwoToneIcon />
-                </IconButton>
-              }
-              title="BloomUI Redesign Project"
-              titleTypographyProps={{
-                variant: 'h5',
-                color: 'textPrimary'
-              }}
-            />
+          </Grid>
+          <Grid item xs={12} md={4}>
             <Box>
-              <Typography variant="subtitle2" gutterBottom>
-                Tasks done:{' '}
-                <Text color="black">
-                  <b>87</b>
-                </Text>
-                <b> /100</b>
-              </Typography>
-              <LinearProgressWrapper
-                value={87}
-                color="primary"
-                variant="determinate"
+              <CardHeader
+                sx={{
+                  px: 0,
+                  pt: 0
+                }}
+                avatar={
+                  <AvatarWrapperSuccess>
+                    <CheckTwoToneIcon />
+                  </AvatarWrapperSuccess>
+                }
+                title="AI"
+                titleTypographyProps={{
+                  variant: 'h5',
+                  color: 'textPrimary'
+                }}
               />
             </Box>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between'
-              }}
-            >
-              <AvatarGroup>
-                <Tooltip arrow title="View profile for Remy Sharp">
-                  <Avatar
-                    sx={{
-                      width: 30,
-                      height: 30
-                    }}
-                    component={RouterLink}
-                    to="#"
-                    alt="Remy Sharp"
-                    src="/static/images/avatars/1.jpg"
-                  />
-                </Tooltip>
-                <Tooltip arrow title="View profile for Cindy Baker">
-                  <Avatar
-                    sx={{
-                      width: 30,
-                      height: 30
-                    }}
-                    component={RouterLink}
-                    to="#"
-                    alt="Cindy Baker"
-                    src="/static/images/avatars/3.jpg"
-                  />
-                </Tooltip>
-                <Tooltip arrow title="View profile for Agnes Walker">
-                  <Avatar
-                    sx={{
-                      width: 30,
-                      height: 30
-                    }}
-                    component={RouterLink}
-                    to="#"
-                    alt="Agnes Walker"
-                    src="/static/images/avatars/2.jpg"
-                  />
-                </Tooltip>
-                <Tooltip arrow title="View profile for Trevor Henderson">
-                  <Avatar
-                    sx={{
-                      width: 30,
-                      height: 30
-                    }}
-                    component={RouterLink}
-                    to="#"
-                    alt="Trevor Henderson"
-                    src="/static/images/avatars/4.jpg"
-                  />
-                </Tooltip>
-              </AvatarGroup>
-              <Box>
-                <Tooltip arrow title="View project calendar" placement="top">
-                  <IconButton
-                    size="small"
-                    color="secondary"
-                    sx={{
-                      ml: 0.5
-                    }}
-                  >
-                    <CalendarTodayTwoToneIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip
-                  arrow
-                  title="Mark project as favourite"
-                  placement="top"
-                >
-                  <IconButton
-                    size="small"
-                    sx={{
-                      color: `${theme.colors.warning.main}`,
-                      ml: 0.5
-                    }}
-                  >
-                    <StarTwoToneIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-            </Box>
+          </Grid>
+          <Box>
+            <Button size="small" variant="outlined">
+              View all Courses
+            </Button>
           </Box>
         </Grid>
       </Grid>
