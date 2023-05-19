@@ -91,7 +91,8 @@ function PageHeader(props: PageHeaderProps) {
               Delete
             </LoadingButton>
           )}
-        {tab === 0 ? (
+        {user?.currentInstitute.role !== InstituteUserRole.STUDENT &&
+        tab === 0 ? (
           <Button
             sx={{ mt: { xs: 2, md: 0 } }}
             variant="contained"
@@ -102,15 +103,17 @@ function PageHeader(props: PageHeaderProps) {
             Add Lesson
           </Button>
         ) : (
-          <Button
-            sx={{ mt: { xs: 2, md: 0 } }}
-            variant="contained"
-            color="primary"
-            startIcon={<AddTwoToneIcon fontSize="small" />}
-            onClick={() => setIsAddAsgModalOpen(true)}
-          >
-            Add Assignment
-          </Button>
+          user?.currentInstitute.role !== InstituteUserRole.STUDENT && (
+            <Button
+              sx={{ mt: { xs: 2, md: 0 } }}
+              variant="contained"
+              color="primary"
+              startIcon={<AddTwoToneIcon fontSize="small" />}
+              onClick={() => setIsAddAsgModalOpen(true)}
+            >
+              Add Assignment
+            </Button>
+          )
         )}
       </Grid>
       <CustomModal open={isAddLessonModalOpen}>

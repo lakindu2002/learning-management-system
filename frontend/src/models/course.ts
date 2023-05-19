@@ -16,6 +16,11 @@ export interface LessonFile {
   name: string;
 }
 
+export interface CourseUser {
+  id: string;
+  name: string;
+}
+
 export interface CourseLesson {
   id: string;
   courseId: string;
@@ -42,4 +47,22 @@ export interface CourseAssignment {
   courseIdInstituteId: string;
   submissionDate: string;
   weightage: number;
+}
+
+export interface CourseSubmissionStudent {
+  id: string;
+  courseId: string;
+  assignmentId: string;
+  instituteId: string;
+  studentId: string;
+  student: CourseUser;
+  marks?: number;
+  weightage: number;
+  graded: boolean;
+  feedback: string;
+  createdAt: number;
+  updatedAt: number;
+  courseIdInstituteIdAssignmentIdStudentId: string;
+  courseIdInstituteIdAssignmentId: string;
+  file: LessonFile;
 }
