@@ -1,0 +1,16 @@
+
+cWeb:DoctypePresenceCheck":Insert a <!DOCTYPE> declaration to before this <html> tag.(œ÷Ãûÿÿÿÿ
+Z	Web:S5254"@Add "lang" and/or "xml:lang" attributes to this "<html>" element(œ÷Ãûÿÿÿÿ
+>	Web:S18278")Remove this deprecated "align" attribute.(ıšæí
+HWeb:TableWithoutCaptionCheck8" Add a description to this table.(ıšæí
+:	Web:S52568"%Add "<th>" headers to this "<table>".(ıšæí
+>	Web:S18278")Remove this deprecated "align" attribute.(ıšæí
+HWeb:TableWithoutCaptionCheckF" Add a description to this table.(ß¤€
+:	Web:S5256F"%Add "<th>" headers to this "<table>".(ß¤€
+>	Web:S1827F")Remove this deprecated "width" attribute.(ß¤€
+C	Web:S1827G")Remove this deprecated "align" attribute.(„òÓ‚ıÿÿÿÿ
+C	Web:S1827I")Remove this deprecated "width" attribute.(­Òƒÿÿÿÿÿ
+C	Web:S1827J")Remove this deprecated "width" attribute.(‰¨€åøÿÿÿÿ
+~javascript:S2703"]Add the "let", "const" or "var" keyword to this declaration of "current" to make it explicit.(èÜ»æıÿÿÿÿ
+sjavascript:S2703*"WAdd the "let", "const" or "var" keyword to this declaration of "d" to make it explicit.(ÔÃ‰ø
+xjavascript:S2703+"WAdd the "let", "const" or "var" keyword to this declaration of "i" to make it explicit.(£×åóÿÿÿÿÿ

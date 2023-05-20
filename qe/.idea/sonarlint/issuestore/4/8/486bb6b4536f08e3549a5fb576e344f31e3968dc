@@ -1,0 +1,12 @@
+
+l	java:S117
+"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(»–Ù`8 ¡úï1
+Y
+java:S1854"<Remove this useless assignment to local variable "ieDriver".(‰ùŞ£8¬¡úï1
+b
+java:S1854"@Remove this useless assignment to local variable "chromeDriver".(ÖğÍûÿÿÿÿ8¬¡úï1
+]	java:S125"<This block of commented-out lines of code should be removed.(ìéÁÂşÿÿÿÿ8­¡úï1
+S
+java:S1481"1Remove this unused "chromeDriver" local variable.(ÖğÍûÿÿÿÿ8±¡úï1
+J
+java:S1481"-Remove this unused "ieDriver" local variable.(‰ùŞ£8²¡úï1

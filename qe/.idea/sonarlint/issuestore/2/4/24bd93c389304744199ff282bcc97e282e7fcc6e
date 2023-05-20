@@ -1,0 +1,84 @@
+
+g	java:S112"FDefine and throw a dedicated exception instead of using a generic one.(ƒÉ¤…úÿÿÿÿ8ˆ‚Èëø0
+g	java:S112:"FDefine and throw a dedicated exception instead of using a generic one.(ñ†ØÀúÿÿÿÿ8ˆ‚Èëø0
+g	java:S112M"FDefine and throw a dedicated exception instead of using a generic one.(µ…úÿÿÿÿ8ˆ‚Èëø0
+b	java:S112e"FDefine and throw a dedicated exception instead of using a generic one.(‘§³8ˆ‚Èëø0
+h	java:S112€"FDefine and throw a dedicated exception instead of using a generic one.(€Áª‹şÿÿÿÿ8ˆ‚Èëø0
+h	java:S112"FDefine and throw a dedicated exception instead of using a generic one.(ç¼ëŞüÿÿÿÿ8ˆ‚Èëø0
+b	java:S112¼"FDefine and throw a dedicated exception instead of using a generic one.(Ëƒës8ˆ‚Èëø0
+h	java:S112Ñ"FDefine and throw a dedicated exception instead of using a generic one.(ƒ™è’øÿÿÿÿ8ˆ‚Èëø0
+h	java:S112æ"FDefine and throw a dedicated exception instead of using a generic one.(›Ô¬»øÿÿÿÿ8ˆ‚Èëø0
+c	java:S112ò"FDefine and throw a dedicated exception instead of using a generic one.(ãæ—Ñ8ˆ‚Èëø0
+b	java:S112˜"FDefine and throw a dedicated exception instead of using a generic one.(íÊÜ(8ˆ‚Èëø0
+s
+java:S1192W"QDefine a constant instead of duplicating this literal "Test data value " 4 times.(±îˆ–ÿÿÿÿÿ8‰‚Èëø0
+h
+java:S1192T"FDefine a constant instead of duplicating this literal "value" 3 times.(ØªÕğûÿÿÿÿ8‰‚Èëø0
+~
+java:S1192W"\Define a constant instead of duplicating this literal " matches with actual value " 3 times.(±îˆ–ÿÿÿÿÿ8‰‚Èëø0
+ƒ
+java:S11923"aDefine a constant instead of duplicating this literal "Failed! Unable to locate element" 8 times.(Åèæıÿÿÿÿ8‰‚Èëø0
+X
+java:S1141ˆ"5Extract this nested try block into a separate method.(¡»¢üùÿÿÿÿ8‰‚Èëø0
+X
+java:S1141¥"5Extract this nested try block into a separate method.(¡»¢üùÿÿÿÿ8‰‚Èëø0
+r	java:S117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ƒÉ¤…úÿÿÿÿ8‰‚Èëø0
+r	java:S117:"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ñ†ØÀúÿÿÿÿ8‰‚Èëø0
+r	java:S117M"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(µ…úÿÿÿÿ8‰‚Èëø0
+r	java:S117P"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(éåªæøÿÿÿÿ8‰‚Èëø0
+r	java:S117T"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ØªÕğûÿÿÿÿ8Š‚Èëø0
+s	java:S117€"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(€Áª‹şÿÿÿÿ8Š‚Èëø0
+m	java:S117¼"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Ëƒës8Š‚Èëø0
+n	java:S117¿"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(³‡½™8Š‚Èëø0
+s	java:S117Ñ"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ƒ™è’øÿÿÿÿ8Š‚Èëø0
+s	java:S117Õ"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(éåªæøÿÿÿÿ8Š‚Èëø0
+n	java:S117Ø"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¸á¼Ÿ8Š‚Èëø0
+s	java:S117æ"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(›Ô¬»øÿÿÿÿ8Š‚Èëø0
+n	java:S117è"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(³‡½™8Š‚Èëø0
+o	java:S100"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ƒÉ¤…úÿÿÿÿ8¹‚Èëø0
+Z	java:S106'"9Replace this use of System.out or System.err by a logger.(›‹š·üÿÿÿÿ8Ç‚Èëø0
+Z	java:S106)"9Replace this use of System.out or System.err by a logger.(ıßŒıÿÿÿÿ8È‚Èëø0
+U	java:S106,"9Replace this use of System.out or System.err by a logger.(ÃÂä’8È‚Èëø0
+Z	java:S1063"9Replace this use of System.out or System.err by a logger.(Åèæıÿÿÿÿ8É‚Èëø0
+o	java:S100:"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ñ†ØÀúÿÿÿÿ8Ê‚Èëø0
+K
+java:S1874?".Remove this use of "Assert"; it is deprecated.(ŞóÄ8Ë‚Èëø0
+T	java:S106@"9Replace this use of System.out or System.err by a logger.(æÁü.8Ë‚Èëø0
+Z	java:S106F"9Replace this use of System.out or System.err by a logger.(Åèæıÿÿÿÿ8Ë‚Èëø0
+o	java:S100M"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(µ…úÿÿÿÿ8Ë‚Èëø0
+Z	java:S106W"9Replace this use of System.out or System.err by a logger.(±îˆ–ÿÿÿÿÿ8Í‚Èëø0
+Z	java:S106]"9Replace this use of System.out or System.err by a logger.(Åèæıÿÿÿÿ8Í‚Èëø0
+j	java:S100e"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(‘§³8Í‚Èëø0
+]	java:S125n"<This block of commented-out lines of code should be removed.(ş Ä–ÿÿÿÿÿ8Ï‚Èëø0
+U	java:S106t"9Replace this use of System.out or System.err by a logger.(«Ú¡Â8Ï‚Èëø0
+Z	java:S106z"9Replace this use of System.out or System.err by a logger.(Åèæıÿÿÿÿ8Ğ‚Èëø0
+p	java:S100€"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(€Áª‹şÿÿÿÿ8Ğ‚Èëø0
+F	java:S108‹")Either remove or fill this block of code.(”ı¾8Ñ‚Èëø0
+[	java:S106"9Replace this use of System.out or System.err by a logger.(ƒÂÌİÿÿÿÿÿ8Ñ‚Èëø0
+[	java:S106–"9Replace this use of System.out or System.err by a logger.(Åèæıÿÿÿÿ8Ò‚Èëø0
+j	java:S100"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(®¬ß)8Ò‚Èëø0
+F	java:S108¨")Either remove or fill this block of code.(”ı¾8Ó‚Èëø0
+[	java:S106®"9Replace this use of System.out or System.err by a logger.(ƒÂÌİÿÿÿÿÿ8Ô‚Èëø0
+[	java:S106´"9Replace this use of System.out or System.err by a logger.(Åèæıÿÿÿÿ8Ô‚Èëø0
+j	java:S100¼"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Ëƒës8Ô‚Èëø0
+L
+java:S1874Ä".Remove this use of "Assert"; it is deprecated.(ŞóÄ8Ø‚Èëø0
+[	java:S106É"9Replace this use of System.out or System.err by a logger.(Åèæıÿÿÿÿ8Ø‚Èëø0
+p	java:S100Ñ"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ƒ™è’øÿÿÿÿ8Ù‚Èëø0
+Q
+java:S1874Ú".Remove this use of "Assert"; it is deprecated.(¾‹²†ıÿÿÿÿ8Û‚Èëø0
+[	java:S106Û"9Replace this use of System.out or System.err by a logger.(±îˆ–ÿÿÿÿÿ8Û‚Èëø0
+[	java:S106ß"9Replace this use of System.out or System.err by a logger.(Åèæıÿÿÿÿ8Û‚Èëø0
+p	java:S100æ"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(›Ô¬»øÿÿÿÿ8İ‚Èëø0
+V	java:S106ì"9Replace this use of System.out or System.err by a logger.(éóÏ•8Ş‚Èëø0
+k	java:S100ò"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ãæ—Ñ8Ş‚Èëø0
+|
+java:S2142û"^Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.(”ı¾8ß‚Èëø0
+F	java:S108û")Either remove or fill this block of code.(”ı¾8ß‚Èëø0
+V	java:S106ş"9Replace this use of System.out or System.err by a logger.(†ìÙ 8ß‚Èëø0
+U	java:S106„"9Replace this use of System.out or System.err by a logger.( ³®8ß‚Èëø0
+^	java:S125"<This block of commented-out lines of code should be removed.(¬‰¡àùÿÿÿÿ8à‚Èëø0
+^	java:S125‘"<This block of commented-out lines of code should be removed.(¬‰¡àùÿÿÿÿ8à‚Èëø0
+j	java:S100˜"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(íÊÜ(8á‚Èëø0
+H
+java:S5960?"+Remove this assertion from production code.(ŞóÄ8â‚Èëø0

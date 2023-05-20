@@ -1,0 +1,17 @@
+
+E
+java:S1604t"(Make this anonymous inner class a lambda(°¦ä8É‡ ¦÷0
+b
+java:S2259†"DA "NullPointerException" could be thrown; "choice" is nullable here.(ÁŸ‡š8ûˆ ¦÷0
+v
+java:S3008"TRename this field "USER_NAME" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(’µ¸şÿÿÿÿ8şˆ ¦÷0
+u
+java:S3008"SRename this field "PASSWORD" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(µÉèÁùÿÿÿÿ8şˆ ¦÷0
+q
+java:S3008"TRename this field "RECIPIENT" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(õ¯8şˆ ¦÷0
+”
+java:S5527+"wEnable server hostname verification on this SSL/TLS connection, by setting "mail.smtp.ssl.checkserveridentity" to true.(’ß‡ƒ8¯‰ ¦÷0
+|
+java:S2142ƒ"^Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.(”ı¾8Õ‰ ¦÷0
+[	java:S106„"9Replace this use of System.out or System.err by a logger.(Ö”®Ìüÿÿÿÿ8ç‰ ¦÷0
+V	java:S106†"9Replace this use of System.out or System.err by a logger.(ÁŸ‡š8è‰ ¦÷0

@@ -1,0 +1,22 @@
+
+r	java:S117
+"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Óîú£ùÿÿÿÿ8†£¦›‚1
+m	java:S117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ŽÎ‰Ö8‡£¦›‚1
+m	java:S117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(çûÁ¹8‡£¦›‚1
+r	java:S117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ý‡•ãøÿÿÿÿ8‡£¦›‚1
+l	java:S117*"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Ëƒës8‡£¦›‚1
+r	java:S117/"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ƒ™è’øÿÿÿÿ8‡£¦›‚1
+l	java:S1174"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ö¨Éa8‡£¦›‚1
+o	java:S100
+"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Óîú£ùÿÿÿÿ8‘£¦›‚1
+j	java:S100"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ŽÎ‰Ö8’£¦›‚1
+j	java:S100"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(çûÁ¹8“£¦›‚1
+o	java:S100"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ý‡•ãøÿÿÿÿ8”£¦›‚1
+j	java:S100"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¾¿Óà8”£¦›‚1
+o	java:S100$"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(£•ßåûÿÿÿÿ8•£¦›‚1
+i	java:S100*"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Ëƒës8•£¦›‚1
+o	java:S100/"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ƒ™è’øÿÿÿÿ8–£¦›‚1
+i	java:S1004"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ö¨Éa8–£¦›‚1
+i	java:S100:"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(á·êu8–£¦›‚1
+o	java:S100@"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.( ãß‚üÿÿÿÿ8—£¦›‚1
+j	java:S100F"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(†äûÙ8—£¦›‚1
