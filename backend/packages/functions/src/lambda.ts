@@ -1133,6 +1133,147 @@ export const updateCourseAssignment: APIGatewayProxyHandlerV2 = async (
     })
     .promise();
 
+
+  console.log('visibility: ' + visibility);
+  
+  try{
+    if(visibility == 'visible'){
+      console.log('assignment Id:' + assignmentId);
+  
+      var dynamodb = new DynamoDB({apiVersion: "2012-08-10"});
+      const documentClient = new DocumentClient();
+  
+      // Get courseId, submission date and title of the assingment
+      var params = {
+          Key: {
+            "id": {"S": assignmentId}
+          }, 
+          TableName: COURSE_ASSIGNMENT_TABLE
+      };
+      var result = await dynamodb.getItem(params).promise();
+
+      var jsonObj = JSON.stringify(result.Item);
+      var objectValue = JSON.parse(jsonObj);
+
+      var courseId = objectValue['courseId'];
+      var submissionDat = objectValue['submissionDate'];
+      var aTitle = objectValue['title'];
+
+      // Get student IDs from course
+      const Items  = await documentClient
+      .query({
+        TableName: STUDENT_COURSE_TABLE,
+        IndexName: "by-institute-index",
+        KeyConditionExpression:
+          "instituteId = :instituteId AND courseId = :courseId",
+        ExpressionAttributeValues: {
+          ":instituteId": instituteId as string,
+          ":courseId": courseId['S'],
+        }
+      })
+      .promise();
+
+        var stuIds: any[] = [];
+
+        Items.Items?.forEach((element) => {
+          stuIds.push(element.studentId);
+        });
+
+        console.log(stuIds);
+
+      // Get course name
+
+      var cparams = {
+        Key: {
+          "id": {"S": courseId['S']}
+        }, 
+        TableName: COURSES_TABLE
+    };
+      var cresult = await dynamodb.getItem(cparams).promise();
+
+      var cjsonObj = JSON.stringify(cresult.Item);
+      var cobjectValue = JSON.parse(cjsonObj);
+
+      var cName = cobjectValue['name'];
+
+
+      // Loop studentIDs and find student name and email
+      var emailList = [];
+
+      for(var i = 0; i < stuIds.length; i++){
+        var sID = stuIds[i];
+
+        var sparams = {
+          Key: {
+            "id": {"S": sID}
+          }, 
+          TableName: USERS_TABLE_NAME
+      };
+        var result = await dynamodb.getItem(sparams).promise();
+
+        var sjsonObj = JSON.stringify(result.Item);
+        var sobjectValue = JSON.parse(sjsonObj);
+
+        var email = sobjectValue['email'];
+        emailList.push(email['S']);
+      }
+
+      const subjectName = cName['S'];
+      const assignmentTitme = aTitle['S'];
+      const submissionDate = submissionDat['S'];
+
+      // email template
+      var emailSubject = `${subjectName}` +`${' '}`+ ' Assignment published!';
+      var emailString = '<h3>Dear Student,</h3> <p>'+ `${subjectName}` +' assignment "<strong>'+`${assignmentTitme}` +
+      '</strong>" now published. <br/> You can access the assignment through the LMS. The Assignment due date will be ' +`${submissionDate}`+
+      '.<p> <br/> <p>Regards,<br/><p>The MyLMS team <br>mylms.learn@gmail.com</p>';
+      
+      var rowemailString = `${subjectName}` + ' assignment "'+ `${assignmentTitme}` +
+      '" now published. You can access the assignment through LMS. Assignment will due on ' +`${submissionDate}`;
+
+      console.log(emailString);
+
+      const AWS = require('aws-sdk');
+
+       let mailParams = {
+        Destination: {
+          ToAddresses: emailList
+        },
+        Message: {
+          Body: {
+            Html: {
+              Charset: "UTF-8",
+              Data: emailString
+      
+            },
+            Text: {
+              Charset: "UTF-8",
+              Data: rowemailString
+            }
+          },
+          Subject: {
+            Charset: 'UTF-8',
+            Data: emailSubject
+          }
+        },
+        Source: 'mylms.learn@gmail.com',
+        ReplyToAddresses: ['mylms.learn@gmail.com' ],
+      };
+
+      const ses = new AWS.SES({
+        region:'ap-southeast-1'
+     })
+     
+    //  Send emails to students
+     const resp = await ses.sendEmail(mailParams).promise();
+     console.log(resp)
+    }    
+
+  }
+  catch (error) {
+    console.log(error);
+}
+
   return SuccessWithData({ ...parsedPatchObject, updatedAt: newUpdatedAt });
 };
 
