@@ -159,7 +159,7 @@ export function lmsApiGateway({ stack }: StackContext) {
 
   apiGateway.attachPermissionsToRoute(
     "PATCH /institutes/{instituteId}/courses/{courseId}/assignments/{assignmentId}",
-    [courseAssignmentTable]
+    [courseAssignmentTable,studentCourseTable,usersTable,courseTable, "ses:SendTemplatedEmail", "ses:SendEmail"]
   );
 
   apiGateway.attachPermissionsToRoute(
