@@ -74,7 +74,10 @@ export default function Submission(props: Props) {
         marks: values.marks ? values.marks : undefined,
         feedback: values.feedback,
         graded: true,
-        file: initialValues.file
+        file: initialValues.file,
+        courseId: initialValues.courseId,
+        assignmentId: initialValues.assignmentId,
+        id: initialValues.id
       };
 
       try {
