@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { FC, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
+import HtmlToReact from 'html-to-react';
 
 import { useAuth } from 'src/contexts/AuthContext';
 import {
@@ -150,6 +151,9 @@ export const Assignment: FC<AssignmentProps> = ({
     backgroundColor: '#33334d'
   };
 
+  const HtmlToReactParser = HtmlToReact.Parser;
+  const htmlToReactParser = new HtmlToReactParser();
+
   // Header component
   const Header = () => (
     <Grid container alignItems="center" style={style}>
@@ -212,7 +216,7 @@ export const Assignment: FC<AssignmentProps> = ({
             </Box>
           </Box>
         }
-        subheader={assignment.description}
+        subheader={htmlToReactParser.parse(assignment.description)}
       />
       <CardContent>
         <Grid container spacing={3}>

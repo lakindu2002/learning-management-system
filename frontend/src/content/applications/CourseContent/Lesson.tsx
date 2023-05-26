@@ -9,6 +9,8 @@ import {
   Typography
 } from '@mui/material';
 import { FC } from 'react';
+import HtmlToReact from 'html-to-react';
+
 import { useAuth } from 'src/contexts/AuthContext';
 import { CourseLesson, LessonVisbility } from 'src/models/course';
 import { InstituteUserRole } from 'src/models/user';
@@ -46,6 +48,9 @@ export const Lesson: FC<LessonProps> = ({
     await onDelete();
   };
 
+  const HtmlToReactParser = HtmlToReact.Parser;
+  const htmlToReactParser = new HtmlToReactParser();
+
   return (
     <Card>
       <CardHeader
@@ -73,7 +78,7 @@ export const Lesson: FC<LessonProps> = ({
             </Box>
           </Box>
         }
-        subheader={lesson.description}
+        subheader={htmlToReactParser.parse(lesson.description)}
       />
       <CardContent>
         <Typography variant="h4">Learning Material</Typography>
