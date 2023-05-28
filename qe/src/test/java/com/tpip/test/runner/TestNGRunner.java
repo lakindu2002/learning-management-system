@@ -21,7 +21,7 @@ import cucumber.api.CucumberOptions;
 import cucumber.api.testng.CucumberFeatureWrapper;
 import cucumber.api.testng.TestNGCucumberRunner;
 
-@CucumberOptions(features = "src\\test\\BulkRun\\Admin Permissions", monochrome = true, glue = { "com.tpip.core",
+@CucumberOptions(features = "src\\test\\BulkRun", monochrome = true, glue = { "com.tpip.core",
 		"com.tpip.impl" }, plugin = { "pretty", "html:test-output",
 				"com.cucumber.listener.ExtentCucumberFormatter:target/cucumber-reports/report.html",
 				"html:target/cucumber-reports/cucumber-pretty", "json:target/cucumber-reports/CucumberTestReport.json",
